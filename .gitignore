@@ -1,0 +1,15 @@
+# Secrets - never commit
+.env
+.env.*
+
+# Build output
+bin/
+obj/
+*.tmod
+
+# Editor / OS
+.vs/
+.vscode/
+.idea/
+*.user
+.DS_Store

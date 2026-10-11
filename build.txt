@@ -1,0 +1,4 @@
+displayName = Mother of Terraria
+author = Unix-H
+version = 0.1
+buildIgnore = *.md, .gitignore, .env, .env.*, .git*, .vscode/*, bin\*, obj\*
