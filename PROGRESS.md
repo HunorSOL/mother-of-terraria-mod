@@ -7,7 +7,8 @@
 - Phase 1 COMPLETE (confirmed in-game 2026-10-11): Heavenly Teleporter item + recipe (Celestial Sigil + Copper Shortsword, craftable only at an Ancient Manipulator), Debug Starter Kit (craft from 1 Dirt Block), localization file, sprite cut from the owner's design.
 
 ## Next
-- Phase 2 (the Heavens). Waiting for owner's go-ahead.
+- Phase 2 (the Heavens), REVISED PLAN: skip the sky structure; build a real subworld with SubworldLibrary so the Teleporter is the only way in and flight is blocked. Steps 2.1-2.6 are in ROADMAP.md (local only). Start with 2.1 (dependency + empty subworld) on Opus 5.5. Restate the plan and wait for owner's OK first.
+- Open decision: scrub ROADMAP.md from GitHub history, or make the repo private (repo is public).
 
 - Pushed to GitHub (2026-10-11): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1). Remote uses SSH (key ~/.ssh/id_ed25519_github).
 
