@@ -13,3 +13,6 @@ obj/
 .idea/
 *.user
 .DS_Store
+
+# Private planning notes (kept locally, not published)
+ROADMAP.md
