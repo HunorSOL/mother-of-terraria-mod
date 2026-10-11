@@ -8,7 +8,8 @@
 
 ## Next
 - Phase 2 (the Heavens). Waiting for owner's go-ahead.
-- Open question: GitHub repo URL for the first push (Phase 0 tag).
+
+- Pushed to GitHub (2026-10-11): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1). Remote uses SSH (key ~/.ssh/id_ed25519_github).
 
 ## Build notes
 - Project folder MUST be named MotherOfTerraria (tModLoader uses the folder name as the mod name). ModSources/MotherOfTerraria is a symlink to it.
