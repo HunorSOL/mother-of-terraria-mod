@@ -1,6 +1,26 @@
-Items: {
-	PlaceholderSword: {
-		DisplayName: Placeholder Sword
-		Tooltip: ""
+Mods: {
+	MotherOfTerraria: {
+		Items: {
+			PlaceholderSword: {
+				DisplayName: Placeholder Sword
+				Tooltip: Phase 0 test weapon. Will be removed before release.
+			}
+			HeavenlyTeleporter: {
+				DisplayName: Heavenly Teleporter
+				Tooltip:
+					'''
+					Opens a portal to the Heavens.
+					The Heavens are not yet reachable.
+					'''
+			}
+			DebugStarterKit: {
+				DisplayName: Debug Starter Kit
+				Tooltip:
+					'''
+					TESTING ONLY. Remove before release.
+					Gives a Celestial Sigil, a Copper Shortsword and a Heavenly Teleporter.
+					'''
+			}
+		}
 	}
 }
