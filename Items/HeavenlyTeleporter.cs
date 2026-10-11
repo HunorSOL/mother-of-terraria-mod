@@ -17,8 +17,8 @@ namespace MotherOfTerraria.Items
 
 		public override void SetDefaults()
 		{
-			Item.width = 48;
-			Item.height = 48;
+			Item.width = 64;
+			Item.height = 64;
 			Item.maxStack = 1;
 			Item.useStyle = ItemUseStyleID.HoldUp; // raise the item overhead, like a Magic Mirror
 			Item.useTime = 45;
