@@ -28,6 +28,14 @@ namespace MotherOfTerraria.Items.Debug
 			// consumable stays false (the default): the kit is reusable.
 		}
 
+		// Craftable anywhere (no crafting station) from a single Dirt Block, so it is easy to get in a test world.
+		public override void AddRecipes()
+		{
+			CreateRecipe()
+				.AddIngredient(ItemID.DirtBlock)
+				.Register();
+		}
+
 		public override bool? UseItem(Player player)
 		{
 			// QuickSpawnItem drops the items on the player and handles multiplayer syncing for us.
