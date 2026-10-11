@@ -1,12 +1,11 @@
 # Progress
 
 ## Done
-- Phase 0 scaffold: mod project, placeholder sword, .gitignore, ASSETS.md, local git repo.
+- Phase 0 COMPLETE (confirmed in-game 2026-10-11): mod builds, loads in tModLoader 1.4.4.9, Placeholder Sword found and working in a Journey world.
 - .NET 8 SDK installed; command-line build works (see Build notes).
 
 ## Next
-- Confirm Phase 0 in-game (Build + Reload, enable mod, craft sword in a Journey world).
-- Then Phase 1 (Heavenly Teleporter + recipe), once Phase 0 is confirmed.
+- Phase 1 (Heavenly Teleporter + recipe). Waiting for owner's go-ahead.
 
 ## Build notes
 - Project folder MUST be named MotherOfTerraria (tModLoader uses the folder name as the mod name). ModSources/MotherOfTerraria is a symlink to it.
