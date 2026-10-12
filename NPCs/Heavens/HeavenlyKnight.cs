@@ -43,7 +43,37 @@ namespace MotherOfTerraria.NPCs.Heavens
 
 		public override void SetStaticDefaults()
 		{
-			Main.npcFrameCount[Type] = 1;
+			// The sheet stacks 7 frames: 0 = standing, 1-6 = walk cycle (made by tools/make_knight_sheet.py).
+			Main.npcFrameCount[Type] = 7;
+		}
+
+		// Picks which frame of the sheet to draw. Runs on each player's own game (visuals only).
+		public override void FindFrame(int frameHeight)
+		{
+			bool walking = Math.Abs(NPC.velocity.X) > 0.4f && NPC.velocity.Y == 0f;
+			if (!walking)
+			{
+				NPC.frameCounter = 0;
+				NPC.frame.Y = 0; // standing (also used while winding up and in the air)
+				return;
+			}
+
+			NPC.frameCounter++;
+			if (NPC.frameCounter >= 6) // a new frame every 6 ticks = 10 per second
+			{
+				NPC.frameCounter = 0;
+				int next = NPC.frame.Y / frameHeight + 1;
+				if (next > 6)
+				{
+					next = 1;
+				}
+				NPC.frame.Y = next * frameHeight;
+			}
+			// Coming from the standing frame: make sure we start inside the walk cycle.
+			if (NPC.frame.Y == 0)
+			{
+				NPC.frame.Y = frameHeight;
+			}
 		}
 
 		public override void SetDefaults()
