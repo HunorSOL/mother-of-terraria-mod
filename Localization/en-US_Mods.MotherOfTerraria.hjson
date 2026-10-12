@@ -28,7 +28,10 @@ Items: {
 	}
 }
 
-Tiles.GoldenStatue.MapEntry: Golden Statue
+Tiles: {
+	GoldenStatue.MapEntry: Golden Statue
+	GoldenBridgePost.MapEntry: Golden Bridge Post
+}
 
 NPCs: {
 	HeavenlyKnight.DisplayName: Heavenly Knight
@@ -36,7 +39,3 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
-Tiles.GoldenColumn.MapEntry: Golden Column
-Tiles.BrokenColumn.MapEntry: Broken Column
-Tiles.RuinedArch.MapEntry: Ruined Arch
-Tiles.GoldenBridgePost.MapEntry: Golden Bridge Post

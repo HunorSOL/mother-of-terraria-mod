@@ -1,11 +1,7 @@
-"""Generates the PLACEHOLDER sprite sheets for the Heavens ruins and bridge posts (no owner designs yet).
+"""Generates the PLACEHOLDER sprite sheet for the golden bridge posts (no owner design yet).
 
-Outputs (each is a multi-tile object sheet: 16 px tiles with 2 px padding between them):
-  Tiles/GoldenColumn.png      2x6 tiles   a tall intact golden marble column
-  Tiles/BrokenColumn.png      2x3 tiles   a snapped column stump with rubble
-  Tiles/RuinedArch.png        7x6 tiles   two columns and a broken arch between them
-  Tiles/GoldenBridgePost.png  1x3 tiles   an ornate golden post with a glowing orb, for the golden bridges
-Replace any PNG with the owner's art of the same size (no code changes).
+Output: Tiles/GoldenBridgePost.png  (1x3 tiles: an ornate golden post with a glowing orb; 16 px tiles, 2 px padding)
+Replace the PNG with the owner's art of the same size (no code changes).
 
 Run from the project folder:  python3 tools/make_heavens_decor.py      (needs ImageMagick and numpy)
 """
@@ -82,61 +78,6 @@ class Canvas:
         print(f"wrote {path}: {W}x{H}")
 
 
-def column(c, x0, width, top, bottom, broken_top=None):
-    """A fluted column. x0 = left edge, width in px. broken_top: list of top y per x (jagged break) or None."""
-    x1 = x0 + width - 1
-    for x in range(x0, x1 + 1):
-        t = top if broken_top is None else broken_top[x - x0]
-        for y in range(t, bottom + 1):
-            rel = (x - x0) / max(1, width - 1)
-            col = LIGHT if rel < 0.2 else SHADE if rel > 0.78 else BASE
-            if (x - x0) % 5 == 3:
-                col = DARK if rel > 0.4 else SHADE  # flute lines
-            c.set(x, y, col)
-    # base and capital trims
-    c.rect(x0 - 2, bottom - 7, x1 + 2, bottom - 4, BASE); c.rect(x0 - 3, bottom - 3, x1 + 3, bottom, SHADE)
-    c.rect(x0 - 2, bottom - 7, x1 + 2, bottom - 7, LIGHT)
-    if broken_top is None:
-        c.rect(x0 - 3, top - 6, x1 + 3, top - 3, BASE); c.rect(x0 - 3, top - 6, x1 + 3, top - 6, LIGHT)
-        c.rect(x0 - 2, top - 2, x1 + 2, top - 1, SHADE)
-
-
-def golden_column():
-    c = Canvas(2, 6)
-    column(c, 6, 20, 14, 95)
-    c.set(15, 4, GEM); c.set(16, 4, GEM)
-    c.outline(); c.save("Tiles/GoldenColumn.png")
-
-
-def broken_column():
-    c = Canvas(2, 3)
-    jag = [28 + ((x * 7) % 6) - (3 if x % 5 == 0 else 0) for x in range(20)]
-    column(c, 6, 20, 26, 47, broken_top=jag)
-    # rubble: fallen blocks on the ground to the sides
-    c.rect(0, 40, 4, 47, BASE); c.rect(0, 40, 4, 41, LIGHT); c.rect(27, 42, 31, 47, SHADE); c.rect(27, 42, 31, 43, BASE)
-    c.outline(); c.save("Tiles/BrokenColumn.png")
-
-
-def ruined_arch():
-    c = Canvas(7, 6)
-    column(c, 4, 20, 22, 95)                                  # left column, intact
-    jag = [58 + ((x * 5) % 7) - (4 if x % 4 == 0 else 0) for x in range(20)]
-    column(c, 88, 20, 56, 95, broken_top=jag)                  # right column, snapped halfway
-    # a stone lintel running from the left column's capital, snapped off raggedly before the right column
-    for x in range(22, 80):
-        edge = 78 - (x % 4)           # ragged broken end
-        sag = int(4 * ((x - 22) / 56.0) ** 2)  # droops slightly toward the break
-        if x < edge:
-            for y in range(15 + sag, 25 + sag):
-                rel = (y - 15 - sag) / 9.0
-                c.set(x, y, LIGHT if rel < 0.2 else SHADE if rel > 0.8 else BASE)
-    c.rect(48, 18, 53, 26, DARK); c.rect(49, 19, 52, 25, GEM)  # gem set into the lintel
-    c.set(50, 20, GEMLIGHT)
-    # rubble in the gap
-    c.rect(60, 88, 70, 95, BASE); c.rect(60, 88, 70, 89, LIGHT); c.rect(72, 90, 80, 95, SHADE)
-    c.outline(); c.save("Tiles/RuinedArch.png")
-
-
 def bridge_post():
     c = Canvas(1, 3)
     c.rect(6, 12, 9, 47, BASE); c.rect(6, 12, 6, 47, LIGHT); c.rect(9, 12, 9, 47, SHADE)
@@ -147,4 +88,4 @@ def bridge_post():
 
 
 if __name__ == "__main__":
-    golden_column(); broken_column(); ruined_arch(); bridge_post()
+    bridge_post()

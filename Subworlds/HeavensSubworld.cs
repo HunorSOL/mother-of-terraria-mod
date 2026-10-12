@@ -30,7 +30,7 @@ namespace MotherOfTerraria.Subworlds
 		private static readonly HashSet<int> protectedTiles = new HashSet<int>
 		{
 			TileID.Cloud,
-			TileID.HallowedGrass,
+			TileID.Grass,
 			TileID.Trees,
 			TileID.Saplings,
 		};
@@ -51,9 +51,6 @@ namespace MotherOfTerraria.Subworlds
 			}
 			// Mod tiles get their numeric ID at load time, so they are checked here and not in the static set.
 			return type == ModContent.TileType<GoldenStatue>()
-				|| type == ModContent.TileType<GoldenColumn>()
-				|| type == ModContent.TileType<BrokenColumn>()
-				|| type == ModContent.TileType<RuinedArch>()
 				|| type == ModContent.TileType<GoldenBridgePost>();
 		}
 

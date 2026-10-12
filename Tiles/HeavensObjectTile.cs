@@ -8,7 +8,7 @@ using Terraria.ObjectData;
 
 namespace MotherOfTerraria.Tiles
 {
-	// Shared setup for the Heavens' multi-tile decorations (statues, columns, ruins, bridge posts).
+	// Shared setup for the Heavens' multi-tile decorations (statues and bridge posts).
 	// Each one is a ModTile (a block-like object in the world) with no item: world generation places them and
 	// they are protected from breaking (see Subworlds/HeavensSubworld.IsProtectedTile).
 	// A subclass only says how many tiles wide and tall it is. Its texture is the PNG with the same name as the
@@ -66,27 +66,6 @@ namespace MotherOfTerraria.Tiles
 	public class GoldenStatue : HeavensObjectTile
 	{
 		protected override int ObjectWidth => 3;
-		protected override int ObjectHeight => 6;
-	}
-
-	// A tall intact golden marble column (2x6 tiles).
-	public class GoldenColumn : HeavensObjectTile
-	{
-		protected override int ObjectWidth => 2;
-		protected override int ObjectHeight => 6;
-	}
-
-	// A snapped column stump with rubble (2x3 tiles).
-	public class BrokenColumn : HeavensObjectTile
-	{
-		protected override int ObjectWidth => 2;
-		protected override int ObjectHeight => 3;
-	}
-
-	// Two columns and a broken stone lintel between them: a ruined temple gateway (7x6 tiles).
-	public class RuinedArch : HeavensObjectTile
-	{
-		protected override int ObjectWidth => 7;
 		protected override int ObjectHeight => 6;
 	}
 
