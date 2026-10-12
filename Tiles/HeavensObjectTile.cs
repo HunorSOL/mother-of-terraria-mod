@@ -24,6 +24,10 @@ namespace MotherOfTerraria.Tiles
 		// A soft golden glow around the object (red, green, blue strengths).
 		protected virtual Vector3 Glow => new Vector3(0.55f, 0.42f, 0.08f);
 
+		// True for pieces that are part of the ground you walk on: you can stand on their top surface (like a
+		// platform), but they are not liquids and nothing can sink or fall through them.
+		protected virtual bool IsWalkableSurface => false;
+
 		// Animated objects stack their frames vertically in the texture. 1 = not animated.
 		protected virtual int AnimationFrames => 1;
 
@@ -34,6 +38,11 @@ namespace MotherOfTerraria.Tiles
 		{
 			Main.tileFrameImportant[Type] = true; // multi-tile objects need this so their frames are kept
 			Main.tileLavaDeath[Type] = false;
+			if (IsWalkableSurface)
+			{
+				Main.tileSolid[Type] = true;
+				Main.tileSolidTop[Type] = true; // stand on the top, walk through from the sides and below
+			}
 
 			TileObjectData.newTile.Width = ObjectWidth;
 			TileObjectData.newTile.Height = ObjectHeight;
@@ -151,8 +160,8 @@ namespace MotherOfTerraria.Tiles
 		protected override Vector3 Glow => new Vector3(0.35f, 0.55f, 0.8f); // the orb glows blue-white
 	}
 
-	// A small flat pool of shimmering light on the turf (2x1 tiles). Pure decoration: it is not solid and not a
-	// liquid, so players and enemies simply walk over it and can never fall through it.
+	// A small pool of shimmering light set INTO the turf (2x1 tiles). It replaces a stretch of the ground surface
+	// and is level with the grass: you walk across the top of it. It is not a liquid, so nothing can fall through.
 	public class ShimmerPuddleSmall : HeavensObjectTile
 	{
 		public const int TilesWide = 2;
@@ -161,6 +170,7 @@ namespace MotherOfTerraria.Tiles
 		protected override int ObjectWidth => TilesWide;
 		protected override int ObjectHeight => TilesHigh;
 		protected override int AnimationFrames => 8;
+		protected override bool IsWalkableSurface => true;
 
 		// The glow drifts between pink, blue and lilac as it shimmers.
 		protected override Vector3 Glow
@@ -182,6 +192,7 @@ namespace MotherOfTerraria.Tiles
 		protected override int ObjectWidth => TilesWide;
 		protected override int ObjectHeight => TilesHigh;
 		protected override int AnimationFrames => 8;
+		protected override bool IsWalkableSurface => true;
 
 		protected override Vector3 Glow
 		{

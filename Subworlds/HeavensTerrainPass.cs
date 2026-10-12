@@ -165,7 +165,7 @@ namespace MotherOfTerraria.Subworlds
 			Mod.Logger.Info($"Heavens trees planted: {planted}.");
 			progress.Set(0.92f);
 
-			// Shimmer puddles: little pools of colour scattered over the islands, wherever there is room.
+			// Shimmer puddles: little pools of colour set into the turf, scattered over the islands wherever there is room.
 			progress.Message = "Scattering shimmer puddles";
 			var random = new Random(4242);
 			var puddleCounts = new (Island Island, int Count)[] { (Arrival, 5), (High, 3), (Low, 3), (Arena, 6) };
@@ -181,7 +181,7 @@ namespace MotherOfTerraria.Subworlds
 					{
 						continue;
 					}
-					PlaceObject(island, x, kind);
+					PlacePuddle(island, x, kind);
 					placedPuddles++;
 				}
 			}
@@ -293,6 +293,40 @@ namespace MotherOfTerraria.Subworlds
 				WorldGen.SquareTileFrame(tx, ground, true);
 			}
 			WorldGen.PlaceObject(x, ground - 1, type, true);
+			Occupied.Add((island, x - originX, x - originX + w - 1));
+		}
+
+		// Sets a shimmer pool INTO the ground: it replaces the turf tiles of the surface row, level with the grass,
+		// and sits on the cloud body below. (Unlike other scenery it does not stand on top of the ground.)
+		private static void PlacePuddle(Island island, int x, Kind what)
+		{
+			(int type, int w, int _) = Describe(what);
+			int originX = w / 2;
+			int ground = island.SurfaceY(x);
+			for (int dx = 0; dx < w; dx++)
+			{
+				int tx = x - originX + dx;
+				for (int k = 1; k <= 3; k++)
+				{
+					SetTile(tx, ground + k, TileID.Cloud); // a solid body for the pool to sit on
+				}
+				Tile surface = Main.tile[tx, ground];
+				surface.HasTile = false;                    // make room for the pool where the turf was
+				Tile above = Main.tile[tx, ground - 1];
+				above.HasTile = false;
+			}
+			if (!WorldGen.PlaceObject(x, ground, type, true))
+			{
+				// If the game refused, put the turf back so there is no hole in the island.
+				for (int dx = 0; dx < w; dx++)
+				{
+					SetTile(x - originX + dx, ground, TileID.Grass, glowingGold: true);
+				}
+			}
+			for (int dx = -1; dx <= w; dx++)
+			{
+				WorldGen.SquareTileFrame(x - originX + dx, ground, true); // re-shape the turf at the ends of the pool
+			}
 			Occupied.Add((island, x - originX, x - originX + w - 1));
 		}
 

@@ -35,6 +35,8 @@ Tiles: {
 	HeavenlyTreeRound.MapEntry: Heavenly Tree
 	HeavenlySapling.MapEntry: Heavenly Sapling
 	HeavenlyStump.MapEntry: Heavenly Stump
+	ShimmerPuddleSmall.MapEntry: Shimmering Puddle
+	ShimmerPuddleLarge.MapEntry: Shimmering Puddle
 }
 
 NPCs: {
@@ -43,5 +45,3 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
-Tiles.ShimmerPuddleSmall.MapEntry: Shimmering Puddle
-Tiles.ShimmerPuddleLarge.MapEntry: Shimmering Puddle
