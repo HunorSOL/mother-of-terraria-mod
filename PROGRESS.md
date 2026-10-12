@@ -15,6 +15,7 @@
 
 ## Decisions
 - SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Phase 2.6 (multiplayer testing) is deferred and became the "Multiplayer upgrade" step in Phase 8, to be done after the boss works. We keep server-authoritative habits (logic on the server, only visuals/sound/UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. The Heavenly Teleporter shows a message and does nothing in multiplayer.
+- Boss summon idea (owner, 2026-10-12, planning stage, specifics TBC): Heavens enemies drop crystals; a Heavenly Basket in the middle of the Heavens summons the boss when full. Logged in ROADMAP.md (Phase 2C and Phase 3). The crystal is a placeholder item for now.
 
 ## In progress
 - Nothing. Waiting for the owner to pick the next phase.
