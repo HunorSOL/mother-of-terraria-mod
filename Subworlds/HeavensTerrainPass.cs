@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using MotherOfTerraria.Tiles;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
@@ -9,13 +11,17 @@ using Terraria.WorldBuilding;
 
 namespace MotherOfTerraria.Subworlds
 {
-	// The world generation step that builds the Heavens: long floating islands joined by cloud bridges,
-	// golden statues and trees. The layout is hand-authored (fixed coordinates), so every visit is identical.
-	// Phase 2C will add finer detail on top of this.
+	// The world generation step that builds the Heavens: long floating islands with luminous golden turf,
+	// joined by golden bridges, with golden statues, broken golden temple ruins and trees.
+	// The layout is hand-authored (fixed coordinates), so every visit is identical.
 	public class HeavensTerrainPass : GenPass
 	{
 		// Fixed seed so tree shapes come out the same every time too.
 		private const int Seed = 777;
+
+		// The island tops are Hallowed Grass painted this colour and made to glow ("illuminant"), as a stand-in
+		// for a custom golden turf tile. Change it here if the colour looks wrong in-game.
+		private const byte TurfPaint = PaintID.YellowPaint;
 
 		// One island: centre column, height of its top surface, half-width, thickness at the middle,
 		// how far the top edges droop below the middle (0 = perfectly flat), and whether it is the boss arena.
@@ -39,10 +45,11 @@ namespace MotherOfTerraria.Subworlds
 			}
 		}
 
-		private static readonly Island Arrival = new(155, 235, 115, 26, 5);
-		private static readonly Island High = new(400, 200, 90, 20, 4);
-		private static readonly Island Low = new(390, 270, 90, 22, 4);
-		private static readonly Island Arena = new(655, 245, 125, 34, 0, Arena: true); // wide and flat: the future boss fight
+		// The islands sit close together (gaps of about 15-20 tiles), at similar heights so the bridges stay gentle.
+		private static readonly Island Arrival = new(140, 235, 100, 24, 5);
+		private static readonly Island High = new(330, 222, 75, 18, 4);
+		private static readonly Island Low = new(335, 250, 75, 20, 4);
+		private static readonly Island Arena = new(538, 240, 110, 32, 0, Arena: true); // wide and flat: the future boss fight
 
 		// Long islands that players can walk on.
 		private static readonly Island[] MainIslands = { Arrival, High, Low, Arena };
@@ -50,10 +57,10 @@ namespace MotherOfTerraria.Subworlds
 		// Small decorative islands with no bridges.
 		private static readonly Island[] Floaters =
 		{
-			new(60, 160, 26, 10, 2),
-			new(720, 140, 32, 12, 2),
-			new(400, 120, 22, 8, 2),
-			new(540, 190, 18, 7, 1),
+			new(60, 165, 26, 10, 2),
+			new(610, 145, 32, 12, 2),
+			new(330, 150, 22, 8, 2),
+			new(425, 178, 16, 7, 1),
 		};
 
 		// Bridges run from the right edge of one island to the left edge of the next.
@@ -65,14 +72,24 @@ namespace MotherOfTerraria.Subworlds
 			(Low, Arena),
 		};
 
-		// Statues: which island and which column. They stand flanking the arrival point,
-		// guarding the arena, and crowning the middle islands.
-		private static readonly (Island On, int X)[] Statues =
+		private enum Kind
 		{
-			(Arrival, 100), (Arrival, 210),
-			(High, 400),
-			(Low, 390),
-			(Arena, 570), (Arena, 740),
+			Statue,
+			Column,
+			BrokenColumn,
+			Arch,
+		}
+
+		// Decorations: which island, which column, what. They flank the arrival point, crown the middle islands
+		// and frame the arena. Ruins are broken golden temple pieces.
+		private static readonly (Island On, int X, Kind What)[] Objects =
+		{
+			(Arrival, 95, Kind.Statue), (Arrival, 185, Kind.Statue), (Arrival, 215, Kind.Arch),
+			(High, 330, Kind.Statue), (High, 285, Kind.BrokenColumn), (High, 375, Kind.Column),
+			(Low, 335, Kind.Statue), (Low, 297, Kind.Column), (Low, 375, Kind.BrokenColumn),
+			(Arena, 490, Kind.Statue), (Arena, 590, Kind.Statue),
+			(Arena, 446, Kind.Column), (Arena, 468, Kind.BrokenColumn),
+			(Arena, 610, Kind.BrokenColumn), (Arena, 632, Kind.Column),
 		};
 
 		// "Heavens Terrain" is the step name shown in logs; the number is its rough weight for the progress bar.
@@ -96,14 +113,15 @@ namespace MotherOfTerraria.Subworlds
 			{
 				BuildIsland(island);
 			}
-			progress.Set(0.3f);
+			progress.Set(0.25f);
 
-			progress.Message = "Laying the bridges";
+			progress.Message = "Laying the golden bridges";
+			var bridgeColumns = new List<(int X, int Y)>();
 			foreach (var (from, to) in Bridges)
 			{
-				BuildBridge(from, to);
+				BuildBridge(from, to, bridgeColumns);
 			}
-			progress.Set(0.5f);
+			progress.Set(0.4f);
 
 			// Fix up tile shapes so clouds and grass blend smoothly instead of looking like raw squares.
 			progress.Message = "Smoothing the clouds";
@@ -117,18 +135,22 @@ namespace MotherOfTerraria.Subworlds
 					}
 				}
 			}
-			progress.Set(0.7f);
+			progress.Set(0.6f);
 
-			progress.Message = "Raising the statues";
-			foreach (var (on, x) in Statues)
+			progress.Message = "Raising the statues and ruins";
+			foreach (var (on, x, what) in Objects)
 			{
-				PlaceStatue(on, x);
+				PlaceObject(on, x, what);
+			}
+			foreach (var (x, y) in bridgeColumns)
+			{
+				WorldGen.PlaceObject(x, y - 1, ModContent.TileType<GoldenBridgePost>(), true);
 			}
 			progress.Set(0.8f);
 
 			progress.Message = "Growing the trees";
 			int grown = 0, tried = 0;
-			foreach (Island island in new[] { Arrival, High, Low, Arena })
+			foreach (Island island in MainIslands)
 			{
 				for (int x = island.Left + 6; x <= island.Right - 6; x += 11)
 				{
@@ -137,7 +159,7 @@ namespace MotherOfTerraria.Subworlds
 					{
 						continue;
 					}
-					if (NearStatue(x))
+					if (NearObject(x))
 					{
 						continue;
 					}
@@ -166,53 +188,88 @@ namespace MotherOfTerraria.Subworlds
 				int depth = island.Depth(x);
 				for (int k = 0; k < depth; k++)
 				{
-					SetTile(x, top + k, k == 0 ? TileID.HallowedGrass : TileID.Cloud);
+					SetTile(x, top + k, k == 0 ? TileID.HallowedGrass : TileID.Cloud, glowingGold: k == 0);
 				}
 			}
 		}
 
-		// A thin cloud path that sags a little in the middle.
-		private static void BuildBridge(Island from, Island to)
+		// A golden walkway of platforms that sags a little in the middle. Remembers some columns for posts.
+		private static void BuildBridge(Island from, Island to, List<(int X, int Y)> postSpots)
 		{
 			int x1 = from.Right - 2, x2 = to.Left + 2;
 			int y1 = from.SurfaceY(x1), y2 = to.SurfaceY(x2);
+			short frameY = (short)(HeavensSubworld.GoldenPlatformStyle * 18);
+			var placed = new List<(int X, int Y)>();
 			for (int x = x1; x <= x2; x++)
 			{
 				double t = (x - x1) / (double)(x2 - x1);
-				int y = (int)Math.Round(y1 + (y2 - y1) * t + 3 * Math.Sin(Math.PI * t));
-				for (int k = 0; k < 3; k++)
+				int y = (int)Math.Round(y1 + (y2 - y1) * t + 2 * Math.Sin(Math.PI * t));
+				if (Main.tile[x, y].HasTile)
 				{
-					SetTile(x, y + k, TileID.Cloud);
+					continue; // still inside an island: the bridge starts where the ground ends
+				}
+				Tile tile = Main.tile[x, y];
+				tile.HasTile = true;
+				tile.TileType = TileID.Platforms;
+				tile.TileFrameY = frameY;
+				placed.Add((x, y));
+			}
+
+			// Ornate posts at both ends and about every 7 tiles between.
+			for (int i = 0; i < placed.Count; i++)
+			{
+				if (i == 0 || i == placed.Count - 1 || i % 7 == 0)
+				{
+					postSpots.Add(placed[i]);
 				}
 			}
 		}
 
-		// Levels a small pad under the statue, clears the air above it, then places the statue.
-		private static void PlaceStatue(Island island, int x)
+		// Levels a pad under the object, clears the air above it, then places it.
+		private static void PlaceObject(Island island, int x, Kind what)
 		{
+			(int type, int w, int h) = Describe(what);
+			int originX = w / 2;
 			int ground = island.SurfaceY(x);
-			for (int dx = -1; dx <= 1; dx++)
+			for (int dx = 0; dx < w; dx++)
 			{
-				SetTile(x + dx, ground, TileID.HallowedGrass);
+				int tx = x - originX + dx;
+				SetTile(tx, ground, TileID.HallowedGrass, glowingGold: true);
 				for (int k = 1; k <= 3; k++)
 				{
-					SetTile(x + dx, ground + k, TileID.Cloud);
+					SetTile(tx, ground + k, TileID.Cloud);
 				}
-				for (int k = 1; k <= 8; k++)
+				for (int k = 1; k <= h + 3; k++)
 				{
-					Tile air = Main.tile[x + dx, ground - k];
+					Tile air = Main.tile[tx, ground - k];
 					air.HasTile = false;
 				}
-				WorldGen.SquareTileFrame(x + dx, ground, true);
+				WorldGen.SquareTileFrame(tx, ground, true);
 			}
-			WorldGen.PlaceObject(x, ground - 1, ModContent.TileType<GoldenStatue>(), true);
+			WorldGen.PlaceObject(x, ground - 1, type, true);
 		}
 
-		private static bool NearStatue(int x)
+		private static (int Type, int Width, int Height) Describe(Kind what)
 		{
-			foreach (var (_, sx) in Statues)
+			switch (what)
 			{
-				if (Math.Abs(sx - x) <= 6)
+				case Kind.Column:
+					return (ModContent.TileType<GoldenColumn>(), 2, 6);
+				case Kind.BrokenColumn:
+					return (ModContent.TileType<BrokenColumn>(), 2, 3);
+				case Kind.Arch:
+					return (ModContent.TileType<RuinedArch>(), 7, 6);
+				default:
+					return (ModContent.TileType<GoldenStatue>(), 3, 6);
+			}
+		}
+
+		private static bool NearObject(int x)
+		{
+			foreach (var (_, ox, what) in Objects)
+			{
+				int reach = what == Kind.Arch ? 9 : 6;
+				if (Math.Abs(ox - x) <= reach)
 				{
 					return true;
 				}
@@ -220,19 +277,40 @@ namespace MotherOfTerraria.Subworlds
 			return false;
 		}
 
-		// Plants a sapling on the grass and grows it instantly into a tree. Returns false if the game refused.
+		// Plants a sapling on the turf and grows it instantly into a tree, then paints the tree gold and makes it
+		// glow (a stand-in until the owner's golden tree sprites arrive). Returns false if the game refused.
 		private static bool PlantTree(Island island, int x)
 		{
 			int ground = island.SurfaceY(x);
 			WorldGen.PlaceTile(x, ground - 1, TileID.Saplings, true, true);
-			return WorldGen.GrowTree(x, ground - 1);
+			bool grown = WorldGen.GrowTree(x, ground - 1);
+
+			// Paint whatever tree tiles now stand in this column's neighbourhood.
+			for (int tx = x - 6; tx <= x + 6; tx++)
+			{
+				for (int ty = ground - 45; ty < ground; ty++)
+				{
+					Tile tile = Main.tile[tx, ty];
+					if (tile.HasTile && (tile.TileType == TileID.Trees || tile.TileType == TileID.Saplings))
+					{
+						tile.TileColor = TurfPaint;
+						tile.IsTileFullbright = true;
+					}
+				}
+			}
+			return grown;
 		}
 
-		private static void SetTile(int x, int y, int type)
+		private static void SetTile(int x, int y, int type, bool glowingGold = false)
 		{
 			Tile tile = Main.tile[x, y];
 			tile.HasTile = true;
 			tile.TileType = (ushort)type;
+			if (glowingGold)
+			{
+				tile.TileColor = TurfPaint;
+				tile.IsTileFullbright = true; // "illuminant": glows, so the turf looks luminous
+			}
 		}
 	}
 }

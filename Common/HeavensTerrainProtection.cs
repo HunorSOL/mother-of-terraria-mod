@@ -10,27 +10,27 @@ namespace MotherOfTerraria.Common
 	// These hooks run on both the client and the server, so the rule holds in multiplayer too.
 	public class HeavensTerrainProtection : GlobalTile
 	{
-		private static bool IsProtected(int type)
+		private static bool IsProtected(int i, int j, int type)
 		{
-			return SubworldSystem.IsActive<HeavensSubworld>() && HeavensSubworld.IsProtectedTile(type);
+			return SubworldSystem.IsActive<HeavensSubworld>() && HeavensSubworld.IsProtectedTile(i, j, type);
 		}
 
 		// Pickaxes, hammers, drills.
 		public override bool CanKillTile(int i, int j, int type, ref bool blockDamaged)
 		{
-			return !IsProtected(type);
+			return !IsProtected(i, j, type);
 		}
 
 		// Bombs, dynamite, explosive projectiles.
 		public override bool CanExplode(int i, int j, int type)
 		{
-			return !IsProtected(type);
+			return !IsProtected(i, j, type);
 		}
 
 		// Placing a different block on top of an existing one (e.g. paint-style replacement).
 		public override bool CanReplace(int i, int j, int type, int tileTypeBeingPlaced)
 		{
-			return !IsProtected(type);
+			return !IsProtected(i, j, type);
 		}
 	}
 }

@@ -36,3 +36,7 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
+Tiles.GoldenColumn.MapEntry: Golden Column
+Tiles.BrokenColumn.MapEntry: Broken Column
+Tiles.RuinedArch.MapEntry: Ruined Arch
+Tiles.GoldenBridgePost.MapEntry: Golden Bridge Post

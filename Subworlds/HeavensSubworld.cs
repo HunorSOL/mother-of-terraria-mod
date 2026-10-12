@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SubworldLibrary;
 using MotherOfTerraria.Tiles;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
@@ -14,7 +15,7 @@ namespace MotherOfTerraria.Subworlds
 	public class HeavensSubworld : Subworld
 	{
 		// Size in tiles. Small on purpose: the Heavens is an arena area, not a full world.
-		public override int Width => 800;
+		public override int Width => 700;
 		public override int Height => 400;
 
 		// Regenerate it fresh on every visit, so it always looks the same and can't be griefed permanently.
@@ -34,10 +35,26 @@ namespace MotherOfTerraria.Subworlds
 			TileID.Saplings,
 		};
 
-		public static bool IsProtectedTile(int type)
+		// The golden platform used for the bridges is one STYLE of the ordinary Platforms tile, so only that style
+		// is protected (players can still build and remove ordinary platforms of other kinds).
+		public static int GoldenPlatformStyle => ContentSamples.ItemsByType[ItemID.GoldenPlatform].placeStyle;
+
+		public static bool IsProtectedTile(int i, int j, int type)
 		{
-			// Mod tiles get their numeric ID at load time, so they are checked separately from the static set.
-			return protectedTiles.Contains(type) || type == ModContent.TileType<GoldenStatue>();
+			if (protectedTiles.Contains(type))
+			{
+				return true;
+			}
+			if (type == TileID.Platforms)
+			{
+				return Main.tile[i, j].TileFrameY / 18 == GoldenPlatformStyle;
+			}
+			// Mod tiles get their numeric ID at load time, so they are checked here and not in the static set.
+			return type == ModContent.TileType<GoldenStatue>()
+				|| type == ModContent.TileType<GoldenColumn>()
+				|| type == ModContent.TileType<BrokenColumn>()
+				|| type == ModContent.TileType<RuinedArch>()
+				|| type == ModContent.TileType<GoldenBridgePost>();
 		}
 
 		// The list of world generation steps, run in order when the subworld is created.
