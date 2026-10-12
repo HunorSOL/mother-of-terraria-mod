@@ -53,9 +53,7 @@ namespace MotherOfTerraria.Subworlds
 				|| type == ModContent.TileType<HeavenlyTreeTall>()
 				|| type == ModContent.TileType<HeavenlyTreeRound>()
 				|| type == ModContent.TileType<HeavenlySapling>()
-				|| type == ModContent.TileType<HeavenlyStump>()
-				|| type == ModContent.TileType<ShimmerPuddleSmall>()
-				|| type == ModContent.TileType<ShimmerPuddleLarge>();
+				|| type == ModContent.TileType<HeavenlyStump>();
 		}
 
 		// The list of world generation steps, run in order when the subworld is created.

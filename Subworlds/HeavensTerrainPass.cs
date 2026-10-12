@@ -78,9 +78,6 @@ namespace MotherOfTerraria.Subworlds
 			(Arena, 490), (Arena, 590),
 		};
 
-		// Which tile columns on which island are already taken by scenery, so later pieces do not overlap.
-		private static readonly List<(Island On, int Left, int Right)> Occupied = new();
-
 		// "Heavens Terrain" is the step name shown in logs; the number is its rough weight for the progress bar.
 		public HeavensTerrainPass() : base("Heavens Terrain", 1) { }
 
@@ -89,8 +86,6 @@ namespace MotherOfTerraria.Subworlds
 			// Tell the game where "surface" and "underground" are, so the sky and lighting render as open sky.
 			Main.worldSurface = 330;
 			Main.rockLayer = 360;
-
-			Occupied.Clear();
 
 			progress.Message = "Raising the islands";
 			foreach (Island island in MainIslands)
@@ -163,28 +158,7 @@ namespace MotherOfTerraria.Subworlds
 				}
 			}
 			Mod.Logger.Info($"Heavens trees planted: {planted}.");
-			progress.Set(0.92f);
 
-			// Shimmer puddles: little pools of colour set into the turf, scattered over the islands wherever there is room.
-			progress.Message = "Scattering shimmer puddles";
-			var random = new Random(4242);
-			var puddleCounts = new (Island Island, int Count)[] { (Arrival, 5), (High, 3), (Low, 3), (Arena, 6) };
-			foreach (var (island, count) in puddleCounts)
-			{
-				int placedPuddles = 0;
-				for (int attempt = 0; attempt < 80 && placedPuddles < count; attempt++)
-				{
-					Kind kind = random.Next(3) == 0 ? Kind.PuddleLarge : Kind.PuddleSmall;
-					int width = kind == Kind.PuddleLarge ? ShimmerPuddleLarge.TilesWide : ShimmerPuddleSmall.TilesWide;
-					int x = random.Next(island.Left + 10, island.Right - 10);
-					if (IsOccupied(island, x - width / 2 - 1, x - width / 2 + width))
-					{
-						continue;
-					}
-					PlacePuddle(island, x, kind);
-					placedPuddles++;
-				}
-			}
 			progress.Set(1f);
 
 			// Players arrive on the grand arrival island, between its two statues.
@@ -246,8 +220,6 @@ namespace MotherOfTerraria.Subworlds
 			TreeRound,
 			Sapling,
 			Stump,
-			PuddleSmall,
-			PuddleLarge,
 		}
 
 		private static (int Type, int Width, int Height) Describe(Kind what)
@@ -262,10 +234,6 @@ namespace MotherOfTerraria.Subworlds
 					return (ModContent.TileType<HeavenlySapling>(), HeavenlySapling.TilesWide, HeavenlySapling.TilesHigh);
 				case Kind.Stump:
 					return (ModContent.TileType<HeavenlyStump>(), HeavenlyStump.TilesWide, HeavenlyStump.TilesHigh);
-				case Kind.PuddleSmall:
-					return (ModContent.TileType<ShimmerPuddleSmall>(), ShimmerPuddleSmall.TilesWide, ShimmerPuddleSmall.TilesHigh);
-				case Kind.PuddleLarge:
-					return (ModContent.TileType<ShimmerPuddleLarge>(), ShimmerPuddleLarge.TilesWide, ShimmerPuddleLarge.TilesHigh);
 				default:
 					return (ModContent.TileType<GoldenStatue>(), GoldenStatue.TilesWide, GoldenStatue.TilesHigh);
 			}
@@ -293,54 +261,6 @@ namespace MotherOfTerraria.Subworlds
 				WorldGen.SquareTileFrame(tx, ground, true);
 			}
 			WorldGen.PlaceObject(x, ground - 1, type, true);
-			Occupied.Add((island, x - originX, x - originX + w - 1));
-		}
-
-		// Sets a shimmer pool INTO the ground: it replaces the turf tiles of the surface row, level with the grass,
-		// and sits on the cloud body below. (Unlike other scenery it does not stand on top of the ground.)
-		private static void PlacePuddle(Island island, int x, Kind what)
-		{
-			(int type, int w, int _) = Describe(what);
-			int originX = w / 2;
-			int ground = island.SurfaceY(x);
-			for (int dx = 0; dx < w; dx++)
-			{
-				int tx = x - originX + dx;
-				for (int k = 1; k <= 3; k++)
-				{
-					SetTile(tx, ground + k, TileID.Cloud); // a solid body for the pool to sit on
-				}
-				Tile surface = Main.tile[tx, ground];
-				surface.HasTile = false;                    // make room for the pool where the turf was
-				Tile above = Main.tile[tx, ground - 1];
-				above.HasTile = false;
-			}
-			if (!WorldGen.PlaceObject(x, ground, type, true))
-			{
-				// If the game refused, put the turf back so there is no hole in the island.
-				for (int dx = 0; dx < w; dx++)
-				{
-					SetTile(x - originX + dx, ground, TileID.Grass, glowingGold: true);
-				}
-			}
-			for (int dx = -1; dx <= w; dx++)
-			{
-				WorldGen.SquareTileFrame(x - originX + dx, ground, true); // re-shape the turf at the ends of the pool
-			}
-			Occupied.Add((island, x - originX, x - originX + w - 1));
-		}
-
-		// True if any scenery already covers a column between left and right (inclusive) on this island.
-		private static bool IsOccupied(Island island, int left, int right)
-		{
-			foreach (var (on, l, r) in Occupied)
-			{
-				if (on == island && left <= r && right >= l)
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 
 		// True if a statue stands within `margin` tiles (plus half the statue's width) of this column.

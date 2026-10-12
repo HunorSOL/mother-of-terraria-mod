@@ -8,7 +8,7 @@ using Terraria.ObjectData;
 
 namespace MotherOfTerraria.Tiles
 {
-	// Shared setup for the Heavens' multi-tile decorations (statues, trees, bridge posts and shimmer puddles).
+	// Shared setup for the Heavens' multi-tile decorations (statues, trees and bridge posts).
 	// Each one is a ModTile (a block-like object in the world) with no item: world generation places them and
 	// they are protected from breaking (see Subworlds/HeavensSubworld.IsProtectedTile).
 	// A subclass only says how many tiles wide and tall it is. Its texture is the PNG with the same name as the
@@ -24,25 +24,10 @@ namespace MotherOfTerraria.Tiles
 		// A soft golden glow around the object (red, green, blue strengths).
 		protected virtual Vector3 Glow => new Vector3(0.55f, 0.42f, 0.08f);
 
-		// True for pieces that are part of the ground you walk on: you can stand on their top surface (like a
-		// platform), but they are not liquids and nothing can sink or fall through them.
-		protected virtual bool IsWalkableSurface => false;
-
-		// Animated objects stack their frames vertically in the texture. 1 = not animated.
-		protected virtual int AnimationFrames => 1;
-
-		// How many ticks (60 per second) each animation frame lasts.
-		protected virtual int TicksPerFrame => 6;
-
 		public override void SetStaticDefaults()
 		{
 			Main.tileFrameImportant[Type] = true; // multi-tile objects need this so their frames are kept
 			Main.tileLavaDeath[Type] = false;
-			if (IsWalkableSurface)
-			{
-				Main.tileSolid[Type] = true;
-				Main.tileSolidTop[Type] = true; // stand on the top, walk through from the sides and below
-			}
 
 			TileObjectData.newTile.Width = ObjectWidth;
 			TileObjectData.newTile.Height = ObjectHeight;
@@ -64,29 +49,9 @@ namespace MotherOfTerraria.Tiles
 			TileObjectData.newTile.AnchorBottom = new AnchorData(anchor, ObjectWidth, 0);
 			TileObjectData.newTile.LavaDeath = false;
 			TileObjectData.addTile(Type);
-			if (AnimationFrames > 1)
-			{
-				// Each animation frame is a copy of the whole object, stacked down the texture.
-				AnimationFrameHeight = ObjectHeight * 18;
-			}
 
 			AddMapEntry(new Color(236, 190, 56)); // name comes from the localization file
 			DustType = DustID.GoldCoin;
-		}
-
-		// Plays the animation for objects with more than one frame (visuals only).
-		public override void AnimateTile(ref int frame, ref int frameCounter)
-		{
-			if (AnimationFrames <= 1)
-			{
-				return;
-			}
-			frameCounter++;
-			if (frameCounter >= TicksPerFrame)
-			{
-				frameCounter = 0;
-				frame = (frame + 1) % AnimationFrames;
-			}
 		}
 
 		public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -158,49 +123,5 @@ namespace MotherOfTerraria.Tiles
 		protected override int ObjectHeight => 3;
 		protected override bool CanStandOnPlatform => true;
 		protected override Vector3 Glow => new Vector3(0.35f, 0.55f, 0.8f); // the orb glows blue-white
-	}
-
-	// A small pool of shimmering light set INTO the turf (2x1 tiles). It replaces a stretch of the ground surface
-	// and is level with the grass: you walk across the top of it. It is not a liquid, so nothing can fall through.
-	public class ShimmerPuddleSmall : HeavensObjectTile
-	{
-		public const int TilesWide = 2;
-		public const int TilesHigh = 1;
-
-		protected override int ObjectWidth => TilesWide;
-		protected override int ObjectHeight => TilesHigh;
-		protected override int AnimationFrames => 8;
-		protected override bool IsWalkableSurface => true;
-
-		// The glow drifts between pink, blue and lilac as it shimmers.
-		protected override Vector3 Glow
-		{
-			get
-			{
-				float t = Main.GameUpdateCount * 0.04f;
-				return new Vector3(0.38f + 0.12f * (float)System.Math.Sin(t), 0.3f + 0.1f * (float)System.Math.Sin(t + 2f), 0.5f + 0.12f * (float)System.Math.Sin(t + 4f));
-			}
-		}
-	}
-
-	// The same, 4 tiles wide.
-	public class ShimmerPuddleLarge : HeavensObjectTile
-	{
-		public const int TilesWide = 4;
-		public const int TilesHigh = 1;
-
-		protected override int ObjectWidth => TilesWide;
-		protected override int ObjectHeight => TilesHigh;
-		protected override int AnimationFrames => 8;
-		protected override bool IsWalkableSurface => true;
-
-		protected override Vector3 Glow
-		{
-			get
-			{
-				float t = Main.GameUpdateCount * 0.04f;
-				return new Vector3(0.38f + 0.12f * (float)System.Math.Sin(t), 0.3f + 0.1f * (float)System.Math.Sin(t + 2f), 0.5f + 0.12f * (float)System.Math.Sin(t + 4f));
-			}
-		}
 	}
 }
