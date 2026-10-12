@@ -14,7 +14,10 @@ namespace MotherOfTerraria.Subworlds
 	public static class HeavensSpawner
 	{
 		private const int CheckInterval = 240; // ticks (60 per second) between spawn attempts
-		private const int MaxKnights = 3;      // PLACEHOLDER cap, to be tuned
+
+		// PLACEHOLDER caps, to be tuned: how many of each can exist at once.
+		private const int MaxKnights = 3;
+		private const int MaxDragons = 2;
 
 		public static void Update()
 		{
@@ -24,18 +27,35 @@ namespace MotherOfTerraria.Subworlds
 			}
 
 			int knightType = ModContent.NPCType<HeavenlyKnight>();
-			int knights = 0;
+			int dragonType = ModContent.NPCType<HeavensDragon>();
+			int knights = 0, dragons = 0;
 			foreach (NPC npc in Main.ActiveNPCs)
 			{
 				if (npc.type == knightType)
 				{
 					knights++;
 				}
+				else if (npc.type == dragonType)
+				{
+					dragons++;
+				}
 			}
-			if (knights >= MaxKnights)
+
+			// Which types still have room? Pick one at random.
+			var open = new List<int>();
+			if (knights < MaxKnights)
+			{
+				open.Add(knightType);
+			}
+			if (dragons < MaxDragons)
+			{
+				open.Add(dragonType);
+			}
+			if (open.Count == 0)
 			{
 				return;
 			}
+			int type = open[Main.rand.Next(open.Count)];
 
 			// Pick a random living player to spawn near.
 			var players = new List<Player>();
@@ -68,13 +88,13 @@ namespace MotherOfTerraria.Subworlds
 					continue; // nothing to stand on in that column (a gap between islands)
 				}
 
-				// Needs a clear 2x5 tile space above the ground.
+				// Needs a clear space above the ground (the knight is the tallest at 76 px).
 				Vector2 feet = new Vector2(tileX * 16f + 8f, groundY * 16f);
-				if (Collision.SolidCollision(feet - new Vector2(20f, 80f), 40, 78))
+				if (Collision.SolidCollision(feet - new Vector2(28f, 80f), 56, 78))
 				{
 					continue;
 				}
-				NPC.NewNPC(new EntitySource_WorldEvent(), (int)feet.X, (int)feet.Y, knightType);
+				NPC.NewNPC(new EntitySource_WorldEvent(), (int)feet.X, (int)feet.Y, type);
 				return;
 			}
 		}
