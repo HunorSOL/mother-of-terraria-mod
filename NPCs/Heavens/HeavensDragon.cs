@@ -1,36 +1,46 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MotherOfTerraria.Items;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace MotherOfTerraria.NPCs.Heavens
 {
-	// The Heavens Dragon: a small wyvern-like flier. It hovers beside and above the player, then rears back
-	// with its mouth glowing (the tell) and DASHES straight at where the player was. Anything it hits is set
-	// On Fire! After the dash it is exposed for a moment.
-	// Texture: NPCs/Heavens/HeavensDragon.png (PLACEHOLDER sheet made by tools/make_dragon_placeholder.py;
-	// the owner has no design yet). It faces RIGHT, like the knight.
+	// The Heavens Dragon: a long golden wyvern. It flies at the player, gives a short warning (it slows and
+	// light gathers at its head), then SWOOPS in a homing strike, flies past, circles back and strikes again.
+	// Anything it hits is set On Fire! It is stronger than the Heavenly Knight and spawns less often.
+	// Texture: NPCs/Heavens/HeavensDragon.png (owner's design, 8 animation frames of 202x91 made by
+	// tools/make_dragon_sheet.py). The art faces RIGHT and is long, so we draw it ourselves (PreDraw) with the
+	// HEAD on the NPC's hitbox; the long body trails behind it.
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS, to be tuned with the owner after the enemies exist.
 	public class HeavensDragon : ModNPC
 	{
-		private const int HoverTime = 100;          // ticks (60 per second) of circling before a dash
-		private const int WindUpTime = 50;          // the tell: it stops, rears back, and its mouth glows
-		private const float DashSpeed = 14f;
-		private const int DashTime = 24;            // about 21 tiles of travel
-		private const int RecoverTime = 70;         // exposed after the dash
-		private const float DashDamageMultiplier = 1.5f;
+		// Where the hitbox sits on the picture: a spot just behind the nose (frame coordinates, art facing right).
+		private const float HeadAnchorX = 170f;
+		private const float HeadAnchorY = 43f;
+
+		private const float ApproachSpeed = 11f;
+		private const int ApproachMaxTime = 180;    // ticks (60 per second); gives up circling and strikes anyway
+		private const float StrikeRange = 360f;     // starts the warning when this close (pixels)
+		private const int TelegraphTime = 30;       // the warning
+		private const float StrikeSpeed = 16f;
+		private const float StrikeTurnRate = 0.05f; // radians per tick the strike can curve toward the player
+		private const int StrikeMaxTime = 55;
+		private const int RetreatTime = 50;         // flies off before circling back
+		private const float StrikeDamageMultiplier = 1.3f;
 		private const int BurnTicks = 60 * 5;       // On Fire! lasts 5 seconds
 
 		private enum State
 		{
-			Hover = 0,
-			WindUp = 1,
-			Dash = 2,
-			Recover = 3,
+			Approach = 0,
+			Telegraph = 1,
+			Strike = 2,
+			Retreat = 3,
 		}
 
 		private State CurrentState
@@ -40,29 +50,27 @@ namespace MotherOfTerraria.NPCs.Heavens
 		}
 
 		private ref float Timer => ref NPC.ai[1];
-		private ref float DashAngle => ref NPC.ai[2]; // direction of the dash in radians, locked when it starts; synced
 
 		public override void SetStaticDefaults()
 		{
-			// The sheet stacks 4 frames: 0 = wings up, 1 = wings down, 2 = wind-up, 3 = dash.
-			Main.npcFrameCount[Type] = 4;
+			Main.npcFrameCount[Type] = 8;
 		}
 
 		public override void SetDefaults()
 		{
-			NPC.width = 56;
-			NPC.height = 40;
-			NPC.damage = 140;       // contact damage (placeholder)
-			NPC.defense = 45;       // placeholder
-			NPC.lifeMax = 6500;     // placeholder
+			NPC.width = 72;
+			NPC.height = 44;
+			NPC.damage = 190;       // contact damage (placeholder; stronger than the knight's 150)
+			NPC.defense = 70;       // placeholder
+			NPC.lifeMax = 12000;    // placeholder
 			NPC.HitSound = SoundID.NPCHit1;
 			NPC.DeathSound = SoundID.NPCDeath8;
-			NPC.knockBackResist = 0.2f;
-			NPC.value = Item.buyPrice(gold: 2);
+			NPC.knockBackResist = 0.1f;
+			NPC.value = Item.buyPrice(gold: 4);
 			NPC.aiStyle = -1;       // our own AI below
 			NPC.noGravity = true;   // it flies
-			NPC.noTileCollide = false;
-			NPC.buffImmune[BuffID.OnFire] = true; // a fire dragon does not burn
+			NPC.noTileCollide = true; // like the vanilla wyverns, it flies through the islands instead of getting stuck
+			NPC.buffImmune[BuffID.OnFire] = true;
 			NPC.buffImmune[BuffID.Confused] = true;
 		}
 
@@ -74,81 +82,64 @@ namespace MotherOfTerraria.NPCs.Heavens
 			// No living player left: fly up and away, and despawn.
 			if (!target.active || target.dead)
 			{
-				NPC.velocity.Y -= 0.2f;
+				NPC.velocity.Y -= 0.3f;
 				NPC.EncourageDespawn(60);
 				return;
 			}
 
-			// It keeps facing the player, except during a dash, when it faces along its path.
-			if (CurrentState == State.Dash)
-			{
-				NPC.direction = Math.Cos(DashAngle) >= 0 ? 1 : -1;
-			}
-			else
-			{
-				NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
-			}
-			// The art faces right and Terraria flips when spriteDirection is 1, hence the reversed sign
-			// (same as the knight).
-			NPC.spriteDirection = -NPC.direction;
-
-			Lighting.AddLight(NPC.Center, 0.7f, 0.35f, 0.1f);
+			Lighting.AddLight(NPC.Center, 0.8f, 0.7f, 0.3f);
 
 			switch (CurrentState)
 			{
-				case State.Hover:
-					DoHover(target);
+				case State.Approach:
+					DoApproach(target);
 					break;
-				case State.WindUp:
-					DoWindUp(target);
+				case State.Telegraph:
+					DoTelegraph();
 					break;
-				case State.Dash:
-					DoDash();
+				case State.Strike:
+					DoStrike(target);
 					break;
-				case State.Recover:
-					DoRecover();
+				case State.Retreat:
+					DoRetreat(target);
 					break;
 			}
 
-			// Tilt: a gentle lean into its movement; during the dash, nose pointing along the path.
-			if (CurrentState == State.Dash)
+			// Face the way it is flying (with a little hysteresis so it does not flicker when nearly still).
+			if (Math.Abs(NPC.velocity.X) > 1.5f)
 			{
-				float angle = DashAngle;
-				NPC.rotation = NPC.direction == 1 ? angle : MathHelper.WrapAngle(angle - MathHelper.Pi);
+				NPC.direction = NPC.velocity.X > 0f ? 1 : -1;
 			}
-			else
-			{
-				NPC.rotation = MathHelper.Clamp(NPC.velocity.X * 0.02f, -0.3f, 0.3f);
-			}
+
+			// Lean into its flight path. Gentle most of the time, steeper during the strike.
+			float angle = NPC.velocity.ToRotation();
+			float rotation = NPC.direction == 1 ? MathHelper.WrapAngle(angle) : MathHelper.WrapAngle(angle - MathHelper.Pi);
+			float limit = CurrentState == State.Strike ? 1.1f : 0.5f;
+			NPC.rotation = MathHelper.Lerp(NPC.rotation, MathHelper.Clamp(rotation, -limit, limit), 0.15f);
 		}
 
-		// Circle beside and above the player, bobbing gently, then pick the next action.
-		private void DoHover(Player target)
+		// Fly toward the player (bobbing a little), then warn and strike.
+		private void DoApproach(Player target)
 		{
-			float side = NPC.Center.X < target.Center.X ? -1f : 1f; // stay on the side it is already on
-			float bob = (float)Math.Sin(Main.GameUpdateCount * 0.06f) * 20f;
-			Vector2 goal = target.Center + new Vector2(side * 300f, -170f + bob);
-			Vector2 desired = (goal - NPC.Center) * 0.06f;
-			if (desired.Length() > 9f)
-			{
-				desired = desired.SafeNormalize(Vector2.Zero) * 9f;
-			}
-			NPC.velocity = Vector2.Lerp(NPC.velocity, desired, 0.08f);
+			float bob = (float)Math.Sin(Main.GameUpdateCount * 0.07f) * 30f;
+			Vector2 goal = target.Center + new Vector2(0f, -40f + bob);
+			Vector2 desired = (goal - NPC.Center).SafeNormalize(Vector2.UnitX) * ApproachSpeed;
+			NPC.velocity = Vector2.Lerp(NPC.velocity, desired, 0.05f);
 
 			Timer++;
-			if (Timer >= HoverTime && Vector2.Distance(NPC.Center, target.Center) < 900f)
+			if (Vector2.Distance(NPC.Center, target.Center) < StrikeRange || Timer >= ApproachMaxTime)
 			{
 				Timer = 0;
-				CurrentState = State.WindUp;
+				CurrentState = State.Telegraph;
 				NPC.netUpdate = true;
 			}
 		}
 
-		// The tell: it stops, rears back, and fire gathers at its mouth. Move out of its line before it goes.
-		private void DoWindUp(Player target)
+		// The warning: it slows, roars, and golden-blue light streams into its head. Get ready to dodge sideways.
+		private void DoTelegraph()
 		{
-			NPC.velocity *= 0.85f;
-			Vector2 mouth = NPC.Center + new Vector2(NPC.direction * 30f, -8f);
+			NPC.velocity *= 0.9f;
+			Vector2 head = HeadPosition();
 
 			if (Timer == 0)
 			{
@@ -157,59 +148,81 @@ namespace MotherOfTerraria.NPCs.Heavens
 
 			for (int i = 0; i < 2; i++)
 			{
-				Vector2 spawn = mouth + Main.rand.NextVector2CircularEdge(40f, 40f);
-				Dust dust = Dust.NewDustPerfect(spawn, DustID.Torch, (mouth - spawn) * 0.1f, 0, default, 1.5f);
+				Vector2 spawn = head + Main.rand.NextVector2CircularEdge(60f, 60f);
+				int type = Main.rand.NextBool() ? DustID.GoldCoin : DustID.GemSapphire;
+				Dust dust = Dust.NewDustPerfect(spawn, type, (head - spawn) * 0.1f, 0, default, 1.4f);
 				dust.noGravity = true;
 			}
 
 			Timer++;
-			if (Timer >= WindUpTime)
+			if (Timer >= TelegraphTime)
 			{
-				// Lock the path at the player's current position: moving away in time dodges it.
-				DashAngle = (target.Center - NPC.Center).ToRotation();
 				Timer = 0;
-				CurrentState = State.Dash;
+				CurrentState = State.Strike;
 				NPC.netUpdate = true;
 			}
 		}
 
-		// A fast straight charge. It ends early if it hits terrain.
-		private void DoDash()
+		// A homing swoop: it speeds up and curves toward the player, but can only turn so fast,
+		// so a well-timed sidestep makes it miss and fly past.
+		private void DoStrike(Player target)
 		{
-			NPC.velocity = DashAngle.ToRotationVector2() * DashSpeed;
+			Vector2 toTarget = target.Center - NPC.Center;
+			float currentAngle = NPC.velocity.LengthSquared() > 1f ? NPC.velocity.ToRotation() : toTarget.ToRotation();
+			float wanted = toTarget.ToRotation();
+			float difference = MathHelper.WrapAngle(wanted - currentAngle);
+			float newAngle = currentAngle + MathHelper.Clamp(difference, -StrikeTurnRate, StrikeTurnRate);
 
-			// Flames trail behind it.
-			Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Torch, -NPC.velocity.X * 0.2f, -NPC.velocity.Y * 0.2f, 0, default, 1.6f);
-			dust.noGravity = true;
+			float speed = Math.Min(NPC.velocity.Length() + 0.9f, StrikeSpeed);
+			NPC.velocity = newAngle.ToRotationVector2() * speed;
+
+			// Golden-blue sparkles trail behind the strike.
+			if (Main.rand.NextBool(2))
+			{
+				Dust dust = Dust.NewDustPerfect(HeadPosition(), Main.rand.NextBool() ? DustID.GoldCoin : DustID.GemSapphire,
+					-NPC.velocity * 0.1f, 0, default, 1.3f);
+				dust.noGravity = true;
+			}
 
 			Timer++;
-			if (Timer >= DashTime || NPC.collideX || NPC.collideY)
+			bool passedPlayer = Vector2.Dot(NPC.velocity, toTarget) < 0f && toTarget.Length() > 120f;
+			if (Timer >= StrikeMaxTime || passedPlayer)
 			{
-				NPC.velocity *= 0.3f;
 				Timer = 0;
-				CurrentState = State.Recover;
+				CurrentState = State.Retreat;
 				NPC.netUpdate = true;
 			}
 		}
 
-		private void DoRecover()
+		// After the strike it flies off to a spot far to one side and above, then comes back.
+		private void DoRetreat(Player target)
 		{
-			NPC.velocity *= 0.93f;
+			float side = NPC.Center.X < target.Center.X ? -1f : 1f; // go to the side it is already on
+			Vector2 goal = target.Center + new Vector2(side * 520f, -260f);
+			Vector2 desired = (goal - NPC.Center).SafeNormalize(Vector2.UnitX) * ApproachSpeed;
+			NPC.velocity = Vector2.Lerp(NPC.velocity, desired, 0.06f);
+
 			Timer++;
-			if (Timer >= RecoverTime)
+			if (Timer >= RetreatTime)
 			{
 				Timer = 0;
-				CurrentState = State.Hover;
+				CurrentState = State.Approach;
 				NPC.netUpdate = true;
 			}
 		}
 
-		// Hits harder while dashing.
+		// Where the head is in the world (a bit in front of the hitbox centre, along the flight direction).
+		private Vector2 HeadPosition()
+		{
+			return NPC.Center + new Vector2(NPC.direction * 30f, 0f).RotatedBy(NPC.rotation);
+		}
+
+		// Hits harder while striking.
 		public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
 		{
-			if (CurrentState == State.Dash)
+			if (CurrentState == State.Strike)
 			{
-				modifiers.SourceDamage *= DashDamageMultiplier;
+				modifiers.SourceDamage *= StrikeDamageMultiplier;
 			}
 		}
 
@@ -219,30 +232,35 @@ namespace MotherOfTerraria.NPCs.Heavens
 			target.AddBuff(BuffID.OnFire, BurnTicks);
 		}
 
-		// Picks which frame of the sheet to draw (visuals only, runs on each player's own game).
+		// The body ripples and the wings flap: 8 frames, played faster the faster it flies.
 		public override void FindFrame(int frameHeight)
 		{
-			int frame;
-			switch (CurrentState)
-			{
-				case State.WindUp:
-					frame = 2;
-					break;
-				case State.Dash:
-					frame = 3;
-					break;
-				default:
-					NPC.frameCounter++;
-					frame = (int)(NPC.frameCounter / 7) % 2; // wings up, wings down, every 7 ticks
-					break;
-			}
+			NPC.frameCounter += 1.0 + NPC.velocity.Length() * 0.08;
+			int frame = (int)(NPC.frameCounter / 4) % 8;
 			NPC.frame.Y = frame * frameHeight;
 		}
 
-		// Drops: a chance (placeholder: 1 in 3) of 1 to 2 Heavens Crystals, same as the knight.
+		// The picture is much longer than the hitbox and its head is at the right end, so draw it by hand:
+		// pin the head spot of the picture to the hitbox centre, and let the body trail behind it.
+		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+		{
+			Texture2D texture = TextureAssets.Npc[Type].Value;
+			Rectangle frame = NPC.frame;
+			Vector2 origin = new Vector2(HeadAnchorX, HeadAnchorY);
+			SpriteEffects effects = SpriteEffects.None;
+			if (NPC.direction == -1)
+			{
+				effects = SpriteEffects.FlipHorizontally;
+				origin.X = frame.Width - HeadAnchorX;
+			}
+			spriteBatch.Draw(texture, NPC.Center - screenPos, frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, effects, 0f);
+			return false;
+		}
+
+		// Drops: a better chance than the knight (placeholder: 1 in 2) of 1 to 3 Heavens Crystals.
 		public override void ModifyNPCLoot(NPCLoot npcLoot)
 		{
-			npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeavensCrystal>(), 3, 1, 2));
+			npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeavensCrystal>(), 2, 1, 3));
 		}
 	}
 }

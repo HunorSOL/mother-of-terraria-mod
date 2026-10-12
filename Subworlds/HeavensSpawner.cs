@@ -17,7 +17,7 @@ namespace MotherOfTerraria.Subworlds
 
 		// PLACEHOLDER caps, to be tuned: how many of each can exist at once.
 		private const int MaxKnights = 3;
-		private const int MaxDragons = 2;
+		private const int MaxDragons = 1;
 
 		public static void Update()
 		{
@@ -41,10 +41,13 @@ namespace MotherOfTerraria.Subworlds
 				}
 			}
 
-			// Which types still have room? Pick one at random.
+			// Which types still have room? Pick one at random. Entries are repeated to weight the choice,
+			// so knights are picked 3 times as often as dragons (dragons are the rarer, stronger enemy).
 			var open = new List<int>();
 			if (knights < MaxKnights)
 			{
+				open.Add(knightType);
+				open.Add(knightType);
 				open.Add(knightType);
 			}
 			if (dragons < MaxDragons)
@@ -83,7 +86,7 @@ namespace MotherOfTerraria.Subworlds
 					{
 						continue;
 					}
-					if (Collision.SolidCollision(spawn - new Vector2(32f, 24f), 64, 48))
+					if (Collision.SolidCollision(spawn - new Vector2(36f, 22f), 72, 44))
 					{
 						continue;
 					}
