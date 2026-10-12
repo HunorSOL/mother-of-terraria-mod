@@ -7,9 +7,7 @@
 - Phase 1 COMPLETE (confirmed in-game 2026-10-11): Heavenly Teleporter item + recipe (Celestial Sigil + Copper Shortsword, craftable only at an Ancient Manipulator), Debug Starter Kit (craft from 1 Dirt Block), localization file, sprite cut from the owner's design.
 
 - Phase 2.1 COMPLETE (confirmed in-game 2026-10-12): SubworldLibrary 2.3.0.1 dependency, empty Heavens subworld (800x400, flat cloud floor, regenerated every visit). Temporary /heavens debug command used for the test, removed in 2.2.
-
-## In progress
-- Phase 2.2 (awaiting owner test): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item).
+- Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
 
 ## Next
 - Phase 2.3 (Sonnet 5.5): rules inside the Heavens (no flight/mounts, no building, no escape items except the Teleporter).
