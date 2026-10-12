@@ -219,23 +219,25 @@ namespace MotherOfTerraria.Subworlds
 			}
 		}
 
-		// Levels a small pad under the statue, clears the air above it, then places the statue.
+		// Levels a pad under the statue, clears the air above it, then places the statue.
 		private static void PlaceStatue(Island island, int x)
 		{
+			int originX = GoldenStatue.TilesWide / 2; // the statue's origin tile is its bottom-middle
 			int ground = island.SurfaceY(x);
-			for (int dx = -1; dx <= 1; dx++)
+			for (int dx = 0; dx < GoldenStatue.TilesWide; dx++)
 			{
-				SetTile(x + dx, ground, TileID.Grass, glowingGold: true);
+				int tx = x - originX + dx;
+				SetTile(tx, ground, TileID.Grass, glowingGold: true);
 				for (int k = 1; k <= 3; k++)
 				{
-					SetTile(x + dx, ground + k, TileID.Cloud);
+					SetTile(tx, ground + k, TileID.Cloud);
 				}
-				for (int k = 1; k <= 9; k++)
+				for (int k = 1; k <= GoldenStatue.TilesHigh + 3; k++)
 				{
-					Tile air = Main.tile[x + dx, ground - k];
+					Tile air = Main.tile[tx, ground - k];
 					air.HasTile = false;
 				}
-				WorldGen.SquareTileFrame(x + dx, ground, true);
+				WorldGen.SquareTileFrame(tx, ground, true);
 			}
 			WorldGen.PlaceObject(x, ground - 1, ModContent.TileType<GoldenStatue>(), true);
 		}
@@ -244,7 +246,7 @@ namespace MotherOfTerraria.Subworlds
 		{
 			foreach (var (_, sx) in Statues)
 			{
-				if (Math.Abs(sx - x) <= 6)
+				if (Math.Abs(sx - x) <= GoldenStatue.TilesWide / 2 + 5)
 				{
 					return true;
 				}

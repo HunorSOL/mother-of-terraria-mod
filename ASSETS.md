@@ -13,7 +13,7 @@ All art is placeholder until the owner supplies finals. Replace by dropping a PN
 | Heavens Dragon (enemy) | NPCs/Heavens/HeavensDragon.png | 202 wide, 8 frames stacked vertically (202x728, each frame 202x91) | Owner's design (DesignRefs/dragon_design.jpg), cut out and scaled (DesignRefs/dragon_base.png), animated by script (tools/make_dragon_sheet.py: body ripple + wing flap). A stand-in for hand-drawn animation; replace with real frames when available. |
 | Heavens Crystal (item) | Items/HeavensCrystal.png | 20x28, single frame, transparent PNG | Placeholder (generated). No design yet. |
 | Golden Bridge Post (glowing post along the bridges) | Tiles/GoldenBridgePost.png | 16x52: 1x3 tiles | PLACEHOLDER (generated). Owner design wanted. |
-| Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 52x106: 3x6 tiles of 16px with 2px padding between tiles, transparent PNG, single frame | Placeholder (generated: robed figure with halo and spear). Owner design to replace it. |
+| Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 142x124: 8x7 tiles of 16px with 2px padding between tiles, transparent PNG | Owner's design (DesignRefs/statue_design.jpg), cut out at its true pixel size (64x55) and scaled 2x (DesignRefs/statue_base.png), padded into the tile sheet by tools/make_statue_sheet.py. Final unless the owner wants changes. |
 
 ## Vanilla stand-ins (borrowed Terraria visuals that should become custom)
 

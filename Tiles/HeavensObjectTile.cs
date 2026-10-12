@@ -62,11 +62,14 @@ namespace MotherOfTerraria.Tiles
 		}
 	}
 
-	// A tall golden statue: a robed figure with a halo and spear (3x6 tiles).
+	// A grand golden winged statue with a blue gem (the owner's design, 8x7 tiles).
 	public class GoldenStatue : HeavensObjectTile
 	{
-		protected override int ObjectWidth => 3;
-		protected override int ObjectHeight => 6;
+		public const int TilesWide = 8;
+		public const int TilesHigh = 7;
+
+		protected override int ObjectWidth => TilesWide;
+		protected override int ObjectHeight => TilesHigh;
 	}
 
 	// An ornate post with a glowing orb that stands along the golden bridges (1x3 tiles).
