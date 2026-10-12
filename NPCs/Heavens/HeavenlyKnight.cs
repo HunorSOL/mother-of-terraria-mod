@@ -118,6 +118,11 @@ namespace MotherOfTerraria.NPCs.Heavens
 			bool onGround = NPC.velocity.Y == 0f;
 
 			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
+
+			// Which way the picture is drawn. Terraria flips a sprite when spriteDirection is 1 (vanilla art faces
+			// left), but the owner's knight art faces RIGHT, so the sign is reversed. If it ever looks backwards,
+			// change this to `= NPC.direction`.
+			NPC.spriteDirection = -NPC.direction;
 			Lighting.AddLight(NPC.Center, 0.8f, 0.6f, 0.2f);
 
 			switch (CurrentState)
