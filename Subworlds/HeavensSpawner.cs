@@ -42,11 +42,10 @@ namespace MotherOfTerraria.Subworlds
 			}
 
 			// Which types still have room? Pick one at random. Entries are repeated to weight the choice,
-			// so knights are picked 3 times as often as dragons (dragons are the rarer, stronger enemy).
+			// so knights are picked twice as often as dragons (dragons are the rarer, stronger enemy).
 			var open = new List<int>();
 			if (knights < MaxKnights)
 			{
-				open.Add(knightType);
 				open.Add(knightType);
 				open.Add(knightType);
 			}
