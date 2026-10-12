@@ -48,3 +48,4 @@
 - Heavenly Teleporter reference art is a mockup, not a game-ready sprite (see ASSETS.md).
 
 - Tree notes (2026-10-12): the first trees were big pasted pictures; the owner asked for "more like Terraria" and chose real tile trees. They use tModLoader's ModTree, whose look is picked by the tile they grow on, so a custom turf tile was needed. Textures are built by tools/make_tree_textures.py and tools/make_turf_sheet.py from the ExampleMod shape templates in tools/templates/ (MIT, see README there). Tree growth uses WorldGen.GrowTree(x, groundRow) with a seeded random so trees repeat every visit. Check the log line 'Heavens trees: X grown of Y tried' if trees are missing.
+- Trees stand still in the Heavens (owner request 2026-10-12): Systems/HeavensWindSystem.cs hooks On_TileDrawing.GetWindCycle and returns no sway while in the Heavens (client-side drawing only; the normal world is unaffected).

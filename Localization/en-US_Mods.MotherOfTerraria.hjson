@@ -33,6 +33,7 @@ Tiles: {
 	GoldenBridgePost.MapEntry: Golden Bridge Post
 	HeavenlySapling.MapEntry: Heavenly Sapling
 	HeavenlyStump.MapEntry: Heavenly Stump
+	HeavensTurf.MapEntry: Heavens Turf
 }
 
 NPCs: {
@@ -41,4 +42,3 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
-Tiles.HeavensTurf.MapEntry: Heavens Turf
