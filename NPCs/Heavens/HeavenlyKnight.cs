@@ -10,26 +10,26 @@ using Terraria.ModLoader;
 
 namespace MotherOfTerraria.NPCs.Heavens
 {
-	// The Heavenly Knight: a winged golden guardian that flies around the player, throws a heavenly spear
-	// (with a visible wind-up so it can be dodged), and sometimes lands to fight up close.
+	// The Heavenly Knight: a golden winged guardian that walks the Heavens' islands toward the player and
+	// throws a heavenly spear (with a visible wind-up so it can be dodged). Its body also hurts on contact.
 	// A ModNPC is a custom enemy. Its AI() method runs every tick on the server (or in singleplayer).
-	// Texture: NPCs/Heavens/HeavenlyKnight.png (single frame placeholder).
+	// Texture: NPCs/Heavens/HeavenlyKnight.png (owner's design, single frame).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS: health, damage and speeds get tuned with the owner after the enemies exist.
 	public class HeavenlyKnight : ModNPC
 	{
 		private const int SpearDamage = 120;
-		private const float SpearSpeed = 16f;
-		private const int HoverTime = 150;   // ticks (60 per second) spent flying before the next action
-		private const int WindUpTime = 45;   // the tell: the knight stops and gathers light
-		private const int RecoverTime = 30;  // short pause after the throw
-		private const int LandTime = 240;    // how long it fights on the ground
+		private const float SpearSpeed = 10f;   // slow enough to read and dodge
+		private const int WalkTime = 150;       // ticks (60 per second) spent walking before the next throw
+		private const int WindUpTime = 45;      // the tell: the knight stops and gathers light
+		private const int RecoverTime = 40;     // short pause after the throw
+		private const float WalkSpeed = 2.4f;
+		private const float KeepDistance = 280f; // it stops walking once this close (pixels), then keeps throwing
 
 		private enum State
 		{
-			Hover = 0,
+			Walk = 0,
 			WindUp = 1,
 			Recover = 2,
-			Land = 3,
 		}
 
 		// NPC.ai[] values are synced to other players automatically, so they hold anything other players need to know.
@@ -49,7 +49,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 		public override void SetDefaults()
 		{
 			NPC.width = 40;
-			NPC.height = 56;
+			NPC.height = 76;
 			NPC.damage = 150;       // contact damage (placeholder)
 			NPC.defense = 60;       // placeholder
 			NPC.lifeMax = 9000;     // placeholder
@@ -58,7 +58,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.knockBackResist = 0.15f;
 			NPC.value = Item.buyPrice(gold: 2);
 			NPC.aiStyle = -1;       // our own AI below
-			NPC.noGravity = true;   // flying; the Land state applies gravity by hand
+			NPC.noGravity = true;   // gravity is applied by hand in AI() so we control it exactly
 			NPC.noTileCollide = false;
 			NPC.buffImmune[BuffID.Confused] = true;
 		}
@@ -68,21 +68,32 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.TargetClosest(true);
 			Player target = Main.player[NPC.target];
 
-			// No living player left: fly away and despawn.
+			// Fell off the islands: remove it.
+			if (NPC.Center.Y > 340 * 16)
+			{
+				NPC.active = false;
+				return;
+			}
+
+			// No living player left: stop and despawn.
 			if (!target.active || target.dead)
 			{
-				NPC.velocity.Y -= 0.2f;
+				ApplyGravity();
+				NPC.velocity.X *= 0.9f;
 				NPC.EncourageDespawn(60);
 				return;
 			}
+
+			// A velocity.Y of exactly 0 at the start of AI means we landed on something last tick.
+			bool onGround = NPC.velocity.Y == 0f;
 
 			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
 			Lighting.AddLight(NPC.Center, 0.8f, 0.6f, 0.2f);
 
 			switch (CurrentState)
 			{
-				case State.Hover:
-					DoHover(target);
+				case State.Walk:
+					DoWalk(target, onGround);
 					break;
 				case State.WindUp:
 					DoWindUp(target);
@@ -90,42 +101,44 @@ namespace MotherOfTerraria.NPCs.Heavens
 				case State.Recover:
 					DoRecover();
 					break;
-				case State.Land:
-					DoLand(target);
-					break;
 			}
+
+			ApplyGravity();
 		}
 
-		// Fly to a spot beside and above the player, then pick the next action.
-		private void DoHover(Player target)
+		private void ApplyGravity()
 		{
-			NPC.noGravity = true;
+			NPC.velocity.Y = Math.Min(NPC.velocity.Y + 0.35f, 10f);
+		}
 
-			float side = NPC.Center.X < target.Center.X ? -1f : 1f; // stay on the side it is already on
-			Vector2 goal = target.Center + new Vector2(side * 320f, -150f);
-			Vector2 desired = (goal - NPC.Center) * 0.06f;
-			if (desired.Length() > 10f)
+		// Walk toward the player (stopping at the island edge and once close enough), then start a throw.
+		private void DoWalk(Player target, bool onGround)
+		{
+			float distance = Math.Abs(target.Center.X - NPC.Center.X);
+			bool wantsToMove = distance > KeepDistance && !EdgeAhead();
+			float goalSpeed = wantsToMove ? NPC.direction * WalkSpeed : 0f;
+			NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, goalSpeed, 0.1f);
+
+			// Hop over a block in the way, or up toward a player standing higher.
+			if (onGround && wantsToMove && (NPC.collideX || target.Center.Y < NPC.Top.Y - 48f))
 			{
-				desired = desired.SafeNormalize(Vector2.Zero) * 10f;
+				NPC.velocity.Y = -8f;
 			}
-			NPC.velocity = Vector2.Lerp(NPC.velocity, desired, 0.08f);
 
 			Timer++;
-			if (Timer >= HoverTime)
+			if (Timer >= WalkTime && Vector2.Distance(NPC.Center, target.Center) < 900f)
 			{
 				Timer = 0;
-				bool close = Vector2.Distance(NPC.Center, target.Center) < 260f;
-				// Close to the player and ground below? Half the time, land and fight up close.
-				CurrentState = close && HasGroundBelow() && Main.rand.NextBool() ? State.Land : State.WindUp;
+				CurrentState = State.WindUp;
 				NPC.netUpdate = true;
 			}
 		}
 
-		// The tell: the knight slows to a stop and golden-blue light gathers at the spear hand.
+		// The tell: the knight stops and golden-blue light gathers at the spear hand.
 		// Then it throws. This is the moment to dodge.
 		private void DoWindUp(Player target)
 		{
-			NPC.velocity *= 0.9f;
+			NPC.velocity.X *= 0.8f;
 			Vector2 hand = HandPosition();
 
 			if (Timer == 0)
@@ -133,7 +146,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 				SoundEngine.PlaySound(SoundID.Item29, NPC.Center);
 			}
 
-			// Light streams in toward the hand, more densely as the throw gets closer.
+			// Light streams in toward the hand.
 			for (int i = 0; i < 2; i++)
 			{
 				Vector2 spawn = hand + Main.rand.NextVector2CircularEdge(50f, 50f);
@@ -163,39 +176,12 @@ namespace MotherOfTerraria.NPCs.Heavens
 
 		private void DoRecover()
 		{
-			NPC.velocity *= 0.95f;
+			NPC.velocity.X *= 0.9f;
 			Timer++;
 			if (Timer >= RecoverTime)
 			{
 				Timer = 0;
-				CurrentState = State.Hover;
-				NPC.netUpdate = true;
-			}
-		}
-
-		// Land and chase the player on foot. Its body hurts on contact. Then take off again.
-		private void DoLand(Player target)
-		{
-			NPC.noGravity = false;
-			NPC.velocity.Y = Math.Min(NPC.velocity.Y + 0.35f, 10f); // gravity, applied by hand
-
-			float targetSpeed = NPC.direction * 3.5f;
-			NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, targetSpeed, 0.08f);
-
-			// Hop over a block in the way.
-			if (NPC.collideX && NPC.velocity.Y == 0f)
-			{
-				NPC.velocity.Y = -8f;
-			}
-
-			Timer++;
-			bool playerTooFar = Vector2.Distance(NPC.Center, target.Center) > 600f;
-			if (Timer >= LandTime || playerTooFar)
-			{
-				Timer = 0;
-				NPC.noGravity = true;
-				NPC.velocity.Y = -9f; // push off the ground
-				CurrentState = State.Hover;
+				CurrentState = State.Walk;
 				NPC.netUpdate = true;
 			}
 		}
@@ -203,23 +189,24 @@ namespace MotherOfTerraria.NPCs.Heavens
 		// Where the thrown spear leaves the knight: out in front, around chest height.
 		private Vector2 HandPosition()
 		{
-			return NPC.Center + new Vector2(NPC.direction * 24f, -8f);
+			return NPC.Center + new Vector2(NPC.direction * 22f, -10f);
 		}
 
-		// True if solid ground is within ~30 tiles straight down (so landing cannot mean falling off the world).
-		private bool HasGroundBelow()
+		// True if there is no solid ground within ~4 tiles below the spot 2 tiles ahead of the knight,
+		// so it stops at island edges instead of walking off into the void.
+		private bool EdgeAhead()
 		{
-			int x = (int)(NPC.Center.X / 16f);
+			int x = (int)((NPC.Center.X + NPC.direction * 40f) / 16f);
 			int startY = (int)(NPC.Bottom.Y / 16f);
-			for (int y = startY; y < startY + 30 && y < Main.maxTilesY - 1; y++)
+			for (int y = startY; y <= startY + 4 && y < Main.maxTilesY - 1; y++)
 			{
 				Tile tile = Main.tile[x, y];
 				if (tile.HasTile && Main.tileSolid[tile.TileType])
 				{
-					return true;
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 
 		// Drops: a chance (placeholder: 1 in 3) of 1 to 2 Heavens Crystals.

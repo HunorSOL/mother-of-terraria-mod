@@ -8,8 +8,8 @@ All art is placeholder until the owner supplies finals. Replace by dropping a PN
 | Heavenly Teleporter (item) | Items/HeavenlyTeleporter.png | 64x64, single frame, transparent PNG | Cut out and downscaled from DesignRefs/teleporter.jpg (owner design). Replace with a hand-made 64x64 version later if wanted. |
 | Debug Starter Kit (test item) | Items/Debug/DebugStarterKit.png | 32x32, single frame | Placeholder (delete with the item before release) |
 | Heavens background (empty, so no mountains show) | Backgrounds/HeavensEmpty.png | 256x256, fully transparent | Placeholder. Real scenery art optional in Phase 2C (e.g. distant floating islands). |
-| Heavenly Knight (enemy) | NPCs/Heavens/HeavenlyKnight.png | 56x64, single frame for now (real version likely needs animation frames, to be agreed) | Placeholder (generated). Design reference in DesignRefs/. |
-| Heavenly Spear (enemy projectile) | Projectiles/HeavenlySpear.png | 16x64, drawn pointing UP, transparent PNG | Placeholder (generated). Design reference in DesignRefs/. |
+| Heavenly Knight (enemy) | NPCs/Heavens/HeavenlyKnight.png | 91x82, single frame (no animation yet) | Owner's design, cut out of DesignRefs/ and downscaled. Final unless the owner wants a hand-made or animated version. |
+| Heavenly Spear (enemy projectile) | Projectiles/HeavenlySpear.png | 22x82, drawn pointing UP, transparent PNG | Owner's design, cut out of DesignRefs/, rotated and downscaled. Final unless the owner wants a hand-made version. |
 | Heavens Crystal (item) | Items/HeavensCrystal.png | 20x28, single frame, transparent PNG | Placeholder (generated). No design yet. |
 | Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 52x106: 3x6 tiles of 16px with 2px padding between tiles, transparent PNG, single frame | Placeholder (generated: robed figure with halo and spear). Owner design to replace it. |
 

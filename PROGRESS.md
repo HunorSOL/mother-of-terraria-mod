@@ -18,7 +18,7 @@
 - Boss summon idea (owner, 2026-10-12, planning stage, specifics TBC): Heavens enemies drop crystals; a Heavenly Basket in the middle of the Heavens summons the boss when full. Logged in ROADMAP.md (Phase 2C and Phase 3). The crystal is a placeholder item for now.
 
 ## In progress
-- Phase 2C, step 1 (awaiting owner test): Heavenly Knight enemy (flies, throws a heavenly spear with a 0.75 s tell, sometimes lands to fight up close), Heavens Crystal placeholder drop (1 in 3, 1-2 crystals), custom spawner (max 4 knights, spawns 55-80 tiles from the player, only in the Heavens). All stats are PLACEHOLDERS (health 9000, defense 60, contact 150, spear 120) to be tuned after all enemies exist. Dragon, basket, and the visual items of 2C are NOT built yet.
+- Phase 2C, step 1 (awaiting owner test; revised 2026-10-12): Heavenly Knight is now a GROUND enemy (walks toward the player, stops at island edges, throws a slow heavenly spear after a 0.75 s tell, contact damage), with the owner's real sprites for the knight and spear. Heavens Crystal placeholder drops (1 in 3, 1-2). Custom spawner: max 3 knights, spawns on the ground 60-85 tiles from the player at about the player's height, only in the Heavens. All stats are PLACEHOLDERS (health 9000, defense 60, contact 150, spear 120, spear speed 10) to be tuned after all enemies exist. Dragon, basket and the visual items of 2C are NOT built yet.
 - Note: tModLoader rewrites Localization/*.hjson on build and can put new keys in odd places; keep the file in the clean Items/Tiles/NPCs/Projectiles block layout.
 
 ## Next

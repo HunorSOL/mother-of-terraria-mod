@@ -8,7 +8,7 @@ namespace MotherOfTerraria.Projectiles
 {
 	// The spear thrown by the Heavenly Knight: flies in a straight line, hits hard, and is destroyed by
 	// the first thing it hits. A ModProjectile is a flying object spawned by an NPC, item or boss.
-	// Texture: Projectiles/HeavenlySpear.png, drawn pointing UP; the code rotates it to face its direction.
+	// Texture: Projectiles/HeavenlySpear.png (owner's design, 22x82), drawn pointing UP; the code rotates it to face its direction.
 	public class HeavenlySpear : ModProjectile
 	{
 		public override void SetDefaults()
@@ -39,14 +39,14 @@ namespace MotherOfTerraria.Projectiles
 			}
 		}
 
-		// The spear is long and thin, so check a line along its length instead of the small 16x16 box.
+		// The spear is long and thin (about 80 px), so check a line along its length instead of the small 16x16 box.
 		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
 		{
 			Vector2 direction = Projectile.velocity.SafeNormalize(Vector2.UnitY);
 			float unused = 0f;
 			return Collision.CheckAABBvLineCollision(
 				targetHitbox.TopLeft(), targetHitbox.Size(),
-				Projectile.Center - direction * 24f, Projectile.Center + direction * 24f,
+				Projectile.Center - direction * 36f, Projectile.Center + direction * 36f,
 				14f, ref unused);
 		}
 
