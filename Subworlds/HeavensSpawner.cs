@@ -72,7 +72,28 @@ namespace MotherOfTerraria.Subworlds
 			}
 			Player target = players[Main.rand.Next(players.Count)];
 
-			// Appear on the ground 60-85 tiles to one side (just off-screen), at roughly the player's height.
+			// Fliers (the dragon) appear in the air 55-80 tiles to one side, just above the player's height.
+			if (type == dragonType)
+			{
+				for (int attempt = 0; attempt < 10; attempt++)
+				{
+					float airSide = Main.rand.NextBool() ? -1f : 1f;
+					Vector2 spawn = target.Center + new Vector2(airSide * Main.rand.Next(55, 81) * 16f, -Main.rand.Next(4, 15) * 16f);
+					if (spawn.X < 400f || spawn.X > (Main.maxTilesX - 25) * 16f || spawn.Y < 400f)
+					{
+						continue;
+					}
+					if (Collision.SolidCollision(spawn - new Vector2(32f, 24f), 64, 48))
+					{
+						continue;
+					}
+					NPC.NewNPC(new EntitySource_WorldEvent(), (int)spawn.X, (int)spawn.Y, type);
+					return;
+				}
+				return;
+			}
+
+			// Walkers (the knight) appear on the ground 60-85 tiles to one side (just off-screen), at roughly the player's height.
 			for (int attempt = 0; attempt < 10; attempt++)
 			{
 				int side = Main.rand.NextBool() ? -1 : 1;

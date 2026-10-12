@@ -1,7 +1,8 @@
 """Generates the PLACEHOLDER sprite sheet for the Heavens Dragon (the owner has no design yet).
 
 Output: NPCs/Heavens/HeavensDragon.png  (64 wide, 4 frames stacked vertically, 44 tall each)
-Frames: 0 = walk A, 1 = walk B, 2 = wind-up (crouched, mouth glowing), 3 = dash (stretched, legs tucked).
+Frames: 0 = flying, wings up, 1 = flying, wings down, 2 = wind-up (mouth glowing), 3 = dash (stretched, wings swept back).
+Legs are always tucked: it is a flier.
 The dragon faces RIGHT. Replace the PNG with the owner's real frames later (keep the frame count or update
 Main.npcFrameCount and FindFrame in HeavensDragon.cs).
 
@@ -80,21 +81,19 @@ def frame(kind):
     if kind == 2:  # mouth glow = the tell
         rect(img, 56, head_y + 8, 61, head_y + 10, GLOW)
         rect(img, 58, head_y + 9, 60, head_y + 9, LGOLD)
-    # wings: folded gold shapes on the back; swept back in the dash
+    # wings: big gold shapes. Up on frame 0, down on frame 1, raised for the wind-up, swept back in the dash.
     if kind == 3:
-        fill(img, [(20, 18), (6, 14), (12, 20), (4, 22), (16, 24)], GOLD)
-    else:
-        lift = 3 if kind == 1 else 0
-        fill(img, [(24, 18 + drop), (28, 4 + drop - lift), (36, 7 + drop - lift), (42, 17 + drop)], GOLD)
-        fill(img, [(28, 16 + drop), (31, 8 + drop - lift), (36, 10 + drop - lift), (38, 16 + drop)], LGOLD)
-    # legs
-    if kind == 3:      # tucked
-        rect(img, 24, 32, 28, 36, DRED)
-        rect(img, 38, 32, 42, 36, DRED)
-    else:
-        a = 2 if kind == 1 else 0
-        rect(img, 24 - a, 33 + drop, 28 - a, 42, DRED); rect(img, 22 - a, 41, 29 - a, 43, OUT_C)
-        rect(img, 38 + a, 33 + drop, 42 + a, 42, DRED); rect(img, 36 + a, 41, 43 + a, 43, OUT_C)
+        fill(img, [(20, 18), (4, 12), (12, 20), (2, 22), (16, 25)], GOLD)
+        fill(img, [(18, 19), (8, 15), (12, 21), (6, 22)], LGOLD)
+    elif kind == 1:   # wings down
+        fill(img, [(24, 22 + drop), (20, 34), (32, 38), (44, 24 + drop)], GOLD)
+        fill(img, [(26, 24 + drop), (24, 33), (31, 35), (40, 25 + drop)], LGOLD)
+    else:             # wings up (frames 0 and 2)
+        fill(img, [(24, 18 + drop), (22, 2), (34, 0), (44, 17 + drop)], GOLD)
+        fill(img, [(27, 16 + drop), (26, 5), (33, 4), (40, 16 + drop)], LGOLD)
+    # legs: always tucked up against the belly
+    rect(img, 26, 32 + drop, 29, 35 + drop, DRED)
+    rect(img, 37, 32 + drop, 40, 35 + drop, DRED)
     outline(img)
     return np.array(img, dtype=np.uint8)
 

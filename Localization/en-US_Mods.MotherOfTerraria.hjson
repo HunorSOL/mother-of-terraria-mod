@@ -29,6 +29,10 @@ Items: {
 }
 
 Tiles.GoldenStatue.MapEntry: Golden Statue
-NPCs.HeavenlyKnight.DisplayName: Heavenly Knight
+
+NPCs: {
+	HeavenlyKnight.DisplayName: Heavenly Knight
+	HeavensDragon.DisplayName: Heavens Dragon
+}
+
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
-NPCs.HeavensDragon.DisplayName: Heavens Dragon
