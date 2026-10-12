@@ -11,6 +11,7 @@
 
 ## Next
 - Phase 2.3 (Sonnet 5.5), owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
+- 2.4 REVISED (owner, 2026-10-12): long, wide, majestic floating islands with trees and golden statues. NEW Phase 2C (Heavens details and polish) added after Phase 2; Phases 3-8 keep their numbers. Scope of 2C is a draft to refine with the owner.
 - Phase 2 is a real subworld (SubworldLibrary), not a sky structure. Steps 2.1-2.6 are in ROADMAP.md (local only).
 - Open decision: scrub ROADMAP.md from GitHub history, or make the repo private (repo is public).
 
