@@ -37,6 +37,14 @@ namespace MotherOfTerraria.Items
 			// which then moves just this player. In singleplayer it switches worlds directly.
 			if (player.whoAmI == Main.myPlayer)
 			{
+				// SINGLEPLAYER-ONLY: the Heavens has not been tested in multiplayer yet (deferred to Phase 8),
+				// so refuse here instead of risking stuck or broken players. Delete this block to enable it.
+				if (Main.netMode != NetmodeID.SinglePlayer)
+				{
+					Main.NewText("The Heavens are singleplayer-only for now.", 255, 215, 0);
+					return true;
+				}
+
 				if (SubworldSystem.IsActive<HeavensSubworld>())
 				{
 					SubworldSystem.Exit();

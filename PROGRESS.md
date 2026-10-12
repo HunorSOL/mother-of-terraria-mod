@@ -11,8 +11,12 @@
 - Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
 
 ## In progress
+- Phase 2.4/2.5 done. Phase 2 is COMPLETE for singleplayer (2.6 deferred).
 - Phase 2.4 (owner reviewed 2026-10-12, looks good apart from the hallowed look): Heavens terrain is now 4 long islands (Arrival, High, Low, flat Arena) + 4 small floaters joined by cloud bridges, hallowed grass tops, trees, 6 golden statues (placeholder art). Fixed layout and seed. Protected block types: Cloud, HallowedGrass, Trees, Saplings, GoldenStatue.
-- Phase 2.5 (awaiting owner test; crash fix and no-mountains background style added after first test, 2026-10-12): Heavens sky (azure-to-gold gradient, warm tint, fewer clouds), placeholder music (vanilla Space), permanent midday, only this mod's NPCs may spawn there (none exist yet, so no spawns). Note for 2C: SubworldLibrary's NormalUpdates is false by default; check that custom enemies spawn, and set NormalUpdates => true if they don't.
+- Phase 2.5 COMPLETE (confirmed in-game 2026-10-12, after a crash fix and a no-mountains background style): Heavens sky (azure-to-gold gradient, warm tint, fewer clouds), placeholder music (vanilla Space), permanent midday, only this mod's NPCs may spawn there (none exist yet, so no spawns). Note for 2C: SubworldLibrary's NormalUpdates is false by default; check that custom enemies spawn, and set NormalUpdates => true if they don't.
+
+## Decisions
+- SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Phase 2.6 (multiplayer testing) is deferred and became the "Multiplayer upgrade" step in Phase 8, to be done after the boss works. We keep server-authoritative habits (logic on the server, only visuals/sound/UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. The Heavenly Teleporter shows a message and does nothing in multiplayer.
 
 ## Next
 - (2.3 decisions) owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
