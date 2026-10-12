@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SubworldLibrary;
 using Terraria;
+using Terraria.ID;
 using Terraria.WorldBuilding;
 
 namespace MotherOfTerraria.Subworlds
@@ -19,6 +20,13 @@ namespace MotherOfTerraria.Subworlds
 
 		// Keep the player's inventory/progress changes made inside (e.g. loot picked up there).
 		public override bool NoPlayerSaving => false;
+
+		// Block types that make up the Heavens' own terrain. Players cannot break or replace these
+		// (see Common/HeavensTerrainProtection). Add each new terrain block type here as terrain grows.
+		public static readonly HashSet<int> ProtectedTiles = new HashSet<int>
+		{
+			TileID.Cloud,
+		};
 
 		// The list of world generation steps, run in order when the subworld is created.
 		public override List<GenPass> Tasks => new List<GenPass>()

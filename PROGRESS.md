@@ -9,9 +9,12 @@
 - Phase 2.1 COMPLETE (confirmed in-game 2026-10-12): SubworldLibrary 2.3.0.1 dependency, empty Heavens subworld (800x400, flat cloud floor, regenerated every visit). Temporary /heavens debug command used for the test, removed in 2.2.
 - Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
 
+## In progress
+- Phase 2.3 (awaiting owner test): escape items blocked inside the Heavens; Heavens terrain (HeavensSubworld.ProtectedTiles, currently Cloud) can't be broken, blown up or replaced. Add each new terrain block type to that set in 2.4.
+
 ## Next
-- Phase 2.3 (Sonnet 5.5), owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
-- 2.4 REVISED (owner, 2026-10-12): long, wide, majestic floating islands with trees and golden statues. NEW Phase 2C (Heavens details and polish) added after Phase 2; Phases 3-8 keep their numbers. Scope of 2C is a draft to refine with the owner.
+- (2.3 decisions) owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
+- 2.4 REVISED (owner, 2026-10-12): long, wide, majestic floating islands with trees and golden statues. NEW Phase 2C (Heavens details and polish) added after Phase 2; Phases 3-8 keep their numbers. Scope of 2C is a draft to refine with the owner. 2C now includes custom hostile Heavens enemies (owner supplies designs; heavenly-spear attacks, very high damage). Boss summon design is deferred, to be discussed later.
 - Phase 2 is a real subworld (SubworldLibrary), not a sky structure. Steps 2.1-2.6 are in ROADMAP.md (local only).
 - Open decision: scrub ROADMAP.md from GitHub history, or make the repo private (repo is public).
 
