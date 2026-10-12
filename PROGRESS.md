@@ -1,51 +1,88 @@
 # Progress
 
-## Done
-- Phase 0 COMPLETE (confirmed in-game 2026-10-11): mod builds, loads in tModLoader 1.4.4.9, Placeholder Sword found and working in a Journey world.
-- .NET 8 SDK installed; command-line build works (see Build notes).
+Last updated: end of day 2026-10-12. Next session: 2026-10-13.
+Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
-- Phase 1 COMPLETE (confirmed in-game 2026-10-11): Heavenly Teleporter item + recipe (Celestial Sigil + Copper Shortsword, craftable only at an Ancient Manipulator), Debug Starter Kit (craft from 1 Dirt Block), localization file, sprite cut from the owner's design.
+## Where we are
+- Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
+- Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
+- Phase 2C (Heavens details and polish) IN PROGRESS: enemies, the island look, trees and statues are built; atmosphere, detail, audio and tuning remain.
+- Phase 3 onward (pylon/Heavenly Basket, boss summon, boss) not started. Boss summon design is deferred, to be discussed.
 
-- Phase 2.1 COMPLETE (confirmed in-game 2026-10-12): SubworldLibrary 2.3.0.1 dependency, empty Heavens subworld (800x400, flat cloud floor, regenerated every visit). Temporary /heavens debug command used for the test, removed in 2.2.
-- Phase 2.5 COMPLETE (confirmed in-game 2026-10-12, after a crash fix and a no-mountains background style): Heavens sky (azure-to-gold gradient, warm tint, fewer clouds), placeholder music (vanilla Space), permanent midday, only this mod's NPCs may spawn there (none exist yet, so no spawns). Note for 2C: SubworldLibrary's NormalUpdates is false by default; check that custom enemies spawn, and set NormalUpdates => true if they don't.
-- Phase 2.4 COMPLETE (owner reviewed 2026-10-12, looks good apart from the hallowed look): Heavens terrain is now 4 long islands (Arrival, High, Low, flat Arena) + 4 small floaters joined by cloud bridges, hallowed grass tops, trees, 6 golden statues (placeholder art). Fixed layout and seed. Protected block types: Cloud, HallowedGrass, Trees, Saplings, GoldenStatue.
-- Phase 2 is COMPLETE for singleplayer (2.6 multiplayer deferred, see Decisions).
-- Phase 2.3 COMPLETE (confirmed in-game 2026-10-12): escape items blocked inside the Heavens; Heavens terrain (HeavensSubworld.ProtectedTiles) can't be broken, blown up or replaced. Add each new terrain block type to that set.
-- Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
-- Phase 2C, step 3: the look of the Heavens, pass 1 (awaiting owner test): world narrowed to 700 tiles; islands moved closer (gaps about 15-20 tiles); island tops are Hallowed Grass painted yellow + illuminant (golden luminous stand-in); trees are now REAL Terraria trees (custom ModTree 'HeavenlyTree': golden bark, owner's canopies as crowns, branches, wind sway) growing on a custom golden Heavens Turf tile via WorldGen.GrowTree, with the owner's sapling and stump as small decorations; golden platform bridges with glowing Golden Bridge Posts; protected set extended (the golden platform style and the posts). Ruins were added and then REMOVED at the owner's request. Island tops are the custom HeavensTurf tile. Owner's statue design is now in the game (8x7 tiles, tools/make_statue_sheet.py). The old painted vanilla trees are gone. Next passes: tree replacement, details (waterfalls, light, creatures, gateway), audio, performance.
-- Owner changes 2026-10-12: knight health +50% (9000 -> 13500, still placeholder); dragon unchanged (12000); NO waterfalls; shimmer puddles were added and then REMOVED completely at the owner's request.
+## What we did on 2026-10-12
 
-## Decisions
-- SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Phase 2.6 (multiplayer testing) is deferred and became the "Multiplayer upgrade" step in Phase 8, to be done after the boss works. We keep server-authoritative habits (logic on the server, only visuals/sound/UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. The Heavenly Teleporter shows a message and does nothing in multiplayer.
-- Boss summon idea (owner, 2026-10-12, planning stage, specifics TBC): Heavens enemies drop crystals; a Heavenly Basket in the middle of the Heavens summons the boss when full. Logged in ROADMAP.md (Phase 2C and Phase 3). The crystal is a placeholder item for now.
+### Phase 2 (subworld), all confirmed in-game by the owner
+- 2.1: SubworldLibrary 2.3.0.1 added as a dependency, empty Heavens subworld.
+- 2.2: the Heavenly Teleporter enters the Heavens; using it inside returns home (it is the only way out). Inventory intact.
+- 2.3: rules inside: everything allowed in the normal world stays allowed (wings, mounts, hooks, jumps, Rod of Discord); escape items blocked (Magic Mirror, Ice Mirror, Recall, Potion of Return, Cell Phone, Shellphones, Conches); the Heavens' own terrain cannot be broken, blown up or replaced (HeavensSubworld.IsProtectedTile); ordinary placed blocks are free.
+- 2.4/2.5: fixed-layout island world, custom sky (azure to gold gradient, warm tint, fewer clouds), no vanilla mountains (empty background style), placeholder music (vanilla Space), permanent midday, no vanilla enemy spawns (only this mod's NPCs).
+- Crash fixed on the way: ManageSpecialBiomeVisuals needs a screen filter; the scene effect now drives the sky directly.
 
-## In progress
-- Phase 2C, step 1 (awaiting owner test; revised 2026-10-12): Heavenly Knight is now a GROUND enemy (walks toward the player, stops at island edges, throws a slow heavenly spear after a 0.75 s tell, contact damage), with the owner's real sprites for the knight and spear. The knight has a 7-frame sheet (standing + 6-frame walk cycle) generated by tools/make_knight_sheet.py; re-run it if DesignRefs/knight_base.png changes. Heavens Crystal placeholder drops (1 in 3, 1-2). Custom spawner: max 3 knights, spawns on the ground 60-85 tiles from the player at about the player's height, only in the Heavens. All stats are PLACEHOLDERS (health 9000, defense 60, contact 150, spear 120, spear speed 10) to be tuned after all enemies exist. 
-- Phase 2C, step 2 (awaiting owner test; revised 2026-10-12): Heavens Dragon uses the owner's long golden wyvern design (animated: body ripple + wing flap) and a wyvern attack pattern instead of a dash: approach, 0.5 s warning, homing swoop (turn-limited), retreat to one side, repeat. On Fire! for 5 s on any hit, 1.3x damage while swooping, fire-immune, flies through terrain, only the head has a hitbox. Placeholder stats: 12000 health, 70 defense, 190 contact damage (knight is now 13500 health); drops crystals (1 in 2, 1-3). Spawner: knights picked twice as often as dragons, max 3 knights and 1 dragon. The Heavenly Basket and the visual items of 2C are NOT built yet. After the enemies work: tune all enemy stats with the owner.
-- Note: tModLoader rewrites Localization/*.hjson on build and can put new keys in odd places; keep the file in the clean Items/Tiles/NPCs/Projectiles block layout.
+### Phase 2C: enemies (owner's real sprites for all)
+- Heavenly Knight (ground): walks toward the player, stops at island edges, 0.75 s glow tell then throws a SLOW heavenly spear, contact damage, faces the player (art faces right, spriteDirection reversed), 7-frame animation (stand + 6 walk) made by tools/make_knight_sheet.py.
+- Heavens Dragon (flying wyvern): owner's long golden dragon, 8-frame animation (body ripple + wing flap) by tools/make_dragon_sheet.py. Attack: approach, 0.5 s roar-and-gather warning, homing swoop (turn-limited), retreat to one side, repeat. NO dash. On Fire! for 5 s on any hit, fire-immune, flies through terrain, only the head is a hitbox.
+- Heavens Crystal: placeholder item (Items/HeavensCrystal), dropped by both enemies.
+- Custom spawner (Subworlds/HeavensSpawner.cs): spawns by hand (not Terraria's spawn system). Knights on the ground 60-85 tiles away; dragons in the air. Knights are picked 2 times in 3, dragons 1 in 3.
+- PLACEHOLDER numbers (to tune): knight 13500 health (raised 50% on 2026-10-12), defense 60, contact 150, spear damage 120, spear speed 10, max 3 at once, drops crystals 1 in 3 for 1-2. Dragon 12000 health, defense 70, contact 190, swoop damage x1.3, max 1 at once, drops crystals 1 in 2 for 1-3.
 
-## Next
-- Phase 2C (Heavens details and polish, draft scope) or Phase 3 (the pylon structure): owner to decide the order. Boss summon design to be discussed first.
-- (2.3 decisions) owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
-- 2.4 REVISED (owner, 2026-10-12): long, wide, majestic floating islands with trees and golden statues. NEW Phase 2C (Heavens details and polish) added after Phase 2; Phases 3-8 keep their numbers. Scope of 2C is a draft to refine with the owner. 2C now includes custom hostile Heavens enemies (owner supplies designs; heavenly-spear attacks, very high damage). Boss summon design is deferred, to be discussed later.
-- Phase 2 is a real subworld (SubworldLibrary), not a sky structure. Steps 2.1-2.6 are in ROADMAP.md (local only).
-- Open decision: scrub ROADMAP.md from GitHub history, or make the repo private (repo is public).
+### Phase 2C: the look of the Heavens
+- World is 700x400. Four long islands (Arrival 140, High 330, Low 335, flat Arena 538) plus four small floaters, about 15-20 tile gaps. Fixed layout, same every visit.
+- Custom golden luminous Heavens Turf tile (Tiles/HeavensTurf, standard block sheet from tools/make_turf_sheet.py). PLACEHOLDER look: speckled gold with amber edges.
+- Golden bridges: vanilla Golden Platform tiles (protected by style) with glowing Golden Bridge Posts (placeholder art).
+- Real Terraria trees: custom ModTree "HeavenlyTree" (trunk, branches, crown) growing on the turf, grown with WorldGen.GrowTree, fixed seed. Crowns are the owner's canopies; bark is generated (tools/make_tree_textures.py, shape templates in tools/templates from tModLoader's ExampleMod, MIT).
+- Trees and plants STAND STILL in the Heavens (Systems/HeavensWindSystem.cs hooks On_TileDrawing.GetWindCycle). The normal world is unaffected.
+- Owner's golden statue (8x7 tiles, 6 placed), sapling and stump decorations (owner's art, 2x3 and 3x2 tiles).
+- Tried and then REMOVED at the owner's request: hallowed grass look, vanilla trees painted gold, temple ruins, waterfalls (cancelled), shimmer puddles (two versions).
 
-- Pushed to GitHub (2026-10-11): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1). Remote uses SSH (key ~/.ssh/id_ed25519_github).
+### Infrastructure and process
+- Singleplayer-first decision recorded; the Teleporter refuses to work in multiplayer with a message (tagged SINGLEPLAYER-ONLY).
+- CLAUDE.md added: tells a new session to read ROADMAP.md, PROGRESS.md and ASSETS.md first.
+- ASSETS.md lists every placeholder and stand-in. DesignRefs/ holds the owner's design images and cut-outs. tools/ holds the scripts that regenerate sprite sheets (need ImageMagick and numpy).
+- All work is committed locally. NOTHING has been pushed since 2026-10-11 (the branch is 36 commits ahead of origin). Never push without the owner saying so.
 
-- Owner feedback on 2.4 (2026-10-12): the Hallowed Grass look is not good. Logged in Phase 2C to be replaced with a custom surface. Also: replace cloud bridges with golden heavenly bridges and move the islands closer together (Phase 2C). See ASSETS.md for the full list of placeholders and stand-ins.
+## Not yet tested in-game (test these FIRST tomorrow)
+Everything below compiles but the owner has not confirmed it after the last build:
+1. The trees standing still (Systems/HeavensWindSystem.cs): crowns and branches must not move in the Heavens, and trees in the normal world must still sway after leaving.
+2. The real trees, the golden turf and the bridges as a whole after the last rebuild: no crash on load, trees present on every island, crowns line up with trunks. If trees are missing, check client.log for "Heavens trees: X grown of Y tried".
+3. Knight health +50% (13500) and the dragon spawn weight change.
+Already confirmed by the owner: the statues, the saplings and stumps, the dragon ("absolutely great"), the knight facing and animation, the island look and the golden trees after the rebuild ("good").
+Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
+
+## To finish tomorrow (suggested order)
+1. Rebuild and test the list above; fix anything broken.
+2. Tune the enemies together: health, damage, spawn rates and caps, crystal drop chances (the owner wants to decide these now that both enemies exist).
+3. Atmosphere pass (needs nothing from the owner): drifting clouds, light beams, falling petals or sparkles, a layered parallax sky background, a sun or halo.
+4. More island detail: floating rocks, flowers, vines, variety. The floating canopy puff and leafy branch from the owner's tree sheet are saved in DesignRefs (tree_puff.png, tree_branch.png) and could become floating decorations.
+5. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
+6. Audio: Heavens music and ambient sounds (needs tracks from the owner; vanilla Space music plays until then).
+7. Owner decisions still open: the dragon's debuff (fire does not match its golden-blue look; a holy or light effect may suit it), whether a third enemy type is wanted, the crystal's final design, and whether to send a bark close-up so the trunk art can match their style.
+8. Performance check (frame rate, load time), then mark Phase 2C complete and plan Phase 3 (the Heavenly Basket: how many crystals fill it, whether it resets, what happens on defeat, where it stands, its look).
+Real art still wanted whenever the owner has it (all currently generated placeholders): turf tile, tree bark, bridge posts, crystal sprite. See ASSETS.md.
+
+## Decisions (keep)
+- SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Multiplayer testing (old 2.6) moved to the "Multiplayer upgrade" step in Phase 8, after the boss works. Keep server-authoritative habits (logic on the server; only visuals, sound and UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. Before the upgrade: check that the dedicated server's hardware can run tModLoader (ARM support, spare RAM for SubworldLibrary's extra process) and keep SubworldLibrary versions matching.
+- Boss summon idea (owner, planning stage, specifics TBC): Heavens enemies drop crystals; a Heavenly Basket in the middle of the Heavens summons the boss when full. Logged in ROADMAP.md (Phases 2C and 3).
+- Enemy design decisions: knight is a ground enemy with a slow spear; dragon is a flying wyvern with swoops, not a dash; dragons are rarer and stronger than knights.
+- Heavens look decisions: golden luminous turf; owner's heavenly trees as REAL tile trees; no ruins; no waterfalls; no shimmer; trees stand still.
+- The ROADMAP.md file is git-ignored (kept local only), so it is not backed up on GitHub.
 
 ## Build notes
 - Project folder MUST be named MotherOfTerraria (tModLoader uses the folder name as the mod name). ModSources/MotherOfTerraria is a symlink to it.
-- SubworldLibrary is a required mod (build.txt modReferences). For compiling, its DLL is extracted from the Workshop .tmod into lib/SubworldLibrary.dll (git-ignored, not shipped). Re-extract if SubworldLibrary updates. Workshop ID 2785100219.
-- SubworldLibrary Enter/Exit must be called on the player's own client; in multiplayer they send a request to the server. They do nothing on the server (use MovePlayerToSubworld there).
+- SubworldLibrary is a required mod (build.txt modReferences). For compiling, its DLL is extracted from the Workshop .tmod into lib/SubworldLibrary.dll (git-ignored, not shipped). Re-extract if SubworldLibrary updates (Workshop ID 2785100219; version used 2.3.0.1).
+- SubworldLibrary Enter/Exit must be called on the player's own client; in multiplayer they send a request to the server (nothing happens on the server; use MovePlayerToSubworld there).
+- SubworldLibrary's NormalUpdates is false: the day/night clock and random world ticks do not run in the Heavens (we lock time to midday ourselves), but NPCs and projectiles update normally.
 - If `dotnet build` hangs at restore, run with `DOTNET_SYSTEM_NET_DISABLEIPV6=1` (this network drops IPv6).
+- The command-line build compiles the code but cannot package the mod while tModLoader is open (error TML003). Compile errors still show. The in-game Build + Reload is the normal path.
+- tModLoader rewrites Localization/*.hjson on build and adds missing keys in a compact dotted form (e.g. `NPCs.HeavenlyKnight.DisplayName: ...`); that is normal and valid.
+- Sprite sheets are regenerated by scripts in tools/ (ImageMagick and numpy needed). tools/ and DesignRefs/ are excluded from the mod build (build.txt buildIgnore).
 
 ## Known issues
 - Celestial Sigil is crafted from 12 of each Lunar Fragment. Unverified whether fragments are still obtainable after Moon Lord is dead (check in a real playthrough).
 - Owner reported the recipe working; the prefixed-sword and missing-ingredient cases were not individually confirmed.
-- Close tModLoader before building from the command line (it locks the .tmod); in-game Build + Reload is the normal path.
-- Heavenly Teleporter reference art is a mockup, not a game-ready sprite (see ASSETS.md).
+- Heavenly Teleporter reference art is a mockup cut-out, not a hand-made sprite (see ASSETS.md).
+- All enemy stats are placeholders; the dragon's fire debuff may not suit its design.
+- Generated placeholder art: turf, bark, bridge posts, crystal (see ASSETS.md).
 
-- Tree notes (2026-10-12): the first trees were big pasted pictures; the owner asked for "more like Terraria" and chose real tile trees. They use tModLoader's ModTree, whose look is picked by the tile they grow on, so a custom turf tile was needed. Textures are built by tools/make_tree_textures.py and tools/make_turf_sheet.py from the ExampleMod shape templates in tools/templates/ (MIT, see README there). Tree growth uses WorldGen.GrowTree(x, groundRow) with a seeded random so trees repeat every visit. Check the log line 'Heavens trees: X grown of Y tried' if trees are missing.
-- Trees stand still in the Heavens (owner request 2026-10-12): Systems/HeavensWindSystem.cs hooks On_TileDrawing.GetWindCycle and returns no sway while in the Heavens (client-side drawing only; the normal world is unaffected).
+## Repo and GitHub
+- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Nothing pushed since; the branch is 36 commits ahead.
+- Open decision for the owner: scrub ROADMAP.md from the GitHub history, or make the repo private (the repo is public and an early commit contained ROADMAP.md before it was git-ignored).
