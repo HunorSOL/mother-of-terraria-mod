@@ -10,7 +10,7 @@
 - Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
 
 ## Next
-- Phase 2.3 (Sonnet 5.5): rules inside the Heavens (no flight/mounts, no building, no escape items except the Teleporter).
+- Phase 2.3 (Sonnet 5.5), owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
 - Phase 2 is a real subworld (SubworldLibrary), not a sky structure. Steps 2.1-2.6 are in ROADMAP.md (local only).
 - Open decision: scrub ROADMAP.md from GitHub history, or make the repo private (repo is public).
 
