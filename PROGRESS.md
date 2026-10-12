@@ -21,6 +21,8 @@
 
 - Pushed to GitHub (2026-10-11): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1). Remote uses SSH (key ~/.ssh/id_ed25519_github).
 
+- Owner feedback on 2.4 (2026-10-12): the Hallowed Grass look is not good. Logged in Phase 2C to be replaced with a custom surface. See ASSETS.md for the full list of placeholders and stand-ins.
+
 ## Build notes
 - Project folder MUST be named MotherOfTerraria (tModLoader uses the folder name as the mod name). ModSources/MotherOfTerraria is a symlink to it.
 - SubworldLibrary is a required mod (build.txt modReferences). For compiling, its DLL is extracted from the Workshop .tmod into lib/SubworldLibrary.dll (git-ignored, not shipped). Re-extract if SubworldLibrary updates. Workshop ID 2785100219.

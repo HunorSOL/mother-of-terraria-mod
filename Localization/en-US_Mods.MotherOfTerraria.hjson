@@ -22,9 +22,5 @@ Items: {
 			'''
 	}
 
-	Tiles: {
-		GoldenStatue: {
-			MapEntry: Golden Statue
-		}
-	}
+	Tiles.GoldenStatue.MapEntry: Golden Statue
 }

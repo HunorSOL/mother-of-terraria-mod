@@ -9,6 +9,30 @@ All art is placeholder until the owner supplies finals. Replace by dropping a PN
 | Debug Starter Kit (test item) | Items/Debug/DebugStarterKit.png | 32x32, single frame | Placeholder (delete with the item before release) |
 | Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 52x106: 3x6 tiles of 16px with 2px padding between tiles, transparent PNG, single frame | Placeholder (generated: robed figure with halo and spear). Owner design to replace it. |
 
+## Vanilla stand-ins (borrowed Terraria visuals that should become custom)
+
+These are not files in the mod; the code uses the game's own graphics for now. Each needs a custom replacement (new tile/texture + a small code change).
+
+| Stand-in | Where | Planned fix |
+|---|---|---|
+| Hallowed Grass (island tops) | Subworlds/HeavensTerrainPass.cs | Owner dislikes the look. Custom heavenly surface tile, Phase 2C. |
+| Hallowed-style trees | Subworlds/HeavensTerrainPass.cs (WorldGen.GrowTree) | Custom trees or tree-like landmarks, Phase 2C. |
+| Cloud blocks (island bodies, bridges) | Subworlds/HeavensTerrainPass.cs | Custom cloud/marble-like body block, Phase 2C. |
+| Vanilla sky, sun and clouds | HeavensSubworld.OnLoad (fixed midday) | Custom sky tint and background, Phase 2.5 / 2C. |
+| Vanilla loading screen text | Subworlds/HeavensTerrainPass.cs | Optional custom loading screen, Phase 2C. |
+| Gold dust when hitting the statue | Tiles/GoldenStatue.cs | Custom dust, optional. |
+
+## Not built yet (will need owner designs)
+
+| Asset | Phase |
+|---|---|
+| Heavens music track | 2.5 / 2C |
+| Heavens ambient sounds | 2C |
+| Heavens enemies (sprites, animations) and their heavenly spears (projectile art) | 2C |
+| Harmless ambient creatures (butterflies, birds) | 2C |
+| Pylon-like structure (tile) | 3 |
+| Mother of Terraria boss (sprite, animation, projectiles), boss bar icon, trophy, relic, drops, music | 5, 6, 7 |
+
 ## Design references (not used by the game directly)
 
 | Reference | File | Notes |
