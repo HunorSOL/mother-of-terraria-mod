@@ -19,6 +19,9 @@ namespace MotherOfTerraria.Systems
 		// Above normal biomes, below boss music (so the boss fight can take over later).
 		public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
 
+		// No mountains or hills behind the islands: this is the sky.
+		public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.GetInstance<HeavensBackgroundStyle>();
+
 		// MUSIC SLOT (placeholder): vanilla Space music for now.
 		// To use a real track later, put an .ogg/.wav/.mp3 in the mod and return
 		// MusicLoader.GetMusicSlot(Mod, "Assets/Music/Heavens") here instead.

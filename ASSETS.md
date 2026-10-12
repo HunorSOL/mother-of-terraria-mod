@@ -7,6 +7,7 @@ All art is placeholder until the owner supplies finals. Replace by dropping a PN
 | Placeholder Sword (Phase 0 test item) | Items/PlaceholderSword.png | 40x40, single frame | Placeholder (delete with the item before release) |
 | Heavenly Teleporter (item) | Items/HeavenlyTeleporter.png | 64x64, single frame, transparent PNG | Cut out and downscaled from DesignRefs/teleporter.jpg (owner design). Replace with a hand-made 64x64 version later if wanted. |
 | Debug Starter Kit (test item) | Items/Debug/DebugStarterKit.png | 32x32, single frame | Placeholder (delete with the item before release) |
+| Heavens background (empty, so no mountains show) | Backgrounds/HeavensEmpty.png | 256x256, fully transparent | Placeholder. Real scenery art optional in Phase 2C (e.g. distant floating islands). |
 | Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 52x106: 3x6 tiles of 16px with 2px padding between tiles, transparent PNG, single frame | Placeholder (generated: robed figure with halo and spear). Owner design to replace it. |
 
 ## Vanilla stand-ins (borrowed Terraria visuals that should become custom)
