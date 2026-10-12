@@ -21,7 +21,7 @@
 
 - Pushed to GitHub (2026-10-11): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1). Remote uses SSH (key ~/.ssh/id_ed25519_github).
 
-- Owner feedback on 2.4 (2026-10-12): the Hallowed Grass look is not good. Logged in Phase 2C to be replaced with a custom surface. See ASSETS.md for the full list of placeholders and stand-ins.
+- Owner feedback on 2.4 (2026-10-12): the Hallowed Grass look is not good. Logged in Phase 2C to be replaced with a custom surface. Also: replace cloud bridges with golden heavenly bridges and move the islands closer together (Phase 2C). See ASSETS.md for the full list of placeholders and stand-ins.
 
 ## Build notes
 - Project folder MUST be named MotherOfTerraria (tModLoader uses the folder name as the mod name). ModSources/MotherOfTerraria is a symlink to it.
