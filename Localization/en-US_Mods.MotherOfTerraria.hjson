@@ -13,6 +13,11 @@ Items: {
 			'''
 	}
 
+	HeavensCrystal: {
+		DisplayName: Heavens Crystal
+		Tooltip: A crystal brimming with heavenly power.
+	}
+
 	DebugStarterKit: {
 		DisplayName: Debug Starter Kit
 		Tooltip:
@@ -21,6 +26,22 @@ Items: {
 			Gives a Celestial Sigil, a Copper Shortsword and a Heavenly Teleporter.
 			'''
 	}
+}
 
-	Tiles.GoldenStatue.MapEntry: Golden Statue
+Tiles: {
+	GoldenStatue: {
+		MapEntry: Golden Statue
+	}
+}
+
+NPCs: {
+	HeavenlyKnight: {
+		DisplayName: Heavenly Knight
+	}
+}
+
+Projectiles: {
+	HeavenlySpear: {
+		DisplayName: Heavenly Spear
+	}
 }

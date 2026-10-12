@@ -58,6 +58,8 @@ namespace MotherOfTerraria.Subworlds
 		{
 			Main.dayTime = true;
 			Main.time = 27000;
+
+			HeavensSpawner.Update();
 		}
 	}
 }

@@ -8,6 +8,9 @@ All art is placeholder until the owner supplies finals. Replace by dropping a PN
 | Heavenly Teleporter (item) | Items/HeavenlyTeleporter.png | 64x64, single frame, transparent PNG | Cut out and downscaled from DesignRefs/teleporter.jpg (owner design). Replace with a hand-made 64x64 version later if wanted. |
 | Debug Starter Kit (test item) | Items/Debug/DebugStarterKit.png | 32x32, single frame | Placeholder (delete with the item before release) |
 | Heavens background (empty, so no mountains show) | Backgrounds/HeavensEmpty.png | 256x256, fully transparent | Placeholder. Real scenery art optional in Phase 2C (e.g. distant floating islands). |
+| Heavenly Knight (enemy) | NPCs/Heavens/HeavenlyKnight.png | 56x64, single frame for now (real version likely needs animation frames, to be agreed) | Placeholder (generated). Design reference in DesignRefs/. |
+| Heavenly Spear (enemy projectile) | Projectiles/HeavenlySpear.png | 16x64, drawn pointing UP, transparent PNG | Placeholder (generated). Design reference in DesignRefs/. |
+| Heavens Crystal (item) | Items/HeavensCrystal.png | 20x28, single frame, transparent PNG | Placeholder (generated). No design yet. |
 | Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 52x106: 3x6 tiles of 16px with 2px padding between tiles, transparent PNG, single frame | Placeholder (generated: robed figure with halo and spear). Owner design to replace it. |
 
 ## Vanilla stand-ins (borrowed Terraria visuals that should become custom)
@@ -30,10 +33,8 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 |---|---|
 | Heavens music track (vanilla Space music plays as placeholder, see Systems/HeavensSceneEffect.cs) | 2C |
 | Heavens ambient sounds | 2C |
-| Heavens enemies (sprites, animations) and their heavenly spears (projectile art) | 2C |
 | Harmless ambient creatures (butterflies, birds) | 2C |
 | Heavens dragon enemy (small wyvern, dash attack; no design yet) | 2C |
-| Heavens crystal (item dropped by Heavens enemies; placeholder planned) | 2C |
 | Heavenly Basket (tile that takes the crystals and summons the boss; idea only, specifics TBC) | 3 |
 | Pylon-like structure (tile) | 3 |
 | Mother of Terraria boss (sprite, animation, projectiles), boss bar icon, trophy, relic, drops, music | 5, 6, 7 |
