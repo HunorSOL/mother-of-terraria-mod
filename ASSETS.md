@@ -32,6 +32,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Heavens ambient sounds | 2C |
 | Heavens enemies (sprites, animations) and their heavenly spears (projectile art) | 2C |
 | Harmless ambient creatures (butterflies, birds) | 2C |
+| Heavens dragon enemy (small wyvern, dash attack; no design yet) | 2C |
 | Heavens crystal (item dropped by Heavens enemies; placeholder planned) | 2C |
 | Heavenly Basket (tile that takes the crystals and summons the boss; idea only, specifics TBC) | 3 |
 | Pylon-like structure (tile) | 3 |
