@@ -82,7 +82,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.height = 76;
 			NPC.damage = 150;       // contact damage (placeholder)
 			NPC.defense = 60;       // placeholder
-			NPC.lifeMax = 9000;     // placeholder
+			NPC.lifeMax = 13500;    // 9000 + 50% (owner request); placeholder
 			NPC.HitSound = SoundID.NPCHit4;
 			NPC.DeathSound = SoundID.NPCDeath14;
 			NPC.knockBackResist = 0.15f;

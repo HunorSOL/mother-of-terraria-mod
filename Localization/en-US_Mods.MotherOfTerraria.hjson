@@ -31,6 +31,10 @@ Items: {
 Tiles: {
 	GoldenStatue.MapEntry: Golden Statue
 	GoldenBridgePost.MapEntry: Golden Bridge Post
+	HeavenlyTreeTall.MapEntry: Heavenly Tree
+	HeavenlyTreeRound.MapEntry: Heavenly Tree
+	HeavenlySapling.MapEntry: Heavenly Sapling
+	HeavenlyStump.MapEntry: Heavenly Stump
 }
 
 NPCs: {
@@ -39,7 +43,5 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
-Tiles.HeavenlyTreeTall.MapEntry: Heavenly Tree
-Tiles.HeavenlyTreeRound.MapEntry: Heavenly Tree
-Tiles.HeavenlySapling.MapEntry: Heavenly Sapling
-Tiles.HeavenlyStump.MapEntry: Heavenly Stump
+Tiles.ShimmerPuddleSmall.MapEntry: Shimmering Puddle
+Tiles.ShimmerPuddleLarge.MapEntry: Shimmering Puddle
