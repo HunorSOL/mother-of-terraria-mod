@@ -13,6 +13,10 @@ All art is placeholder until the owner supplies finals. Replace by dropping a PN
 | Heavens Dragon (enemy) | NPCs/Heavens/HeavensDragon.png | 202 wide, 8 frames stacked vertically (202x728, each frame 202x91) | Owner's design (DesignRefs/dragon_design.jpg), cut out and scaled (DesignRefs/dragon_base.png), animated by script (tools/make_dragon_sheet.py: body ripple + wing flap). A stand-in for hand-drawn animation; replace with real frames when available. |
 | Heavens Crystal (item) | Items/HeavensCrystal.png | 20x28, single frame, transparent PNG | Placeholder (generated). No design yet. |
 | Golden Bridge Post (glowing post along the bridges) | Tiles/GoldenBridgePost.png | 16x52: 1x3 tiles | PLACEHOLDER (generated). Owner design wanted. |
+| Heavenly Tree, tall (Heavens scenery) | Tiles/HeavenlyTreeTall.png | 124x214: 7x12 tiles of 16px with 2px padding | Owner's design (DesignRefs/trees_design.jpg), cut out at its true pixel size (DesignRefs/tree_tall.png), padded by tools/make_tree_sheets.py. Final unless the owner wants changes. |
+| Heavenly Tree, round | Tiles/HeavenlyTreeRound.png | 106x160: 6x9 tiles | Owner's design, same process. |
+| Heavenly Sapling | Tiles/HeavenlySapling.png | 34x52: 2x3 tiles | Owner's design, same process. |
+| Heavenly Stump | Tiles/HeavenlyStump.png | 52x34: 3x2 tiles | Owner's design, same process. |
 | Golden Statue (Heavens decoration tile) | Tiles/GoldenStatue.png | 142x124: 8x7 tiles of 16px with 2px padding between tiles, transparent PNG | Owner's design (DesignRefs/statue_design.jpg), cut out at its true pixel size (64x55) and scaled 2x (DesignRefs/statue_base.png), padded into the tile sheet by tools/make_statue_sheet.py. Final unless the owner wants changes. |
 
 ## Vanilla stand-ins (borrowed Terraria visuals that should become custom)
@@ -22,7 +26,6 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Stand-in | Where | Planned fix |
 |---|---|---|
 | Island tops: ordinary grass painted yellow with the illuminant (glow) coating | Subworlds/HeavensTerrainPass.cs (TurfPaint) | Stand-in for a custom luminous golden turf tile (owner's choice). Needs a custom tile; the colour may need tuning in-game. |
-| Trees: ordinary trees painted deep yellow and glowing | Subworlds/HeavensTerrainPass.cs (TreePaint) | Owner will send sprites for custom heavenly golden trees; replace then. Some trees may grow without leaves (bare trunks). |
 | Cloud blocks (island bodies, bridges) | Subworlds/HeavensTerrainPass.cs | Custom cloud/marble-like body block, Phase 2C. |
 | Bridges: vanilla Golden Platform tiles | Subworlds/HeavensTerrainPass.cs (BuildBridge) | Stand-in for ornate custom golden bridges. Bridge posts are placeholder art. |
 | Sky: now a custom gradient (Systems/HeavensSky.cs). Vanilla sun and clouds still show | Systems/HeavensSky.cs | Custom background art (layered parallax sky, halo), Phase 2C. |
@@ -47,3 +50,4 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Heavenly Teleporter design | DesignRefs/teleporter.jpg | 2400x1792 mockup: golden winged sword, blue gem in the guard, blue core in the blade, purple grip, star pommel. Has a fake checkerboard background, so it is a reference only. A real item sprite (transparent PNG, roughly 40-64 px) must be made from it. Excluded from the mod build. |
 | Heavens enemy design | DesignRefs/Gemini_Generated_Image_isqb3oisqb3oisqb.jpg | 2400x1792 mockup: golden winged-armor knight with a blue-gem helm and belt, white plume, and a starry blue cape. Fake checkerboard background, so reference only. A real sprite sheet (transparent PNG, animation frames) must be made from it. Excluded from the mod build. |
 | Heavenly spear design | DesignRefs/Gemini_Generated_Image_isqb3oisqb3oisqb(1).jpg | 2400x1792 mockup: golden spear with a glowing blue crystal blade, wings at the guard, purple grip wrap, star pommel, sparkles. Fake checkerboard background, so reference only. Needs a game-ready projectile sprite. Excluded from the mod build. |
+| Heavenly tree design: floating cloud canopy and leafy branch (DesignRefs/tree_puff.png, tree_branch.png) | DesignRefs/ | Pieces of the owner's tree design sheet that are not used in the game yet (ideas: floating canopy puffs, branch decorations). |

@@ -31,8 +31,6 @@ namespace MotherOfTerraria.Subworlds
 		{
 			TileID.Cloud,
 			TileID.Grass,
-			TileID.Trees,
-			TileID.Saplings,
 		};
 
 		// The golden platform used for the bridges is one STYLE of the ordinary Platforms tile, so only that style
@@ -51,7 +49,11 @@ namespace MotherOfTerraria.Subworlds
 			}
 			// Mod tiles get their numeric ID at load time, so they are checked here and not in the static set.
 			return type == ModContent.TileType<GoldenStatue>()
-				|| type == ModContent.TileType<GoldenBridgePost>();
+				|| type == ModContent.TileType<GoldenBridgePost>()
+				|| type == ModContent.TileType<HeavenlyTreeTall>()
+				|| type == ModContent.TileType<HeavenlyTreeRound>()
+				|| type == ModContent.TileType<HeavenlySapling>()
+				|| type == ModContent.TileType<HeavenlyStump>();
 		}
 
 		// The list of world generation steps, run in order when the subworld is created.

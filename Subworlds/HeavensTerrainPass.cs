@@ -6,26 +6,18 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 using Terraria.WorldBuilding;
 
 namespace MotherOfTerraria.Subworlds
 {
 	// The world generation step that builds the Heavens: long floating islands with luminous golden turf,
-	// joined by golden bridges, with golden statues and golden trees.
+	// joined by golden bridges, with golden statues and the owner's heavenly trees, saplings and stumps.
 	// The layout is hand-authored (fixed coordinates), so every visit is identical.
 	public class HeavensTerrainPass : GenPass
 	{
-		// Fixed seed so tree shapes come out the same every time too.
-		private const int Seed = 777;
-
 		// The island tops are ordinary grass painted this colour and made to glow ("illuminant"), as a stand-in
-		// for a custom golden turf tile. (Ordinary grass, not Hallowed: trees on Hallowed grass get rainbow colours
-		// that ignore paint.) Change the colours here if they look wrong in-game.
+		// for a custom golden turf tile. Change the colour here if it looks wrong in-game.
 		private const byte TurfPaint = PaintID.YellowPaint;
-
-		// The trees are ordinary trees painted a deeper, more golden yellow, and glowing.
-		private const byte TreePaint = PaintID.DeepYellowPaint;
 
 		// One island: centre column, height of its top surface, half-width, thickness at the middle,
 		// how far the top edges droop below the middle (0 = perfectly flat), and whether it is the boss arena.
@@ -91,9 +83,6 @@ namespace MotherOfTerraria.Subworlds
 
 		protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
 		{
-			// Make the game's world-gen random numbers repeatable, so trees look the same every visit.
-			WorldGen._genRand = new UnifiedRandom(Seed);
-
 			// Tell the game where "surface" and "underground" are, so the sky and lighting render as open sky.
 			Main.worldSurface = 330;
 			Main.rockLayer = 360;
@@ -134,7 +123,7 @@ namespace MotherOfTerraria.Subworlds
 			progress.Message = "Raising the statues";
 			foreach (var (on, x) in Statues)
 			{
-				PlaceStatue(on, x);
+				PlaceObject(on, x, Kind.Statue);
 			}
 			foreach (var (x, y) in bridgeColumns)
 			{
@@ -142,29 +131,33 @@ namespace MotherOfTerraria.Subworlds
 			}
 			progress.Set(0.8f);
 
-			progress.Message = "Growing the trees";
-			int grown = 0, tried = 0;
+			progress.Message = "Planting the heavenly trees";
+			int planted = 0;
 			foreach (Island island in MainIslands)
 			{
-				for (int x = island.Left + 6; x <= island.Right - 6; x += 11)
+				// A tall tree, then a round one, and so on along the island, with a sapling or stump in each gap.
+				int n = 0;
+				for (int x = island.Left + 9; x <= island.Right - 9; x += 14, n++)
 				{
-					// The arena stays open in the middle; only its outer edges get trees.
-					if (island.Arena && x - island.Left > 24 && island.Right - x > 24)
+					// The arena stays open in the middle; only its outer edges get scenery.
+					if (island.Arena && x - island.Left > 30 && island.Right - x > 30)
 					{
 						continue;
 					}
-					if (NearStatue(x))
+					bool tall = n % 2 == 0;
+					if (!NearStatue(x, 9))
 					{
-						continue;
+						PlaceObject(island, x, tall ? Kind.TreeTall : Kind.TreeRound);
+						planted++;
 					}
-					tried++;
-					if (PlantTree(island, x))
+					int smallX = x + 7;
+					if (smallX <= island.Right - 6 && !NearStatue(smallX, 6))
 					{
-						grown++;
+						PlaceObject(island, smallX, n % 3 == 0 ? Kind.Stump : Kind.Sapling);
 					}
 				}
 			}
-			Mod.Logger.Info($"Heavens trees: {grown} grown of {tried} tried.");
+			Mod.Logger.Info($"Heavens trees planted: {planted}.");
 			progress.Set(1f);
 
 			// Players arrive on the grand arrival island, between its two statues.
@@ -219,12 +212,39 @@ namespace MotherOfTerraria.Subworlds
 			}
 		}
 
-		// Levels a pad under the statue, clears the air above it, then places the statue.
-		private static void PlaceStatue(Island island, int x)
+		private enum Kind
 		{
-			int originX = GoldenStatue.TilesWide / 2; // the statue's origin tile is its bottom-middle
+			Statue,
+			TreeTall,
+			TreeRound,
+			Sapling,
+			Stump,
+		}
+
+		private static (int Type, int Width, int Height) Describe(Kind what)
+		{
+			switch (what)
+			{
+				case Kind.TreeTall:
+					return (ModContent.TileType<HeavenlyTreeTall>(), HeavenlyTreeTall.TilesWide, HeavenlyTreeTall.TilesHigh);
+				case Kind.TreeRound:
+					return (ModContent.TileType<HeavenlyTreeRound>(), HeavenlyTreeRound.TilesWide, HeavenlyTreeRound.TilesHigh);
+				case Kind.Sapling:
+					return (ModContent.TileType<HeavenlySapling>(), HeavenlySapling.TilesWide, HeavenlySapling.TilesHigh);
+				case Kind.Stump:
+					return (ModContent.TileType<HeavenlyStump>(), HeavenlyStump.TilesWide, HeavenlyStump.TilesHigh);
+				default:
+					return (ModContent.TileType<GoldenStatue>(), GoldenStatue.TilesWide, GoldenStatue.TilesHigh);
+			}
+		}
+
+		// Levels a pad under the object, clears the air above it, then places it.
+		private static void PlaceObject(Island island, int x, Kind what)
+		{
+			(int type, int w, int h) = Describe(what);
+			int originX = w / 2; // an object's origin tile is its bottom-middle
 			int ground = island.SurfaceY(x);
-			for (int dx = 0; dx < GoldenStatue.TilesWide; dx++)
+			for (int dx = 0; dx < w; dx++)
 			{
 				int tx = x - originX + dx;
 				SetTile(tx, ground, TileID.Grass, glowingGold: true);
@@ -232,50 +252,27 @@ namespace MotherOfTerraria.Subworlds
 				{
 					SetTile(tx, ground + k, TileID.Cloud);
 				}
-				for (int k = 1; k <= GoldenStatue.TilesHigh + 3; k++)
+				for (int k = 1; k <= h + 3; k++)
 				{
 					Tile air = Main.tile[tx, ground - k];
 					air.HasTile = false;
 				}
 				WorldGen.SquareTileFrame(tx, ground, true);
 			}
-			WorldGen.PlaceObject(x, ground - 1, ModContent.TileType<GoldenStatue>(), true);
+			WorldGen.PlaceObject(x, ground - 1, type, true);
 		}
 
-		private static bool NearStatue(int x)
+		// True if a statue stands within `margin` tiles (plus half the statue's width) of this column.
+		private static bool NearStatue(int x, int margin)
 		{
 			foreach (var (_, sx) in Statues)
 			{
-				if (Math.Abs(sx - x) <= GoldenStatue.TilesWide / 2 + 5)
+				if (Math.Abs(sx - x) <= GoldenStatue.TilesWide / 2 + margin)
 				{
 					return true;
 				}
 			}
 			return false;
-		}
-
-		// Plants a sapling on the turf and grows it instantly into a tree, then paints the tree gold and makes it
-		// glow (a stand-in until the owner's golden tree sprites arrive). Returns false if the game refused.
-		private static bool PlantTree(Island island, int x)
-		{
-			int ground = island.SurfaceY(x);
-			WorldGen.PlaceTile(x, ground - 1, TileID.Saplings, true, true);
-			bool grown = WorldGen.GrowTree(x, ground - 1);
-
-			// Paint whatever tree tiles now stand in this column's neighbourhood.
-			for (int tx = x - 6; tx <= x + 6; tx++)
-			{
-				for (int ty = ground - 45; ty < ground; ty++)
-				{
-					Tile tile = Main.tile[tx, ty];
-					if (tile.HasTile && (tile.TileType == TileID.Trees || tile.TileType == TileID.Saplings))
-					{
-						tile.TileColor = TreePaint;
-						tile.IsTileFullbright = true;
-					}
-				}
-			}
-			return grown;
 		}
 
 		private static void SetTile(int x, int y, int type, bool glowingGold = false)

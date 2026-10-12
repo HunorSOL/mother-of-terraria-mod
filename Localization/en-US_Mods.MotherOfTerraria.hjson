@@ -39,3 +39,7 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
+Tiles.HeavenlyTreeTall.MapEntry: Heavenly Tree
+Tiles.HeavenlyTreeRound.MapEntry: Heavenly Tree
+Tiles.HeavenlySapling.MapEntry: Heavenly Sapling
+Tiles.HeavenlyStump.MapEntry: Heavenly Stump
