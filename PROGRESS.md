@@ -7,18 +7,20 @@
 - Phase 1 COMPLETE (confirmed in-game 2026-10-11): Heavenly Teleporter item + recipe (Celestial Sigil + Copper Shortsword, craftable only at an Ancient Manipulator), Debug Starter Kit (craft from 1 Dirt Block), localization file, sprite cut from the owner's design.
 
 - Phase 2.1 COMPLETE (confirmed in-game 2026-10-12): SubworldLibrary 2.3.0.1 dependency, empty Heavens subworld (800x400, flat cloud floor, regenerated every visit). Temporary /heavens debug command used for the test, removed in 2.2.
+- Phase 2.5 COMPLETE (confirmed in-game 2026-10-12, after a crash fix and a no-mountains background style): Heavens sky (azure-to-gold gradient, warm tint, fewer clouds), placeholder music (vanilla Space), permanent midday, only this mod's NPCs may spawn there (none exist yet, so no spawns). Note for 2C: SubworldLibrary's NormalUpdates is false by default; check that custom enemies spawn, and set NormalUpdates => true if they don't.
+- Phase 2.4 COMPLETE (owner reviewed 2026-10-12, looks good apart from the hallowed look): Heavens terrain is now 4 long islands (Arrival, High, Low, flat Arena) + 4 small floaters joined by cloud bridges, hallowed grass tops, trees, 6 golden statues (placeholder art). Fixed layout and seed. Protected block types: Cloud, HallowedGrass, Trees, Saplings, GoldenStatue.
+- Phase 2 is COMPLETE for singleplayer (2.6 multiplayer deferred, see Decisions).
 - Phase 2.3 COMPLETE (confirmed in-game 2026-10-12): escape items blocked inside the Heavens; Heavens terrain (HeavensSubworld.ProtectedTiles) can't be broken, blown up or replaced. Add each new terrain block type to that set.
 - Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
-
-## In progress
-- Phase 2.4/2.5 done. Phase 2 is COMPLETE for singleplayer (2.6 deferred).
-- Phase 2.4 (owner reviewed 2026-10-12, looks good apart from the hallowed look): Heavens terrain is now 4 long islands (Arrival, High, Low, flat Arena) + 4 small floaters joined by cloud bridges, hallowed grass tops, trees, 6 golden statues (placeholder art). Fixed layout and seed. Protected block types: Cloud, HallowedGrass, Trees, Saplings, GoldenStatue.
-- Phase 2.5 COMPLETE (confirmed in-game 2026-10-12, after a crash fix and a no-mountains background style): Heavens sky (azure-to-gold gradient, warm tint, fewer clouds), placeholder music (vanilla Space), permanent midday, only this mod's NPCs may spawn there (none exist yet, so no spawns). Note for 2C: SubworldLibrary's NormalUpdates is false by default; check that custom enemies spawn, and set NormalUpdates => true if they don't.
 
 ## Decisions
 - SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Phase 2.6 (multiplayer testing) is deferred and became the "Multiplayer upgrade" step in Phase 8, to be done after the boss works. We keep server-authoritative habits (logic on the server, only visuals/sound/UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. The Heavenly Teleporter shows a message and does nothing in multiplayer.
 
+## In progress
+- Nothing. Waiting for the owner to pick the next phase.
+
 ## Next
+- Phase 2C (Heavens details and polish, draft scope) or Phase 3 (the pylon structure): owner to decide the order. Boss summon design to be discussed first.
 - (2.3 decisions) owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.
 - 2.4 REVISED (owner, 2026-10-12): long, wide, majestic floating islands with trees and golden statues. NEW Phase 2C (Heavens details and polish) added after Phase 2; Phases 3-8 keep their numbers. Scope of 2C is a draft to refine with the owner. 2C now includes custom hostile Heavens enemies (owner supplies designs; heavenly-spear attacks, very high damage). Boss summon design is deferred, to be discussed later.
 - Phase 2 is a real subworld (SubworldLibrary), not a sky structure. Steps 2.1-2.6 are in ROADMAP.md (local only).
