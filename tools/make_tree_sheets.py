@@ -1,9 +1,10 @@
-"""Builds the tile sheets for the Heavens' golden-cloud trees, saplings and stumps from the owner's tree design.
+"""Builds the tile sheets for the Heavens' saplings and stumps (small scenery objects) from the owner's tree design.
+(The real trees are made by tools/make_tree_textures.py.)
 
-Inputs : DesignRefs/tree_tall.png, tree_round.png, tree_sapling.png, tree_stump.png
+Inputs : DesignRefs/tree_sapling.png, tree_stump.png
          (the design cut out of its checkerboard at its true pixel size; tree_puff.png and tree_branch.png are
           the other pieces of the design sheet, kept for later use)
-Outputs: Tiles/HeavenlyTreeTall.png, HeavenlyTreeRound.png, HeavenlySapling.png, HeavenlyStump.png
+Outputs: Tiles/HeavenlySapling.png, HeavenlyStump.png
          (multi-tile object sheets: 16 px tiles with 2 px padding between them; the art stands on the bottom row, centred)
 
 If the owner supplies new art, replace the DesignRefs PNG and re-run:  python3 tools/make_tree_sheets.py
@@ -16,8 +17,6 @@ import numpy as np
 
 # source picture -> output sheet, in tiles (wide, high) [must match Tiles/HeavensObjectTile.cs]
 OBJECTS = [
-    ("DesignRefs/tree_tall.png", "Tiles/HeavenlyTreeTall.png", 7, 12),
-    ("DesignRefs/tree_round.png", "Tiles/HeavenlyTreeRound.png", 6, 9),
     ("DesignRefs/tree_sapling.png", "Tiles/HeavenlySapling.png", 2, 3),
     ("DesignRefs/tree_stump.png", "Tiles/HeavenlyStump.png", 3, 2),
 ]

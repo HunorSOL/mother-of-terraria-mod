@@ -6,18 +6,22 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.IO;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 using Terraria.WorldBuilding;
 
 namespace MotherOfTerraria.Subworlds
 {
 	// The world generation step that builds the Heavens: long floating islands with luminous golden turf,
-	// joined by golden bridges, with golden statues and the owner's heavenly trees, saplings and stumps.
+	// joined by golden bridges, with golden statues, real heavenly trees (grown with the game's own tree routine),
+	// saplings and stumps.
 	// The layout is hand-authored (fixed coordinates), so every visit is identical.
 	public class HeavensTerrainPass : GenPass
 	{
-		// The island tops are ordinary grass painted this colour and made to glow ("illuminant"), as a stand-in
-		// for a custom golden turf tile. Change the colour here if it looks wrong in-game.
-		private const byte TurfPaint = PaintID.YellowPaint;
+		// Fixed seed so the trees grow the same way every visit.
+		private const int Seed = 777;
+
+		// The island-top tile. (A property, because mod tile IDs only exist once the mod has loaded.)
+		private static int Turf => ModContent.TileType<HeavensTurf>();
 
 		// One island: centre column, height of its top surface, half-width, thickness at the middle,
 		// how far the top edges droop below the middle (0 = perfectly flat), and whether it is the boss arena.
@@ -83,6 +87,9 @@ namespace MotherOfTerraria.Subworlds
 
 		protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
 		{
+			// Make the game's world-gen random numbers repeatable, so the trees look the same every visit.
+			WorldGen._genRand = new UnifiedRandom(Seed);
+
 			// Tell the game where "surface" and "underground" are, so the sky and lighting render as open sky.
 			Main.worldSurface = 330;
 			Main.rockLayer = 360;
@@ -131,11 +138,11 @@ namespace MotherOfTerraria.Subworlds
 			}
 			progress.Set(0.8f);
 
-			progress.Message = "Planting the heavenly trees";
-			int planted = 0;
+			progress.Message = "Growing the heavenly trees";
+			int grown = 0, tried = 0;
 			foreach (Island island in MainIslands)
 			{
-				// A tall tree, then a round one, and so on along the island, with a sapling or stump in each gap.
+				// A tree every 14 tiles along the island, with a sapling or stump in each gap.
 				int n = 0;
 				for (int x = island.Left + 9; x <= island.Right - 9; x += 14, n++)
 				{
@@ -144,11 +151,13 @@ namespace MotherOfTerraria.Subworlds
 					{
 						continue;
 					}
-					bool tall = n % 2 == 0;
 					if (!NearStatue(x, 9))
 					{
-						PlaceObject(island, x, tall ? Kind.TreeTall : Kind.TreeRound);
-						planted++;
+						tried++;
+						if (GrowTree(island, x))
+						{
+							grown++;
+						}
 					}
 					int smallX = x + 7;
 					if (smallX <= island.Right - 6 && !NearStatue(smallX, 6))
@@ -157,8 +166,7 @@ namespace MotherOfTerraria.Subworlds
 					}
 				}
 			}
-			Mod.Logger.Info($"Heavens trees planted: {planted}.");
-
+			Mod.Logger.Info($"Heavens trees: {grown} grown of {tried} tried.");
 			progress.Set(1f);
 
 			// Players arrive on the grand arrival island, between its two statues.
@@ -176,7 +184,7 @@ namespace MotherOfTerraria.Subworlds
 				int depth = island.Depth(x);
 				for (int k = 0; k < depth; k++)
 				{
-					SetTile(x, top + k, k == 0 ? TileID.Grass : TileID.Cloud, glowingGold: k == 0);
+					SetTile(x, top + k, k == 0 ? Turf : TileID.Cloud);
 				}
 			}
 		}
@@ -216,8 +224,6 @@ namespace MotherOfTerraria.Subworlds
 		private enum Kind
 		{
 			Statue,
-			TreeTall,
-			TreeRound,
 			Sapling,
 			Stump,
 		}
@@ -226,10 +232,6 @@ namespace MotherOfTerraria.Subworlds
 		{
 			switch (what)
 			{
-				case Kind.TreeTall:
-					return (ModContent.TileType<HeavenlyTreeTall>(), HeavenlyTreeTall.TilesWide, HeavenlyTreeTall.TilesHigh);
-				case Kind.TreeRound:
-					return (ModContent.TileType<HeavenlyTreeRound>(), HeavenlyTreeRound.TilesWide, HeavenlyTreeRound.TilesHigh);
 				case Kind.Sapling:
 					return (ModContent.TileType<HeavenlySapling>(), HeavenlySapling.TilesWide, HeavenlySapling.TilesHigh);
 				case Kind.Stump:
@@ -248,7 +250,7 @@ namespace MotherOfTerraria.Subworlds
 			for (int dx = 0; dx < w; dx++)
 			{
 				int tx = x - originX + dx;
-				SetTile(tx, ground, TileID.Grass, glowingGold: true);
+				SetTile(tx, ground, Turf);
 				for (int k = 1; k <= 3; k++)
 				{
 					SetTile(tx, ground + k, TileID.Cloud);
@@ -261,6 +263,43 @@ namespace MotherOfTerraria.Subworlds
 				WorldGen.SquareTileFrame(tx, ground, true);
 			}
 			WorldGen.PlaceObject(x, ground - 1, type, true);
+		}
+
+		// Levels a pad, clears the sky above it, then grows a real tree there with the game's own routine.
+		// Returns false if the game refused (it needs room and flat ground).
+		private static bool GrowTree(Island island, int x)
+		{
+			int ground = island.SurfaceY(x);
+			for (int tx = x - 3; tx <= x + 3; tx++)
+			{
+				SetTile(tx, ground, Turf);
+				for (int k = 1; k <= 3; k++)
+				{
+					SetTile(tx, ground + k, TileID.Cloud);
+				}
+				for (int k = 1; k <= 24; k++)
+				{
+					Tile air = Main.tile[tx, ground - k];
+					air.HasTile = false;
+				}
+				WorldGen.SquareTileFrame(tx, ground, true);
+			}
+
+			bool grown = WorldGen.GrowTree(x, ground); // the row of the ground tile it should grow from
+
+			// Make the whole tree glow softly (fullbright), like the turf.
+			for (int tx = x - 6; tx <= x + 6; tx++)
+			{
+				for (int ty = ground - 30; ty < ground; ty++)
+				{
+					Tile tile = Main.tile[tx, ty];
+					if (tile.HasTile && tile.TileType == TileID.Trees)
+					{
+						tile.IsTileFullbright = true;
+					}
+				}
+			}
+			return grown;
 		}
 
 		// True if a statue stands within `margin` tiles (plus half the statue's width) of this column.
@@ -276,16 +315,11 @@ namespace MotherOfTerraria.Subworlds
 			return false;
 		}
 
-		private static void SetTile(int x, int y, int type, bool glowingGold = false)
+		private static void SetTile(int x, int y, int type)
 		{
 			Tile tile = Main.tile[x, y];
 			tile.HasTile = true;
 			tile.TileType = (ushort)type;
-			if (glowingGold)
-			{
-				tile.TileColor = TurfPaint;
-				tile.IsTileFullbright = true; // "illuminant": glows, so the turf looks luminous
-			}
 		}
 	}
 }

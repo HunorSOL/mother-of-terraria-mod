@@ -31,8 +31,6 @@ Items: {
 Tiles: {
 	GoldenStatue.MapEntry: Golden Statue
 	GoldenBridgePost.MapEntry: Golden Bridge Post
-	HeavenlyTreeTall.MapEntry: Heavenly Tree
-	HeavenlyTreeRound.MapEntry: Heavenly Tree
 	HeavenlySapling.MapEntry: Heavenly Sapling
 	HeavenlyStump.MapEntry: Heavenly Stump
 }
@@ -43,3 +41,4 @@ NPCs: {
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
+Tiles.HeavensTurf.MapEntry: Heavens Turf

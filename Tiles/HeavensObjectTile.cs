@@ -8,7 +8,7 @@ using Terraria.ObjectData;
 
 namespace MotherOfTerraria.Tiles
 {
-	// Shared setup for the Heavens' multi-tile decorations (statues, trees and bridge posts).
+	// Shared setup for the Heavens' multi-tile decorations (the statues, saplings, stumps and bridge posts).
 	// Each one is a ModTile (a block-like object in the world) with no item: world generation places them and
 	// they are protected from breaking (see Subworlds/HeavensSubworld.IsProtectedTile).
 	// A subclass only says how many tiles wide and tall it is. Its texture is the PNG with the same name as the
@@ -70,28 +70,6 @@ namespace MotherOfTerraria.Tiles
 
 		protected override int ObjectWidth => TilesWide;
 		protected override int ObjectHeight => TilesHigh;
-	}
-
-	// A tall heavenly tree: golden trunk, pastel blue-and-gold cloud canopy (the owner's design, 7x12 tiles).
-	public class HeavenlyTreeTall : HeavensObjectTile
-	{
-		public const int TilesWide = 7;
-		public const int TilesHigh = 12;
-
-		protected override int ObjectWidth => TilesWide;
-		protected override int ObjectHeight => TilesHigh;
-		protected override Vector3 Glow => new Vector3(0.22f, 0.24f, 0.3f); // a faint cool light under the canopy
-	}
-
-	// A shorter, rounder heavenly tree with hanging golden charms (the owner's design, 6x9 tiles).
-	public class HeavenlyTreeRound : HeavensObjectTile
-	{
-		public const int TilesWide = 6;
-		public const int TilesHigh = 9;
-
-		protected override int ObjectWidth => TilesWide;
-		protected override int ObjectHeight => TilesHigh;
-		protected override Vector3 Glow => new Vector3(0.22f, 0.24f, 0.3f);
 	}
 
 	// A heavenly sapling (the owner's design, 2x3 tiles).
