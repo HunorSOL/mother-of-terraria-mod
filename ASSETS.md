@@ -42,3 +42,5 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Reference | File | Notes |
 |---|---|---|
 | Heavenly Teleporter design | DesignRefs/teleporter.jpg | 2400x1792 mockup: golden winged sword, blue gem in the guard, blue core in the blade, purple grip, star pommel. Has a fake checkerboard background, so it is a reference only. A real item sprite (transparent PNG, roughly 40-64 px) must be made from it. Excluded from the mod build. |
+| Heavens enemy design | DesignRefs/Gemini_Generated_Image_isqb3oisqb3oisqb.jpg | 2400x1792 mockup: golden winged-armor knight with a blue-gem helm and belt, white plume, and a starry blue cape. Fake checkerboard background, so reference only. A real sprite sheet (transparent PNG, animation frames) must be made from it. Excluded from the mod build. |
+| Heavenly spear design | DesignRefs/Gemini_Generated_Image_isqb3oisqb3oisqb(1).jpg | 2400x1792 mockup: golden spear with a glowing blue crystal blade, wings at the guard, purple grip wrap, star pommel, sparkles. Fake checkerboard background, so reference only. Needs a game-ready projectile sprite. Excluded from the mod build. |
