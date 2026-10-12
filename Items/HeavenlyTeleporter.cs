@@ -1,11 +1,12 @@
+using MotherOfTerraria.Subworlds;
+using SubworldLibrary;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace MotherOfTerraria.Items
 {
-	// The key item of the mod: it will open the portal to the Heavens (Phase 2).
-	// For now it only has stats, a recipe, and a placeholder message when used.
+	// The key item of the mod: the only way into (and out of) the Heavens.
 	// Texture: Items/HeavenlyTeleporter.png (same name as the class, so it loads automatically).
 	public class HeavenlyTeleporter : ModItem
 	{
@@ -28,13 +29,22 @@ namespace MotherOfTerraria.Items
 			Item.UseSound = SoundID.Item29;
 		}
 
-		// Runs when the player uses the item. Phase 2 will replace this with the real teleport.
+		// Runs when the player uses the item: enters the Heavens, or returns home if already there.
 		public override bool? UseItem(Player player)
 		{
-			// Only the player who used the item sees the message (local-only feedback, not gameplay logic).
+			// UseItem can run on several machines for the same use; only the user's own game acts on it.
+			// In multiplayer, SubworldLibrary turns Enter/Exit into a request to the server,
+			// which then moves just this player. In singleplayer it switches worlds directly.
 			if (player.whoAmI == Main.myPlayer)
 			{
-				Main.NewText("The Heavens are not ready yet... (coming in Phase 2)", 255, 215, 0);
+				if (SubworldSystem.IsActive<HeavensSubworld>())
+				{
+					SubworldSystem.Exit();
+				}
+				else
+				{
+					SubworldSystem.Enter<HeavensSubworld>();
+				}
 			}
 			return true;
 		}

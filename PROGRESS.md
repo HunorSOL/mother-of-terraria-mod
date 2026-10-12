@@ -6,14 +6,22 @@
 
 - Phase 1 COMPLETE (confirmed in-game 2026-10-11): Heavenly Teleporter item + recipe (Celestial Sigil + Copper Shortsword, craftable only at an Ancient Manipulator), Debug Starter Kit (craft from 1 Dirt Block), localization file, sprite cut from the owner's design.
 
+- Phase 2.1 COMPLETE (confirmed in-game 2026-10-12): SubworldLibrary 2.3.0.1 dependency, empty Heavens subworld (800x400, flat cloud floor, regenerated every visit). Temporary /heavens debug command used for the test, removed in 2.2.
+
+## In progress
+- Phase 2.2 (awaiting owner test): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item).
+
 ## Next
-- Phase 2 (the Heavens), REVISED PLAN: skip the sky structure; build a real subworld with SubworldLibrary so the Teleporter is the only way in and flight is blocked. Steps 2.1-2.6 are in ROADMAP.md (local only). Start with 2.1 (dependency + empty subworld) on Opus 5.5. Restate the plan and wait for owner's OK first.
+- Phase 2.3 (Sonnet 5.5): rules inside the Heavens (no flight/mounts, no building, no escape items except the Teleporter).
+- Phase 2 is a real subworld (SubworldLibrary), not a sky structure. Steps 2.1-2.6 are in ROADMAP.md (local only).
 - Open decision: scrub ROADMAP.md from GitHub history, or make the repo private (repo is public).
 
 - Pushed to GitHub (2026-10-11): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1). Remote uses SSH (key ~/.ssh/id_ed25519_github).
 
 ## Build notes
 - Project folder MUST be named MotherOfTerraria (tModLoader uses the folder name as the mod name). ModSources/MotherOfTerraria is a symlink to it.
+- SubworldLibrary is a required mod (build.txt modReferences). For compiling, its DLL is extracted from the Workshop .tmod into lib/SubworldLibrary.dll (git-ignored, not shipped). Re-extract if SubworldLibrary updates. Workshop ID 2785100219.
+- SubworldLibrary Enter/Exit must be called on the player's own client; in multiplayer they send a request to the server. They do nothing on the server (use MovePlayerToSubworld there).
 - If `dotnet build` hangs at restore, run with `DOTNET_SYSTEM_NET_DISABLEIPV6=1` (this network drops IPv6).
 
 ## Known issues
