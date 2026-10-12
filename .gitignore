@@ -7,6 +7,9 @@ bin/
 obj/
 *.tmod
 
+# Third-party mod DLLs extracted for compiling (SubworldLibrary)
+lib/
+
 # Editor / OS
 .vs/
 .vscode/

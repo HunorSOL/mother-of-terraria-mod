@@ -1,4 +1,5 @@
 displayName = Mother of Terraria
 author = Unix-H
 version = 0.1
-buildIgnore = *.md, .gitignore, .env, .env.*, .git*, .vscode/*, bin\*, obj\*, DesignRefs\*, *.jpg
+modReferences = SubworldLibrary
+buildIgnore = *.md, .gitignore, .env, .env.*, .git*, .vscode/*, bin\*, obj\*, lib\*, DesignRefs\*, *.jpg

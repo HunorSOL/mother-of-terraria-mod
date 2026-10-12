@@ -4,4 +4,12 @@
     <AssemblyName>MotherOfTerraria</AssemblyName>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- SubworldLibrary's code, extracted from its .tmod so the compiler can see it.
+         Not shipped with our mod (Private=false); players get it from the Workshop as a dependency. -->
+    <Reference Include="SubworldLibrary">
+      <HintPath>lib/SubworldLibrary.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 </Project>
