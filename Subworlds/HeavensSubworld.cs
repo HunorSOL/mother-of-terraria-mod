@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using SubworldLibrary;
+using MotherOfTerraria.Tiles;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
 namespace MotherOfTerraria.Subworlds
@@ -23,15 +25,25 @@ namespace MotherOfTerraria.Subworlds
 
 		// Block types that make up the Heavens' own terrain. Players cannot break or replace these
 		// (see Common/HeavensTerrainProtection). Add each new terrain block type here as terrain grows.
-		public static readonly HashSet<int> ProtectedTiles = new HashSet<int>
+		// Only types players cannot normally place are used (no Dirt), so building with ordinary blocks stays free.
+		private static readonly HashSet<int> protectedTiles = new HashSet<int>
 		{
 			TileID.Cloud,
+			TileID.HallowedGrass,
+			TileID.Trees,
+			TileID.Saplings,
 		};
+
+		public static bool IsProtectedTile(int type)
+		{
+			// Mod tiles get their numeric ID at load time, so they are checked separately from the static set.
+			return protectedTiles.Contains(type) || type == ModContent.TileType<GoldenStatue>();
+		}
 
 		// The list of world generation steps, run in order when the subworld is created.
 		public override List<GenPass> Tasks => new List<GenPass>()
 		{
-			new HeavensFloorPass(),
+			new HeavensTerrainPass(),
 		};
 
 		// Runs every time the subworld finishes loading. Lock it to bright daytime for now.

@@ -21,4 +21,10 @@ Items: {
 			Gives a Celestial Sigil, a Copper Shortsword and a Heavenly Teleporter.
 			'''
 	}
+
+	Tiles: {
+		GoldenStatue: {
+			MapEntry: Golden Statue
+		}
+	}
 }

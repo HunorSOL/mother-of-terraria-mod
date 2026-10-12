@@ -7,10 +7,11 @@
 - Phase 1 COMPLETE (confirmed in-game 2026-10-11): Heavenly Teleporter item + recipe (Celestial Sigil + Copper Shortsword, craftable only at an Ancient Manipulator), Debug Starter Kit (craft from 1 Dirt Block), localization file, sprite cut from the owner's design.
 
 - Phase 2.1 COMPLETE (confirmed in-game 2026-10-12): SubworldLibrary 2.3.0.1 dependency, empty Heavens subworld (800x400, flat cloud floor, regenerated every visit). Temporary /heavens debug command used for the test, removed in 2.2.
+- Phase 2.3 COMPLETE (confirmed in-game 2026-10-12): escape items blocked inside the Heavens; Heavens terrain (HeavensSubworld.ProtectedTiles) can't be broken, blown up or replaced. Add each new terrain block type to that set.
 - Phase 2.2 COMPLETE (confirmed in-game 2026-10-12): the Heavenly Teleporter enters the Heavens; using it inside returns to the main world (no separate return item). Inventory and character intact across trips.
 
 ## In progress
-- Phase 2.3 (awaiting owner test): escape items blocked inside the Heavens; Heavens terrain (HeavensSubworld.ProtectedTiles, currently Cloud) can't be broken, blown up or replaced. Add each new terrain block type to that set in 2.4.
+- Phase 2.4 (awaiting owner test): Heavens terrain is now 4 long islands (Arrival, High, Low, flat Arena) + 4 small floaters joined by cloud bridges, hallowed grass tops, trees, 6 golden statues (placeholder art). Fixed layout and seed. Protected block types: Cloud, HallowedGrass, Trees, Saplings, GoldenStatue.
 
 ## Next
 - (2.3 decisions) owner decisions 2026-10-12: flight, mounts, hooks, jumps and Rod of Discord/Harmony all ALLOWED. Placing blocks allowed; breaking the Heavens' own terrain blocked. Escape items (Magic Mirror, Recall, Cell Phone, Shellphone, Potion of Return, conches) blocked; the Teleporter is the only exit.

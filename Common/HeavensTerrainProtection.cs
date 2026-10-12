@@ -5,14 +5,14 @@ using Terraria.ModLoader;
 namespace MotherOfTerraria.Common
 {
 	// A GlobalTile sees every tile in the game. This one stops the Heavens' own terrain
-	// (the blocks listed in HeavensSubworld.ProtectedTiles) from being broken, blown up or replaced.
+	// (the blocks listed in HeavensSubworld) from being broken, blown up or replaced.
 	// Players can still place and remove their own blocks of other types.
 	// These hooks run on both the client and the server, so the rule holds in multiplayer too.
 	public class HeavensTerrainProtection : GlobalTile
 	{
 		private static bool IsProtected(int type)
 		{
-			return SubworldSystem.IsActive<HeavensSubworld>() && HeavensSubworld.ProtectedTiles.Contains(type);
+			return SubworldSystem.IsActive<HeavensSubworld>() && HeavensSubworld.IsProtectedTile(type);
 		}
 
 		// Pickaxes, hammers, drills.
