@@ -19,7 +19,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Hallowed-style trees | Subworlds/HeavensTerrainPass.cs (WorldGen.GrowTree) | Custom trees or tree-like landmarks, Phase 2C. |
 | Cloud blocks (island bodies, bridges) | Subworlds/HeavensTerrainPass.cs | Custom cloud/marble-like body block, Phase 2C. |
 | Cloud bridges between islands | Subworlds/HeavensTerrainPass.cs (BuildBridge) | Golden heavenly bridges, and move islands closer together, Phase 2C. |
-| Vanilla sky, sun and clouds | HeavensSubworld.OnLoad (fixed midday) | Custom sky tint and background, Phase 2.5 / 2C. |
+| Sky: now a custom gradient (Systems/HeavensSky.cs). Vanilla sun and clouds still show | Systems/HeavensSky.cs | Custom background art (layered parallax sky, halo), Phase 2C. |
 | Vanilla loading screen text | Subworlds/HeavensTerrainPass.cs | Optional custom loading screen, Phase 2C. |
 | Gold dust when hitting the statue | Tiles/GoldenStatue.cs | Custom dust, optional. |
 
@@ -27,7 +27,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 
 | Asset | Phase |
 |---|---|
-| Heavens music track | 2.5 / 2C |
+| Heavens music track (vanilla Space music plays as placeholder, see Systems/HeavensSceneEffect.cs) | 2C |
 | Heavens ambient sounds | 2C |
 | Heavens enemies (sprites, animations) and their heavenly spears (projectile art) | 2C |
 | Harmless ambient creatures (butterflies, birds) | 2C |

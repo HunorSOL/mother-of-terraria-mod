@@ -52,5 +52,12 @@ namespace MotherOfTerraria.Subworlds
 			Main.dayTime = true;
 			Main.time = 27000; // midday
 		}
+
+		// Runs every tick inside the Heavens: keep it permanent midday (no night, no moon events).
+		public override void Update()
+		{
+			Main.dayTime = true;
+			Main.time = 27000;
+		}
 	}
 }
