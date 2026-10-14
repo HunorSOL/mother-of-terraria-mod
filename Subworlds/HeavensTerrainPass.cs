@@ -117,10 +117,6 @@ namespace MotherOfTerraria.Subworlds
 			{
 				BuildRock(cx, top, half, depth);
 			}
-			foreach (Island island in MainIslands)
-			{
-				BuildUndersideRocks(island);
-			}
 			progress.Set(0.25f);
 
 			progress.Message = "Laying the golden bridges";
@@ -232,27 +228,6 @@ namespace MotherOfTerraria.Subworlds
 				for (int k = ragged; k < thickness; k++)
 				{
 					SetTile(x, top + k, stone);
-				}
-			}
-		}
-
-		// Stone spikes hanging from the underside of an island, at a few fixed fractions of its width.
-		private static void BuildUndersideRocks(Island island)
-		{
-			int stone = ModContent.TileType<HeavensStone>();
-			double[] fractions = { 0.18, 0.37, 0.58, 0.8 };
-			foreach (double f in fractions)
-			{
-				int x = island.Left + (int)(f * (island.Right - island.Left));
-				int start = island.SurfaceY(x) + island.Depth(x);
-				int length = 5 + WorldGen.genRand.Next(0, 6);
-				for (int k = 0; k < length; k++)
-				{
-					int halfWidth = Math.Max(0, (length - k) / 3);
-					for (int dx = -halfWidth; dx <= halfWidth; dx++)
-					{
-						SetTile(x + dx, start + k - 1, stone);
-					}
 				}
 			}
 		}
