@@ -1,12 +1,12 @@
 # Progress
 
-Last updated: end of day 2026-10-12. Next session: 2026-10-13.
+Last updated: 2026-10-14 (session 2).
 Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
 ## Where we are
 - Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
-- Phase 2C (Heavens details and polish) IN PROGRESS: enemies, the island look, trees and statues are built; atmosphere, detail, audio and tuning remain.
+- Phase 2C (Heavens details and polish) IN PROGRESS and nearly done: enemies (tuned), island look, atmosphere, island details and the theme music are built and the owner has seen them in-game. Ambient creatures, the arrival gateway, ambient sounds, performance check and the open owner decisions remain.
 - Phase 3 onward (pylon/Heavenly Basket, boss summon, boss) not started. Boss summon design is deferred, to be discussed.
 
 ## What we did on 2026-10-12
@@ -40,42 +40,47 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - ASSETS.md lists every placeholder and stand-in. DesignRefs/ holds the owner's design images and cut-outs. tools/ holds the scripts that regenerate sprite sheets (need ImageMagick and numpy).
 - All work is committed locally. NOTHING has been pushed since 2026-10-11 (the branch is 36 commits ahead of origin). Never push without the owner saying so.
 
-## Enemy tuning (2026-10-14, owner approved)
-- Knight: health 35000, defense 70, spear damage 140 (contact 150 unchanged). Dragon: health 50000, defense 80 (contact 190, swoop x1.3 unchanged). Aim: 8-15 s to kill at endgame damage; 3 hits kill an unbuffed player. Damage numbers assume Expert/Master (base is scaled up there); owner has not yet said which difficulty they play, so re-check in a playtest. Spawn caps and crystal drops unchanged.
+## What we did on 2026-10-14
 
-- Fall death (2026-10-14, untested): Common/HeavensFallDeath.cs kills the player who falls below Main.worldSurface (row 330, where the cave background starts) in the Heavens.
+### Enemies (owner approved; "now it is a challenge")
+- Knight: health 35000, defense 70, spear damage 140 (contact 150 unchanged). Dragon: health 50000, defense 80 (contact 190, swoop x1.3 unchanged). Aim: 8-15 s to kill at endgame damage; 3 hits kill an unbuffed player. The damage numbers assume Expert/Master (base is scaled up there); the owner has not said which difficulty they play, so re-check if it ever feels soft.
+- Knockback: knight FULLY immune (knockBackResist 0); dragon takes a tiny bit (0.01). (Went 0.15/0.1 to 0.04/0.02 to 0/0, then the owner wanted the dragon to take a little again.)
+- Crystal drops: both enemies drop exactly 1 crystal, 50% of the time (was knight 1 in 3 for 1-2, dragon 1 in 2 for 1-3). Spawn caps unchanged.
+- Knight spear weak homing (owner said "dragon spears" but only the knight throws spears): turns 108 deg/s (first 72, raised at owner request) for the first 1.5 s, stops steering within 140 px, so jumping does not dodge it but a late sidestep does. Constants at the top of Projectiles/HeavenlySpear.cs. Owner: "good job".
+- Dragon: removed the vanilla roar sound from the swoop warning (owner found it annoying). The visual tell (light gathering at the head) is unchanged. NOT yet re-tested.
 
-- Knockback: knight FULLY immune (knockBackResist 0); dragon takes a tiny bit (0.01) (owner, 2026-10-14).
+### Heavens rules and items
+- Fall death: Common/HeavensFallDeath.cs kills the player who falls below Main.worldSurface (row 330, where the cave background starts) in the Heavens. Owner: "good job".
+- Heavens Crystal icon: now the owner's big crystal (DesignRefs/crystal_design.jpg), shrunk to 22x32 and given a Terraria look (no glow, 1 px outline, small palette) by tools/make_crystal_icon.py; item hitbox updated to 22x32. NOT yet seen in-game. Owner may still replace it with hand-made art.
 
-- Crystal drops (2026-10-14, owner): both enemies drop exactly 1 crystal, 50% of the time (was knight 1 in 3 for 1-2, dragon 1 in 2 for 1-3).
-
-- Knight spear weak homing (2026-10-14, untested; owner said "dragon spears" but only the knight throws spears): turns 108 deg/s (raised from 72 at owner request) for the first 1.5 s, stops within 140 px. Constants at the top of Projectiles/HeavenlySpear.cs.
-
-## Atmosphere and island details (2026-10-14, BUILT, NOT YET SEEN IN-GAME)
+### Atmosphere and island details (owner: "the heaven looks great")
 - Sky (Systems/HeavensSky.cs, HeavensSkyTextures.cs): sun with glow and two rotating halo rings, 7 slow light beams, 3 parallax cloud layers, 70 twinkling golden motes. All procedural, no art files.
 - Foreground (Systems/HeavensAmbientSystem.cs): gold sparkle and pink petal dust drifting across the screen.
 - Islands (Subworlds/HeavensTerrainPass.cs): 12 floating rocks of the new Heavens Stone tile, stone spikes under every main island, flowers (3 kinds) on island tops, hanging vines (2 lengths) under islands. New tiles are protected (HeavensSubworld.IsProtectedTile). Art is placeholder (see ASSETS.md; scripts tools/make_stone_sheet.py, make_heavens_plants.py).
-- If anything looks wrong, tune: cloud/beam/mote numbers in HeavensSky.cs, rock list `Rocks` and the spawn chances in ScatterFlowers/HangVines.
-- Music (2026-10-14, untested): the owner's track "Beneath the Spires" is the Heavens theme. Source mp3 kept in DesignRefs/music/; the game uses Assets/Music/Heavens.ogg (made with: ffmpeg -i DesignRefs/music/Beneath_the_Spires.mp3 -af "volume=-3dB" -c:a libvorbis -q:a 6 Assets/Music/Heavens.ogg). The original was -13 LUFS; turned down 3 dB to about -16 LUFS (was 5 dB; owner asked for a bit louder). Music confirmed working in-game 2026-10-14 after raising the scene priority to Event. Change the dB value and re-run to adjust the volume. Hooked up in HeavensSceneEffect.Music. Ambient sounds are still open.
+- To tune: cloud/beam/mote numbers in HeavensSky.cs, the `Rocks` list and the spawn chances in ScatterFlowers/HangVines.
 
-## Not yet tested in-game (test these FIRST tomorrow)
-Everything below compiles but the owner has not confirmed it after the last build:
-1. The trees standing still (Systems/HeavensWindSystem.cs): crowns and branches must not move in the Heavens, and trees in the normal world must still sway after leaving.
-2. The real trees, the golden turf and the bridges as a whole after the last rebuild: no crash on load, trees present on every island, crowns line up with trunks. If trees are missing, check client.log for "Heavens trees: X grown of Y tried".
-3. Knight health +50% (13500) and the dragon spawn weight change.
-Already confirmed by the owner: the statues, the saplings and stumps, the dragon ("absolutely great"), the knight facing and animation, the island look and the golden trees after the rebuild ("good").
+### Music (confirmed working in-game)
+- The owner's track "Beneath the Spires" is the Heavens theme. Source mp3 kept in DesignRefs/music/; the game uses Assets/Music/Heavens.ogg, made with: ffmpeg -i DesignRefs/music/Beneath_the_Spires.mp3 -af "volume=-3dB" -c:a libvorbis -q:a 6 Assets/Music/Heavens.ogg. The original was -13 LUFS; now turned down 3 dB (to about -16 LUFS; it was 5 dB, the owner asked for a bit louder). Change the dB value and re-run to adjust.
+- BUG FOUND AND FIXED: at first the vanilla cave-like music played instead, because HeavensSceneEffect.Priority (BiomeHigh) lost to a higher-priority vanilla effect. It is now SceneEffectPriority.Event (above all vanilla biomes and environments, below the bosses). When the boss fight is built, its music must use a boss priority to take over. Ambient sounds are still open.
+
+### Process
+- Everything above is committed locally (nothing pushed). ROADMAP.md status block updated.
+
+## Not yet tested in-game
+Compiles and was loaded, but the owner has not explicitly confirmed:
+1. Trees standing still in the Heavens, and swaying again in the normal world after leaving (Systems/HeavensWindSystem.cs).
+2. The dragon without its roar; the new crystal icon in the inventory and on the ground.
+3. Crystal drop rate feel (1 crystal, 50%): decide together with the Basket design.
+Confirmed by the owner this session: enemy tuning, knockback, spear homing, fall death, the atmosphere and island details, the music.
 Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
 
-## To finish tomorrow (suggested order)
-1. Rebuild and test the list above; fix anything broken.
-2. Tune the enemies together: health, damage, spawn rates and caps, crystal drop chances (the owner wants to decide these now that both enemies exist).
-3. Atmosphere pass (needs nothing from the owner): drifting clouds, light beams, falling petals or sparkles, a layered parallax sky background, a sun or halo.
-4. More island detail: floating rocks, flowers, vines, variety. The floating canopy puff and leafy branch from the owner's tree sheet are saved in DesignRefs (tree_puff.png, tree_branch.png) and could become floating decorations.
-5. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
-6. Audio: Heavens music and ambient sounds (needs tracks from the owner; vanilla Space music plays until then).
-7. Owner decisions still open: the dragon's debuff (fire does not match its golden-blue look; a holy or light effect may suit it), whether a third enemy type is wanted, the crystal's final design, and whether to send a bark close-up so the trunk art can match their style.
-8. Performance check (frame rate, load time), then mark Phase 2C complete and plan Phase 3 (the Heavenly Basket: how many crystals fill it, whether it resets, what happens on defeat, where it stands, its look).
-Real art still wanted whenever the owner has it (all currently generated placeholders): turf tile, tree bark, bridge posts, crystal sprite. See ASSETS.md.
+## To finish next (suggested order)
+1. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
+2. Ambient sounds (wind, chimes): needs sounds from the owner, or a pick from vanilla ones.
+3. Floating canopy puffs and leafy branches (DesignRefs: tree_puff.png, tree_branch.png) as extra floating decorations, if wanted.
+4. Owner decisions still open: the dragon's debuff (fire does not match its golden-blue look; a holy or light effect may suit it), whether a third enemy type is wanted, and whether to send a bark close-up so the trunk art can match their style.
+5. Performance check (frame rate, load time), then mark Phase 2C complete and plan Phase 3 (the Heavenly Basket: how many crystals fill it, whether it resets, what happens on defeat, where it stands, its look).
+Real art still wanted whenever the owner has it (generated placeholders): turf tile, stone tile, tree bark, bridge posts, flowers, vines. The crystal now uses the owner's design. See ASSETS.md.
 
 ## Decisions (keep)
 - SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Multiplayer testing (old 2.6) moved to the "Multiplayer upgrade" step in Phase 8, after the boss works. Keep server-authoritative habits (logic on the server; only visuals, sound and UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. Before the upgrade: check that the dedicated server's hardware can run tModLoader (ARM support, spare RAM for SubworldLibrary's extra process) and keep SubworldLibrary versions matching.
