@@ -96,7 +96,9 @@ namespace MotherOfTerraria.Common
 		private const int Seconds = 60;
 		private const int MiracleAt = 10 * Seconds;     // chat: "A heavenly miracle is upon us"
 		private const int ShakeAt = 15 * Seconds;       // the screen shakes
-		private const int ShakeFor = 2 * Seconds;       // ... for 2 seconds
+		private const int ShakeAgainAt = 22 * Seconds;  // ... again
+		private const int ShakeLastAt = 28 * Seconds;   // ... and once more, until the boss spawns
+		private const int ShakeFor = 2 * Seconds;       // each shake lasts 2 seconds
 		private const int ProtectAt = 20 * Seconds;     // chat: "The mother of this world will protect us all"
 		private const int AsSheIsAt = 25 * Seconds;     // chat: "As she is.... The Mother of Terraria"
 		private const int BossSpawnAt = 30 * Seconds;   // the boss spawns
@@ -123,6 +125,8 @@ namespace MotherOfTerraria.Common
 					Main.NewText("A heavenly miracle is upon us", Gold);
 					break;
 				case ShakeAt:
+				case ShakeAgainAt:
+				case ShakeLastAt:
 					// One camera "punch" that rattles the screen for 2 seconds.
 					Main.instance.CameraModifiers.Add(new PunchCameraModifier(Player.Center, Vector2.UnitY, 7f, 14f, ShakeFor, -1f, "MotherOfTerraria:BasketShake"));
 					SoundEngine.PlaySound(SoundID.Item119, Player.Center);
