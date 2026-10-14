@@ -135,16 +135,11 @@ namespace MotherOfTerraria.NPCs.Heavens
 			}
 		}
 
-		// The warning: it slows, roars, and golden-blue light streams into its head. Get ready to dodge sideways.
+		// The warning: it slows and golden-blue light streams into its head. Get ready to dodge sideways.
 		private void DoTelegraph()
 		{
 			NPC.velocity *= 0.9f;
 			Vector2 head = HeadPosition();
-
-			if (Timer == 0)
-			{
-				SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
-			}
 
 			for (int i = 0; i < 2; i++)
 			{
