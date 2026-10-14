@@ -86,10 +86,12 @@ namespace MotherOfTerraria.Subworlds
 		private static readonly (Island On, int X)[] Statues =
 		{
 			(Arrival, 95), (Arrival, 185),
-			(High, 330),
 			(Low, 335),
 			(Arena, 490), (Arena, 590),
 		};
+
+		// The Heavenly Basket stands in the middle of the top central island (where a statue used to be).
+		private static readonly (Island On, int X) BasketSite = (High, 330);
 
 		// "Heavens Terrain" is the step name shown in logs; the number is its rough weight for the progress bar.
 		public HeavensTerrainPass() : base("Heavens Terrain", 1) { }
@@ -146,6 +148,7 @@ namespace MotherOfTerraria.Subworlds
 			{
 				PlaceObject(on, x, Kind.Statue);
 			}
+			PlaceObject(BasketSite.On, BasketSite.X, Kind.Basket);
 			foreach (var (x, y) in bridgeColumns)
 			{
 				WorldGen.PlaceObject(x, y - 1, ModContent.TileType<GoldenBridgePost>(), true);
@@ -315,6 +318,7 @@ namespace MotherOfTerraria.Subworlds
 			Statue,
 			Sapling,
 			Stump,
+			Basket,
 		}
 
 		private static (int Type, int Width, int Height) Describe(Kind what)
@@ -323,6 +327,8 @@ namespace MotherOfTerraria.Subworlds
 			{
 				case Kind.Sapling:
 					return (ModContent.TileType<HeavenlySapling>(), HeavenlySapling.TilesWide, HeavenlySapling.TilesHigh);
+				case Kind.Basket:
+					return (ModContent.TileType<HeavenlyBasket>(), HeavenlyBasket.TilesWide, HeavenlyBasket.TilesHigh);
 				case Kind.Stump:
 					return (ModContent.TileType<HeavenlyStump>(), HeavenlyStump.TilesWide, HeavenlyStump.TilesHigh);
 				default:
@@ -394,6 +400,10 @@ namespace MotherOfTerraria.Subworlds
 		// True if a statue stands within `margin` tiles (plus half the statue's width) of this column.
 		private static bool NearStatue(int x, int margin)
 		{
+			if (Math.Abs(BasketSite.X - x) <= HeavenlyBasket.TilesWide / 2 + margin)
+			{
+				return true; // the Basket keeps trees and saplings away just like a statue
+			}
 			foreach (var (_, sx) in Statues)
 			{
 				if (Math.Abs(sx - x) <= GoldenStatue.TilesWide / 2 + margin)

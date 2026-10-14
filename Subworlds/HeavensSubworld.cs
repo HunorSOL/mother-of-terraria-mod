@@ -54,6 +54,7 @@ namespace MotherOfTerraria.Subworlds
 				|| type == ModContent.TileType<HeavensTurf>()
 				|| type == ModContent.TileType<HeavenlySapling>()
 				|| type == ModContent.TileType<HeavenlyStump>()
+				|| type == ModContent.TileType<HeavenlyBasket>()
 				|| type == ModContent.TileType<HeavensStone>()
 				|| type == ModContent.TileType<HeavenlyFlowerBlue>()
 				|| type == ModContent.TileType<HeavenlyFlowerGold>()

@@ -7,7 +7,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
 - Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Items skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up). Previous status: nearly done: enemies (tuned), island look, atmosphere, island details and the theme music are built and the owner has seen them in-game. Ambient creatures, the arrival gateway, ambient sounds, performance check and the open owner decisions remain.
-- Phase 3 onward (pylon/Heavenly Basket, boss summon, boss) not started. Boss summon design is deferred, to be discussed.
+- Phase 3 (the Heavenly Basket) BUILT 2026-10-14, awaiting the owner's in-game test (see "Phase 3" below). Phase 4 onward (summon sequence, boss) not started.
 
 ## What we did on 2026-10-12
 
@@ -65,6 +65,14 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - The owner's track "Beneath the Spires" is the Heavens theme. Source mp3 kept in DesignRefs/music/; the game uses Assets/Music/Heavens.ogg, made with: ffmpeg -i DesignRefs/music/Beneath_the_Spires.mp3 -af "volume=-3dB" -c:a libvorbis -q:a 6 Assets/Music/Heavens.ogg. The original was -13 LUFS; now turned down 3 dB (to about -16 LUFS; it was 5 dB, the owner asked for a bit louder). Change the dB value and re-run to adjust.
 - BUG FOUND AND FIXED: at first the vanilla cave-like music played instead, because HeavensSceneEffect.Priority (BiomeHigh) lost to a higher-priority vanilla effect. It is now SceneEffectPriority.Event (above all vanilla biomes and environments, below the bosses). When the boss fight is built, its music must use a boss priority to take over. Ambient sounds are still open.
 
+### Phase 3: the Heavenly Basket (BUILT, NOT YET TESTED IN-GAME)
+- Owner decisions (2026-10-14): 50 crystals fill it; crystals stay in the Basket until it is full; they are only lost if the fight was started and lost; it stands in the centre of the top central island (the High island, x=330; I read "the centre top island" this way, so check it is the island the owner meant); it replaces the pylon; placeholder art for now (the owner is sending a design).
+- Built: Tiles/HeavenlyBasket (4x3 tiles, in Tiles/HeavensObjectTile.cs), placed by the terrain pass in place of the High island's old centre statue (trees and saplings keep clear of it). Right-click puts in the crystals you carry (up to what is missing); hovering shows the crystal icon and "n/50"; it glows brighter as it fills; protected from breaking.
+- Fill is stored per player in Common/HeavenlyBasketPlayer.cs (saved with the character). When it reaches 50 the PLACEHOLDER fight starts (chat message and sound); the Basket refuses crystals while a fight is running, so it fires once per attempt. The fight ends as a loss if the player dies, leaves the Heavens, or quits the game mid-fight (crystals reset to 0). With no boss yet, the placeholder fight ends as a WIN after 60 s (also resets to 0). The boss code (Phase 5) must call HeavenlyBasketPlayer.EndFight(won) instead of the timer; Phase 4 replaces StartFight with the real summon sequence.
+- ASSUMPTION to confirm with the owner: a WIN also empties the Basket (otherwise the boss could be re-summoned forever), and leaving the Heavens mid-fight counts as a loss (otherwise leaving would dodge the loss).
+- SINGLEPLAYER-ONLY: the fill and fight state live on the local player; multiplayer needs them moved to the server (Phase 8).
+- Debug: the Debug Starter Kit now also gives 50 Heavens Crystals.
+
 ### Process
 - Everything above is committed locally (nothing pushed). ROADMAP.md status block updated.
 
@@ -76,7 +84,7 @@ Compiles and was loaded, but the owner has not explicitly confirmed:
 Confirmed by the owner this session: enemy tuning, knockback, spear homing, fall death, the atmosphere and island details, the music.
 Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
 
-## Next: Phase 3 (the Heavenly Basket); the list below is the leftover 2C wish list, optional and can be picked up any time
+## Next: test Phase 3, then Phase 4 (summon sequence); the list below is the leftover 2C wish list, optional and can be picked up any time
 1. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
 2. Ambient sounds (wind, chimes): needs sounds from the owner, or a pick from vanilla ones.
 3. Floating canopy puffs and leafy branches (DesignRefs: tree_puff.png, tree_branch.png) as extra floating decorations, if wanted.

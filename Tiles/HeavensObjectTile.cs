@@ -1,9 +1,12 @@
 using Microsoft.Xna.Framework;
+using MotherOfTerraria.Common;
+using MotherOfTerraria.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.GameContent.ObjectInteractions;
 using Terraria.ObjectData;
 
 namespace MotherOfTerraria.Tiles
@@ -151,5 +154,48 @@ namespace MotherOfTerraria.Tiles
 		protected override int ObjectHeight => 4;
 		protected override bool Hanging => true;
 		protected override Vector3 Glow => new Vector3(0.1f, 0.2f, 0.3f);
+	}
+
+	// The Heavenly Basket (4x3 tiles, PLACEHOLDER art): right-click it to put in Heavens Crystals.
+	// When it holds 50, the summon fight starts (see Common/HeavenlyBasketPlayer). It glows brighter as it fills.
+	public class HeavenlyBasket : HeavensObjectTile
+	{
+		public const int TilesWide = 4;
+		public const int TilesHigh = 3;
+
+		protected override int ObjectWidth => TilesWide;
+		protected override int ObjectHeight => TilesHigh;
+
+		public override void SetStaticDefaults()
+		{
+			base.SetStaticDefaults();
+			TileID.Sets.HasOutlines[Type] = true; // shows the interaction outline when the mouse is over it
+		}
+
+		public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
+
+		public override bool RightClick(int i, int j)
+		{
+			Main.LocalPlayer.GetModPlayer<HeavenlyBasketPlayer>().TryDeposit();
+			return true;
+		}
+
+		public override void MouseOver(int i, int j)
+		{
+			Player player = Main.LocalPlayer;
+			player.noThrow = 2;
+			player.cursorItemIconEnabled = true;
+			player.cursorItemIconID = ModContent.ItemType<HeavensCrystal>();
+			player.cursorItemIconText = $"{player.GetModPlayer<HeavenlyBasketPlayer>().Crystals}/{HeavenlyBasketPlayer.CrystalsNeeded}";
+		}
+
+		// Dim when empty, bright blue-gold when full.
+		public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+		{
+			float fill = Main.LocalPlayer.GetModPlayer<HeavenlyBasketPlayer>().Crystals / (float)HeavenlyBasketPlayer.CrystalsNeeded;
+			r = 0.15f + 0.6f * fill;
+			g = 0.2f + 0.6f * fill;
+			b = 0.3f + 0.6f * fill;
+		}
 	}
 }

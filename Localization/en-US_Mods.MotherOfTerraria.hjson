@@ -23,7 +23,7 @@ Items: {
 		Tooltip:
 			'''
 			TESTING ONLY. Remove before release.
-			Gives a Celestial Sigil, a Copper Shortsword and a Heavenly Teleporter.
+			Gives a Celestial Sigil, a Copper Shortsword, a Heavenly Teleporter and 50 Heavens Crystals.
 			'''
 	}
 }
@@ -35,6 +35,7 @@ Tiles: {
 	HeavenlyStump.MapEntry: Heavenly Stump
 	HeavensTurf.MapEntry: Heavens Turf
 	HeavensStone.MapEntry: Heavens Stone
+	HeavenlyBasket.MapEntry: Heavenly Basket
 	HeavenlyFlowerBlue.MapEntry: Heavenly Flower
 	HeavenlyFlowerGold.MapEntry: Heavenly Flower
 	HeavenlyFlowerPink.MapEntry: Heavenly Flower
