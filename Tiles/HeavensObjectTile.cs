@@ -159,7 +159,7 @@ namespace MotherOfTerraria.Tiles
 	}
 
 	// The Heavenly Basket (8x9 tiles, the owner's design): right-click it to put in Heavens Crystals.
-	// When it holds 50, the summon fight starts (see Common/HeavenlyBasketPlayer). The light in its bowl gets
+	// When it is full (30 crystals), the summon fight starts (see Common/HeavenlyBasketPlayer). The light in its bowl gets
 	// brighter as it fills: the base art has the light dimmed, and Tiles/HeavenlyBasket_Glow.png (the same sheet with
 	// only the light) is drawn on top in proportion to the fill, plus a soft orb and rising sparkles.
 	// Art is made by tools/make_basket_sprite.py from DesignRefs/basket_design.jpg.
@@ -198,7 +198,7 @@ namespace MotherOfTerraria.Tiles
 		}
 
 		// How full the local player's Basket is, from 0 to 1.
-		private static float Fill => Main.LocalPlayer.GetModPlayer<HeavenlyBasketPlayer>().Crystals / (float)HeavenlyBasketPlayer.CrystalsNeeded;
+		private static float Fill => MathHelper.Clamp(Main.LocalPlayer.GetModPlayer<HeavenlyBasketPlayer>().Crystals / (float)HeavenlyBasketPlayer.CrystalsNeeded, 0f, 1f);
 
 		private static bool IsTopLeft(int i, int j) => Main.tile[i, j].TileFrameX == 0 && Main.tile[i, j].TileFrameY == 0;
 

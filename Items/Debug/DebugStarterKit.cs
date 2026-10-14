@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 namespace MotherOfTerraria.Items.Debug
 {
 	// TESTING ONLY - delete this item (and its texture) before release.
-	// Using it gives you the Celestial Sigil, a Copper Shortsword, a Heavenly Teleporter and 50 Heavens Crystals,
+	// Using it gives you the Celestial Sigil, a Copper Shortsword, a Heavenly Teleporter and 30 Heavens Crystals,
 	// so you can test the crafting chain without beating Moon Lord.
 	// Texture: Items/Debug/DebugStarterKit.png
 	public class DebugStarterKit : ModItem
@@ -43,7 +43,7 @@ namespace MotherOfTerraria.Items.Debug
 			player.QuickSpawnItem(source, ItemID.CelestialSigil);
 			player.QuickSpawnItem(source, ItemID.CopperShortsword);
 			player.QuickSpawnItem(source, ModContent.ItemType<HeavenlyTeleporter>());
-			player.QuickSpawnItem(source, ModContent.ItemType<HeavensCrystal>(), 50); // enough to fill the Heavenly Basket
+			player.QuickSpawnItem(source, ModContent.ItemType<HeavensCrystal>(), 30); // enough to fill the Heavenly Basket
 			return true;
 		}
 	}

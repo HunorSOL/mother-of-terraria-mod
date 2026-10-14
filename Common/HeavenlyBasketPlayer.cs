@@ -13,7 +13,7 @@ namespace MotherOfTerraria.Common
 	// A ModPlayer is data and code attached to each player; it is saved with the character.
 	//
 	// The rules (owner, 2026-10-14):
-	//  - the Basket needs 50 crystals;
+	//  - the Basket needs 30 crystals;
 	//  - crystals put in STAY in the Basket (leaving the Heavens or quitting the game does not empty it);
 	//  - when it is full the fight starts (PLACEHOLDER for now: Phase 4 adds the real summon sequence, Phase 5 the boss);
 	//  - the Basket empties ONLY when the boss is killed, or when the boss disappears because the player died.
@@ -23,7 +23,7 @@ namespace MotherOfTerraria.Common
 	// move to the server (shared or per-player), with the boss spawn done server-side (see Phase 8).
 	public class HeavenlyBasketPlayer : ModPlayer
 	{
-		public const int CrystalsNeeded = 50;
+		public const int CrystalsNeeded = 30; // owner: was 50, changed to 30 on 2026-10-14
 
 		public int Crystals;
 		public bool FightActive; // not saved: it only lasts while the fight is running in this session
