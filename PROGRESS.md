@@ -6,7 +6,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 ## Where we are
 - Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
-- Phase 2C (Heavens details and polish) IN PROGRESS and nearly done: enemies (tuned), island look, atmosphere, island details and the theme music are built and the owner has seen them in-game. Ambient creatures, the arrival gateway, ambient sounds, performance check and the open owner decisions remain.
+- Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Items skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up). Previous status: nearly done: enemies (tuned), island look, atmosphere, island details and the theme music are built and the owner has seen them in-game. Ambient creatures, the arrival gateway, ambient sounds, performance check and the open owner decisions remain.
 - Phase 3 onward (pylon/Heavenly Basket, boss summon, boss) not started. Boss summon design is deferred, to be discussed.
 
 ## What we did on 2026-10-12
@@ -76,7 +76,7 @@ Compiles and was loaded, but the owner has not explicitly confirmed:
 Confirmed by the owner this session: enemy tuning, knockback, spear homing, fall death, the atmosphere and island details, the music.
 Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
 
-## To finish next (suggested order)
+## Next: Phase 3 (the Heavenly Basket); the list below is the leftover 2C wish list, optional and can be picked up any time
 1. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
 2. Ambient sounds (wind, chimes): needs sounds from the owner, or a pick from vanilla ones.
 3. Floating canopy puffs and leafy branches (DesignRefs: tree_puff.png, tree_branch.png) as extra floating decorations, if wanted.
