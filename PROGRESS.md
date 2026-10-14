@@ -47,6 +47,8 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 
 - Knockback: knight FULLY immune (knockBackResist 0); dragon takes a little (0.05) (owner, 2026-10-14).
 
+- Crystal drops (2026-10-14, owner): both enemies drop exactly 1 crystal, 50% of the time (was knight 1 in 3 for 1-2, dragon 1 in 2 for 1-3).
+
 ## Not yet tested in-game (test these FIRST tomorrow)
 Everything below compiles but the owner has not confirmed it after the last build:
 1. The trees standing still (Systems/HeavensWindSystem.cs): crowns and branches must not move in the Heavens, and trees in the normal world must still sway after leaving.

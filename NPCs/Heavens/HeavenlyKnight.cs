@@ -247,7 +247,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 		// Drops: a chance (placeholder: 1 in 3) of 1 to 2 Heavens Crystals.
 		public override void ModifyNPCLoot(NPCLoot npcLoot)
 		{
-			npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeavensCrystal>(), 3, 1, 2));
+			npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeavensCrystal>(), 2, 1, 1));
 		}
 	}
 }

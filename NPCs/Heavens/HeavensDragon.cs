@@ -260,7 +260,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 		// Drops: a better chance than the knight (placeholder: 1 in 2) of 1 to 3 Heavens Crystals.
 		public override void ModifyNPCLoot(NPCLoot npcLoot)
 		{
-			npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeavensCrystal>(), 2, 1, 3));
+			npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<HeavensCrystal>(), 2, 1, 1));
 		}
 	}
 }
