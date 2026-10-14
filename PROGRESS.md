@@ -45,7 +45,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 
 - Fall death (2026-10-14, untested): Common/HeavensFallDeath.cs kills the player who falls below Main.worldSurface (row 330, where the cave background starts) in the Heavens.
 
-- Knockback: knight FULLY immune (knockBackResist 0); dragon takes a little (0.05) (owner, 2026-10-14).
+- Knockback: knight FULLY immune (knockBackResist 0); dragon takes a tiny bit (0.01) (owner, 2026-10-14).
 
 - Crystal drops (2026-10-14, owner): both enemies drop exactly 1 crystal, 50% of the time (was knight 1 in 3 for 1-2, dragon 1 in 2 for 1-3).
 
