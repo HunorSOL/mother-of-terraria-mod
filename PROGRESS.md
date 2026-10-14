@@ -56,7 +56,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - Foreground (Systems/HeavensAmbientSystem.cs): gold sparkle and pink petal dust drifting across the screen.
 - Islands (Subworlds/HeavensTerrainPass.cs): 12 floating rocks of the new Heavens Stone tile, stone spikes under every main island, flowers (3 kinds) on island tops, hanging vines (2 lengths) under islands. New tiles are protected (HeavensSubworld.IsProtectedTile). Art is placeholder (see ASSETS.md; scripts tools/make_stone_sheet.py, make_heavens_plants.py).
 - If anything looks wrong, tune: cloud/beam/mote numbers in HeavensSky.cs, rock list `Rocks` and the spawn chances in ScatterFlowers/HangVines.
-- Owner is working on the Heavens music (real track will replace vanilla Space in HeavensSceneEffect.Music).
+- Music (2026-10-14, untested): the owner's track "Beneath the Spires" is the Heavens theme. Source mp3 kept in DesignRefs/music/; the game uses Assets/Music/Heavens.ogg (made with: ffmpeg -i DesignRefs/music/Beneath_the_Spires.mp3 -af "volume=-5dB" -c:a libvorbis -q:a 6 Assets/Music/Heavens.ogg). The original was -13 LUFS; turned down 5 dB to about -18 LUFS, like vanilla music. Change the dB value and re-run to adjust the volume. Hooked up in HeavensSceneEffect.Music. Ambient sounds are still open.
 
 ## Not yet tested in-game (test these FIRST tomorrow)
 Everything below compiles but the owner has not confirmed it after the last build:

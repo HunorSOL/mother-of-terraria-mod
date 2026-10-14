@@ -22,10 +22,10 @@ namespace MotherOfTerraria.Systems
 		// No mountains or hills behind the islands: this is the sky.
 		public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.GetInstance<HeavensBackgroundStyle>();
 
-		// MUSIC SLOT (placeholder): vanilla Space music for now.
-		// To use a real track later, put an .ogg/.wav/.mp3 in the mod and return
-		// MusicLoader.GetMusicSlot(Mod, "Assets/Music/Heavens") here instead.
-		public override int Music => MusicID.Space;
+		// The Heavens theme ("Beneath the Spires", from the owner). Assets/Music/Heavens.ogg was made from
+		// DesignRefs/music/Beneath_the_Spires.mp3 and turned down 5 dB (about -18 LUFS, like vanilla music).
+		// To change the volume, re-run the ffmpeg command noted in PROGRESS.md with a different dB value.
+		public override int Music => MusicLoader.GetMusicSlot(Mod, "Assets/Music/Heavens");
 
 		// Turns the custom sky on while the player is in the Heavens, and off otherwise.
 		// (Not Player.ManageSpecialBiomeVisuals: that also expects a screen filter registered under the
