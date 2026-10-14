@@ -63,6 +63,15 @@ namespace MotherOfTerraria.Subworlds
 			new(425, 178, 16, 7, 1),
 		};
 
+		// Floating rocks of pale stone in the open sky: centre column, top row, half-width, depth. They taper to a point
+		// underneath. Placed by hand in the gaps between the islands and above them, clear of the bridges.
+		private static readonly (int Cx, int Top, int HalfWidth, int Depth)[] Rocks =
+		{
+			(200, 172, 7, 11), (252, 118, 5, 8), (398, 112, 6, 10), (470, 148, 5, 8),
+			(520, 92, 8, 12), (565, 190, 6, 9), (95, 108, 5, 8), (180, 92, 4, 6),
+			(662, 205, 5, 8), (300, 88, 4, 7), (375, 190, 4, 6), (28, 205, 4, 6),
+		};
+
 		// Bridges run from the right edge of one island to the left edge of the next.
 		private static readonly (Island From, Island To)[] Bridges =
 		{
@@ -102,6 +111,15 @@ namespace MotherOfTerraria.Subworlds
 			foreach (Island island in Floaters)
 			{
 				BuildIsland(island);
+			}
+			progress.Message = "Hanging the floating rocks";
+			foreach (var (cx, top, half, depth) in Rocks)
+			{
+				BuildRock(cx, top, half, depth);
+			}
+			foreach (Island island in MainIslands)
+			{
+				BuildUndersideRocks(island);
 			}
 			progress.Set(0.25f);
 
@@ -167,6 +185,18 @@ namespace MotherOfTerraria.Subworlds
 				}
 			}
 			Mod.Logger.Info($"Heavens trees: {grown} grown of {tried} tried.");
+
+			progress.Message = "Scattering flowers and vines";
+			foreach (Island island in MainIslands)
+			{
+				ScatterFlowers(island);
+				HangVines(island);
+			}
+			foreach (Island island in Floaters)
+			{
+				ScatterFlowers(island);
+				HangVines(island);
+			}
 			progress.Set(1f);
 
 			// Players arrive on the grand arrival island, between its two statues.
@@ -185,6 +215,90 @@ namespace MotherOfTerraria.Subworlds
 				for (int k = 0; k < depth; k++)
 				{
 					SetTile(x, top + k, k == 0 ? Turf : TileID.Cloud);
+				}
+			}
+		}
+
+		// A floating rock: a wide flat top that tapers to a point underneath, in pale stone.
+		private static void BuildRock(int cx, int top, int halfWidth, int depth)
+		{
+			int stone = ModContent.TileType<HeavensStone>();
+			for (int x = cx - halfWidth; x <= cx + halfWidth; x++)
+			{
+				double d = Math.Abs(x - cx) / (double)(halfWidth + 1);
+				int thickness = Math.Max(1, (int)Math.Round(depth * (1 - d)));
+				// A slightly ragged top edge, so the rock does not look machine-cut.
+				int ragged = WorldGen.genRand.Next(0, 2);
+				for (int k = ragged; k < thickness; k++)
+				{
+					SetTile(x, top + k, stone);
+				}
+			}
+		}
+
+		// Stone spikes hanging from the underside of an island, at a few fixed fractions of its width.
+		private static void BuildUndersideRocks(Island island)
+		{
+			int stone = ModContent.TileType<HeavensStone>();
+			double[] fractions = { 0.18, 0.37, 0.58, 0.8 };
+			foreach (double f in fractions)
+			{
+				int x = island.Left + (int)(f * (island.Right - island.Left));
+				int start = island.SurfaceY(x) + island.Depth(x);
+				int length = 5 + WorldGen.genRand.Next(0, 6);
+				for (int k = 0; k < length; k++)
+				{
+					int halfWidth = Math.Max(0, (length - k) / 3);
+					for (int dx = -halfWidth; dx <= halfWidth; dx++)
+					{
+						SetTile(x + dx, start + k - 1, stone);
+					}
+				}
+			}
+		}
+
+		// Flowers along the island top: roughly every third column, skipping the middle of the arena.
+		private static void ScatterFlowers(Island island)
+		{
+			int[] types =
+			{
+				ModContent.TileType<HeavenlyFlowerBlue>(),
+				ModContent.TileType<HeavenlyFlowerGold>(),
+				ModContent.TileType<HeavenlyFlowerPink>(),
+			};
+			for (int x = island.Left + 3; x <= island.Right - 3; x++)
+			{
+				if (island.Arena && x - island.Left > 30 && island.Right - x > 30)
+				{
+					continue;
+				}
+				if (WorldGen.genRand.Next(3) != 0)
+				{
+					continue;
+				}
+				int ground = island.SurfaceY(x);
+				if (Main.tile[x, ground].HasTile && Main.tile[x, ground].TileType == Turf && !Main.tile[x, ground - 1].HasTile)
+				{
+					WorldGen.PlaceObject(x, ground - 1, types[WorldGen.genRand.Next(types.Length)], true);
+				}
+			}
+		}
+
+		// Vines hanging from the underside of an island, about every fifth column.
+		private static void HangVines(Island island)
+		{
+			int shortVine = ModContent.TileType<HeavenlyVineShort>();
+			int longVine = ModContent.TileType<HeavenlyVineLong>();
+			for (int x = island.Left + 4; x <= island.Right - 4; x++)
+			{
+				if (WorldGen.genRand.Next(5) != 0)
+				{
+					continue;
+				}
+				int below = island.SurfaceY(x) + island.Depth(x); // first row under the island
+				if (Main.tile[x, below - 1].HasTile && !Main.tile[x, below].HasTile)
+				{
+					WorldGen.PlaceObject(x, below, WorldGen.genRand.NextBool() ? shortVine : longVine, true);
 				}
 			}
 		}

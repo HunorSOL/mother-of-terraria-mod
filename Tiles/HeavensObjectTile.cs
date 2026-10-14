@@ -21,6 +21,9 @@ namespace MotherOfTerraria.Tiles
 		// Bridge posts stand on golden platforms, so they accept a platform as their base too.
 		protected virtual bool CanStandOnPlatform => false;
 
+		// Hanging objects (vines) hang from the underside of a solid block instead of standing on top of one.
+		protected virtual bool Hanging => false;
+
 		// A soft golden glow around the object (red, green, blue strengths).
 		protected virtual Vector3 Glow => new Vector3(0.55f, 0.42f, 0.08f);
 
@@ -39,14 +42,22 @@ namespace MotherOfTerraria.Tiles
 			TileObjectData.newTile.CoordinateHeights = heights;
 			TileObjectData.newTile.CoordinateWidth = 16;
 			TileObjectData.newTile.CoordinatePadding = 2;
-			TileObjectData.newTile.Origin = new Point16(ObjectWidth / 2, ObjectHeight - 1); // bottom-middle tile
+			// The origin is the bottom-middle tile (top-middle for hanging objects).
+			TileObjectData.newTile.Origin = new Point16(ObjectWidth / 2, Hanging ? 0 : ObjectHeight - 1);
 			TileObjectData.newTile.UsesCustomCanPlace = true;
 			AnchorType anchor = AnchorType.SolidTile | AnchorType.SolidWithTop;
 			if (CanStandOnPlatform)
 			{
 				anchor |= AnchorType.Platform;
 			}
-			TileObjectData.newTile.AnchorBottom = new AnchorData(anchor, ObjectWidth, 0);
+			if (Hanging)
+			{
+				TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile, ObjectWidth, 0);
+			}
+			else
+			{
+				TileObjectData.newTile.AnchorBottom = new AnchorData(anchor, ObjectWidth, 0);
+			}
 			TileObjectData.newTile.LavaDeath = false;
 			TileObjectData.addTile(Type);
 
@@ -101,5 +112,44 @@ namespace MotherOfTerraria.Tiles
 		protected override int ObjectHeight => 3;
 		protected override bool CanStandOnPlatform => true;
 		protected override Vector3 Glow => new Vector3(0.35f, 0.55f, 0.8f); // the orb glows blue-white
+	}
+
+	// Small glowing flowers that grow on the island tops (placeholder art).
+	public class HeavenlyFlowerBlue : HeavensObjectTile
+	{
+		protected override int ObjectWidth => 1;
+		protected override int ObjectHeight => 1;
+		protected override Vector3 Glow => new Vector3(0.12f, 0.2f, 0.32f);
+	}
+
+	public class HeavenlyFlowerGold : HeavensObjectTile
+	{
+		protected override int ObjectWidth => 1;
+		protected override int ObjectHeight => 2;
+		protected override Vector3 Glow => new Vector3(0.35f, 0.28f, 0.08f);
+	}
+
+	public class HeavenlyFlowerPink : HeavensObjectTile
+	{
+		protected override int ObjectWidth => 1;
+		protected override int ObjectHeight => 1;
+		protected override Vector3 Glow => new Vector3(0.3f, 0.15f, 0.22f);
+	}
+
+	// Vines that hang from the undersides of the islands, ending in a glowing bud (placeholder art).
+	public class HeavenlyVineShort : HeavensObjectTile
+	{
+		protected override int ObjectWidth => 1;
+		protected override int ObjectHeight => 2;
+		protected override bool Hanging => true;
+		protected override Vector3 Glow => new Vector3(0.1f, 0.2f, 0.3f);
+	}
+
+	public class HeavenlyVineLong : HeavensObjectTile
+	{
+		protected override int ObjectWidth => 1;
+		protected override int ObjectHeight => 4;
+		protected override bool Hanging => true;
+		protected override Vector3 Glow => new Vector3(0.1f, 0.2f, 0.3f);
 	}
 }

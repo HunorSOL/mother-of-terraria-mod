@@ -34,6 +34,12 @@ Tiles: {
 	HeavenlySapling.MapEntry: Heavenly Sapling
 	HeavenlyStump.MapEntry: Heavenly Stump
 	HeavensTurf.MapEntry: Heavens Turf
+	HeavensStone.MapEntry: Heavens Stone
+	HeavenlyFlowerBlue.MapEntry: Heavenly Flower
+	HeavenlyFlowerGold.MapEntry: Heavenly Flower
+	HeavenlyFlowerPink.MapEntry: Heavenly Flower
+	HeavenlyVineShort.MapEntry: Heavenly Vine
+	HeavenlyVineLong.MapEntry: Heavenly Vine
 }
 
 NPCs: {

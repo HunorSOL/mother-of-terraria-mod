@@ -51,6 +51,13 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 
 - Knight spear weak homing (2026-10-14, untested; owner said "dragon spears" but only the knight throws spears): turns 108 deg/s (raised from 72 at owner request) for the first 1.5 s, stops within 140 px. Constants at the top of Projectiles/HeavenlySpear.cs.
 
+## Atmosphere and island details (2026-10-14, BUILT, NOT YET SEEN IN-GAME)
+- Sky (Systems/HeavensSky.cs, HeavensSkyTextures.cs): sun with glow and two rotating halo rings, 7 slow light beams, 3 parallax cloud layers, 70 twinkling golden motes. All procedural, no art files.
+- Foreground (Systems/HeavensAmbientSystem.cs): gold sparkle and pink petal dust drifting across the screen.
+- Islands (Subworlds/HeavensTerrainPass.cs): 12 floating rocks of the new Heavens Stone tile, stone spikes under every main island, flowers (3 kinds) on island tops, hanging vines (2 lengths) under islands. New tiles are protected (HeavensSubworld.IsProtectedTile). Art is placeholder (see ASSETS.md; scripts tools/make_stone_sheet.py, make_heavens_plants.py).
+- If anything looks wrong, tune: cloud/beam/mote numbers in HeavensSky.cs, rock list `Rocks` and the spawn chances in ScatterFlowers/HangVines.
+- Owner is working on the Heavens music (real track will replace vanilla Space in HeavensSceneEffect.Music).
+
 ## Not yet tested in-game (test these FIRST tomorrow)
 Everything below compiles but the owner has not confirmed it after the last build:
 1. The trees standing still (Systems/HeavensWindSystem.cs): crowns and branches must not move in the Heavens, and trees in the normal world must still sway after leaving.
