@@ -40,6 +40,9 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - ASSETS.md lists every placeholder and stand-in. DesignRefs/ holds the owner's design images and cut-outs. tools/ holds the scripts that regenerate sprite sheets (need ImageMagick and numpy).
 - All work is committed locally. NOTHING has been pushed since 2026-10-11 (the branch is 36 commits ahead of origin). Never push without the owner saying so.
 
+## Enemy tuning (2026-10-14, owner approved)
+- Knight: health 35000, defense 70, spear damage 140 (contact 150 unchanged). Dragon: health 50000, defense 80 (contact 190, swoop x1.3 unchanged). Aim: 8-15 s to kill at endgame damage; 3 hits kill an unbuffed player. Damage numbers assume Expert/Master (base is scaled up there); owner has not yet said which difficulty they play, so re-check in a playtest. Spawn caps and crystal drops unchanged.
+
 ## Not yet tested in-game (test these FIRST tomorrow)
 Everything below compiles but the owner has not confirmed it after the last build:
 1. The trees standing still (Systems/HeavensWindSystem.cs): crowns and branches must not move in the Heavens, and trees in the normal world must still sway after leaving.

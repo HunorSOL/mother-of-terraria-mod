@@ -61,8 +61,8 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.width = 72;
 			NPC.height = 44;
 			NPC.damage = 190;       // contact damage (placeholder; stronger than the knight's 150)
-			NPC.defense = 70;       // placeholder
-			NPC.lifeMax = 12000;    // placeholder
+			NPC.defense = 80;       // tuned 2026-10-14
+			NPC.lifeMax = 50000;    // tuned 2026-10-14: sturdier than the knight
 			NPC.HitSound = SoundID.NPCHit1;
 			NPC.DeathSound = SoundID.NPCDeath8;
 			NPC.knockBackResist = 0.1f;

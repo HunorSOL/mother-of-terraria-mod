@@ -17,7 +17,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS: health, damage and speeds get tuned with the owner after the enemies exist.
 	public class HeavenlyKnight : ModNPC
 	{
-		private const int SpearDamage = 120;
+		private const int SpearDamage = 140;
 		private const float SpearSpeed = 10f;   // slow enough to read and dodge
 		private const int WalkTime = 150;       // ticks (60 per second) spent walking before the next throw
 		private const int WindUpTime = 45;      // the tell: the knight stops and gathers light
@@ -81,8 +81,8 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.width = 40;
 			NPC.height = 76;
 			NPC.damage = 150;       // contact damage (placeholder)
-			NPC.defense = 60;       // placeholder
-			NPC.lifeMax = 13500;    // 9000 + 50% (owner request); placeholder
+			NPC.defense = 70;       // tuned 2026-10-14
+			NPC.lifeMax = 35000;    // tuned 2026-10-14: about 8-15 s to kill at endgame damage
 			NPC.HitSound = SoundID.NPCHit4;
 			NPC.DeathSound = SoundID.NPCDeath14;
 			NPC.knockBackResist = 0.15f;
