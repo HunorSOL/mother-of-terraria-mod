@@ -11,10 +11,10 @@ namespace MotherOfTerraria.Projectiles
 	// Texture: Projectiles/HeavenlySpear.png (owner's design, 22x82), drawn pointing UP; the code rotates it to face its direction.
 	public class HeavenlySpear : ModProjectile
 	{
-		// Weak homing (placeholder numbers, to tune): it can bend about 1.2 degrees per tick (72 degrees a second),
+		// Weak homing (placeholder numbers, to tune): it can bend about 1.8 degrees per tick (108 degrees a second),
 		// only for the first 1.5 s, and stops steering once it is close, so a late sidestep still works
 		// but simply jumping over a straight shot does not.
-		private const float TurnPerTick = MathHelper.Pi / 150f;
+		private const float TurnPerTick = MathHelper.Pi / 100f;
 		private const int HomingTicks = 90;
 		private const float StopHomingDistance = 140f;
 
