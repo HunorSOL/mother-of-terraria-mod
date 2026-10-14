@@ -1,12 +1,12 @@
 # Progress
 
-Last updated: 2026-10-14 (session 2).
+Last updated: end of day 2026-10-14 (session 2).
 Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
 ## Where we are
 - Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
-- Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Items skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up). Previous status: nearly done: enemies (tuned), island look, atmosphere, island details and the theme music are built and the owner has seen them in-game. Ambient creatures, the arrival gateway, ambient sounds, performance check and the open owner decisions remain.
+- Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Built and seen in-game: enemies (tuned), island look, atmosphere, island details, theme music. Skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up).
 - Phase 3 (the Heavenly Basket) COMPLETE (owner, 2026-10-14). Phase 4 (summon sequence) BUILT 2026-10-14, awaiting the owner's test. Phase 5 onward (boss) not started. The Basket-emptying rule is a to-do for Phase 5 (see ROADMAP).
 
 ## What we did on 2026-10-12
@@ -86,24 +86,28 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - Everything above is committed locally (nothing pushed). ROADMAP.md status block updated.
 
 ## Not yet tested in-game
-Compiles and was loaded, but the owner has not explicitly confirmed:
+Compiles, but the owner has not explicitly confirmed (test these first next session):
+0. PHASE 4: the whole 30 s summon sequence (chat lines at 10/20/25 s, shakes at 15/22/28 s, the placeholder boss message at 30 s, restart by right-clicking the full Basket, cancel by leaving or dying) and the 30-crystal Basket with its growing glow. Also the Basket's size and glow position.
 1. Trees standing still in the Heavens, and swaying again in the normal world after leaving (Systems/HeavensWindSystem.cs).
 2. The dragon without its roar; the new crystal icon in the inventory and on the ground.
-3. Crystal drop rate feel (1 crystal, 50%): decide together with the Basket design.
+3. Crystal drop rate feel (1 crystal at 50%, Basket needs 30, so about 60 kills): tune if it feels too grindy or too easy.
 Confirmed by the owner this session: enemy tuning, knockback, spear homing, fall death, the atmosphere and island details, the music.
 Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
 
-## Next: test Phase 4, then Phase 5 (the boss skeleton); the list below is the leftover 2C wish list, optional and can be picked up any time
+## Next: test Phase 4, then Phase 5 (the boss skeleton: needs the boss design and any sprite from the owner; placeholder art is fine). Hook up the Basket-emptying rule in Phase 5. The list below is the leftover 2C wish list, optional and can be picked up any time
 1. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
 2. Ambient sounds (wind, chimes): needs sounds from the owner, or a pick from vanilla ones.
 3. Floating canopy puffs and leafy branches (DesignRefs: tree_puff.png, tree_branch.png) as extra floating decorations, if wanted.
 4. Owner decisions still open: the dragon's debuff (fire does not match its golden-blue look; a holy or light effect may suit it), whether a third enemy type is wanted, and whether to send a bark close-up so the trunk art can match their style.
-5. Performance check (frame rate, load time), then mark Phase 2C complete and plan Phase 3 (the Heavenly Basket: how many crystals fill it, whether it resets, what happens on defeat, where it stands, its look).
+5. Performance check (frame rate, load time): do it before release.
 Real art still wanted whenever the owner has it (generated placeholders): turf tile, stone tile, tree bark, bridge posts, flowers, vines. The crystal now uses the owner's design. See ASSETS.md.
 
 ## Decisions (keep)
 - SINGLEPLAYER-FIRST (owner, 2026-10-12): the mod is solo-only for now. Multiplayer testing (old 2.6) moved to the "Multiplayer upgrade" step in Phase 8, after the boss works. Keep server-authoritative habits (logic on the server; only visuals, sound and UI on the client) and tag shortcuts with `// SINGLEPLAYER-ONLY:` comments. Before the upgrade: check that the dedicated server's hardware can run tModLoader (ARM support, spare RAM for SubworldLibrary's extra process) and keep SubworldLibrary versions matching.
-- Boss summon idea (owner, planning stage, specifics TBC): Heavens enemies drop crystals; a Heavenly Basket in the middle of the Heavens summons the boss when full. Logged in ROADMAP.md (Phases 2C and 3).
+- Boss summon (owner, 2026-10-14, FINAL): Heavens enemies drop crystals (1, at 50%); the Heavenly Basket (centre of the High island, replaces the pylon) takes 30 and starts a 30 s scripted sequence, then the boss spawns. The Basket empties ONLY when the boss is killed or vanishes because the player died; until then nothing empties it. Open for Phase 5: what leaving or quitting mid-fight does once a boss is alive.
+- Enemy tuning (owner, 2026-10-14): knight 35000 HP, dragon 50000 HP, knight knockback-immune, dragon 0.01, weakly homing spear, 1 crystal at 50%, no dragon roar, fall death below row 330.
+- Look and sound (owner, 2026-10-14): the owner's crystal, basket and music are in; stone spikes under islands removed; sky does not darken in the summon.
+- Phases: 2C complete, 3 complete, 4 built and awaiting a test. The owner chose to move on from 2C before the deferred items.
 - Enemy design decisions: knight is a ground enemy with a slow spear; dragon is a flying wyvern with swoops, not a dash; dragons are rarer and stronger than knights.
 - Heavens look decisions: golden luminous turf; owner's heavenly trees as REAL tile trees; no ruins; no waterfalls; no shimmer; trees stand still.
 - The ROADMAP.md file is git-ignored (kept local only), so it is not backed up on GitHub.
@@ -115,6 +119,7 @@ Real art still wanted whenever the owner has it (generated placeholders): turf t
 - SubworldLibrary is a required mod (build.txt modReferences). For compiling, its DLL is extracted from the Workshop .tmod into lib/SubworldLibrary.dll (git-ignored, not shipped). Re-extract if SubworldLibrary updates (Workshop ID 2785100219; version used 2.3.0.1).
 - SubworldLibrary Enter/Exit must be called on the player's own client; in multiplayer they send a request to the server (nothing happens on the server; use MovePlayerToSubworld there).
 - SubworldLibrary's NormalUpdates is false: the day/night clock and random world ticks do not run in the Heavens (we lock time to midday ourselves), but NPCs and projectiles update normally.
+- A clickable tile (TileID.Sets.HasOutlines) needs a `<TileName>_Highlight.png` or the mod fails to load ("Asset could not be found"). For mod music, `ModSceneEffect.Priority` must beat the vanilla effects (use Event); BiomeHigh lost and the theme never played.
 - If `dotnet build` hangs at restore, run with `DOTNET_SYSTEM_NET_DISABLEIPV6=1` (this network drops IPv6).
 - The command-line build compiles the code but cannot package the mod while tModLoader is open (error TML003). Compile errors still show. The in-game Build + Reload is the normal path.
 - tModLoader rewrites Localization/*.hjson on build and adds missing keys in a compact dotted form (e.g. `NPCs.HeavenlyKnight.DisplayName: ...`); that is normal and valid.
@@ -124,9 +129,11 @@ Real art still wanted whenever the owner has it (generated placeholders): turf t
 - Celestial Sigil is crafted from 12 of each Lunar Fragment. Unverified whether fragments are still obtainable after Moon Lord is dead (check in a real playthrough).
 - Owner reported the recipe working; the prefixed-sword and missing-ingredient cases were not individually confirmed.
 - Heavenly Teleporter reference art is a mockup cut-out, not a hand-made sprite (see ASSETS.md).
-- All enemy stats are placeholders; the dragon's fire debuff may not suit its design.
-- Generated placeholder art: turf, bark, bridge posts, crystal (see ASSETS.md).
+- Enemy stats were tuned on 2026-10-14 with the owner; they assume Expert/Master (the owner never said which difficulty they play). The dragon's fire debuff may not suit its design.
+- Generated placeholder art: turf, stone, bark, bridge posts, flowers, vines (see ASSETS.md). The crystal and the Basket use the owner's designs.
+- Everything about the Basket and the summon is SINGLEPLAYER-ONLY (fill and sequence run on the local client).
+- Unverified: the glow and orb position over the Basket's bowl were set by eye.
 
 ## Repo and GitHub
-- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Nothing pushed since; the branch is 36 commits ahead.
+- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Nothing pushed since; the branch is 27 commits ahead of origin (as of the end of session 2, 2026-10-14). Never push without the owner saying so.
 - Open decision for the owner: scrub ROADMAP.md from the GitHub history, or make the repo private (the repo is public and an early commit contained ROADMAP.md before it was git-ignored).
