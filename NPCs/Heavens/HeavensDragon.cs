@@ -65,7 +65,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.lifeMax = 50000;    // tuned 2026-10-14: sturdier than the knight
 			NPC.HitSound = SoundID.NPCHit1;
 			NPC.DeathSound = SoundID.NPCDeath8;
-			NPC.knockBackResist = 0f; // fully immune to knockback (owner, 2026-10-14)
+			NPC.knockBackResist = 0.05f; // takes a little knockback (owner, 2026-10-14; 1 = full, 0 = immune)
 			NPC.value = Item.buyPrice(gold: 4);
 			NPC.aiStyle = -1;       // our own AI below
 			NPC.noGravity = true;   // it flies
