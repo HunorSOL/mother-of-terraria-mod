@@ -45,7 +45,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 
 - Fall death (2026-10-14, untested): Common/HeavensFallDeath.cs kills the player who falls below Main.worldSurface (row 330, where the cave background starts) in the Heavens.
 
-- Knockback resistance raised (2026-10-14): knight knockBackResist 0.15 to 0.04, dragon 0.1 to 0.02 (0 = immune).
+- Knockback: both enemies FULLY immune (knockBackResist 0, owner 2026-10-14).
 
 ## Not yet tested in-game (test these FIRST tomorrow)
 Everything below compiles but the owner has not confirmed it after the last build:
