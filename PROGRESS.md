@@ -49,6 +49,8 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 
 - Crystal drops (2026-10-14, owner): both enemies drop exactly 1 crystal, 50% of the time (was knight 1 in 3 for 1-2, dragon 1 in 2 for 1-3).
 
+- Knight spear weak homing (2026-10-14, untested; owner said "dragon spears" but only the knight throws spears): turns 72 deg/s for the first 1.5 s, stops within 140 px. Constants at the top of Projectiles/HeavenlySpear.cs.
+
 ## Not yet tested in-game (test these FIRST tomorrow)
 Everything below compiles but the owner has not confirmed it after the last build:
 1. The trees standing still (Systems/HeavensWindSystem.cs): crowns and branches must not move in the Heavens, and trees in the normal world must still sway after leaving.
