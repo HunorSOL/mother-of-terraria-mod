@@ -6,3 +6,5 @@ Before doing anything, read these files in this folder:
 3. `ASSETS.md`: every placeholder asset and what still needs the owner's designs.
 
 Work in `/home/unixh/Documents/coding projects/MotherOfTerraria`. The folder name must stay `MotherOfTerraria`; do not use the old copy in the Trash.
+
+Logging rule (from the ROADMAP ground rules): update `PROGRESS.md` (and `ASSETS.md` for any asset) in the same step as every change you make, even small tuning changes, and commit it with the change. Do not wait to be asked, and do not batch it to the end of the session.
