@@ -87,37 +87,5 @@ def bridge_post():
     c.outline(); c.save("Tiles/GoldenBridgePost.png")
 
 
-def basket():
-    """The Heavenly Basket: a golden bowl on a pedestal, brimming with crystals (4x3 tiles, PLACEHOLDER)."""
-    c = Canvas(4, 3)
-    CRY = (170, 220, 255, 255); CRYL = (240, 250, 255, 255); CRYD = (96, 150, 226, 255)
-    # crystals sticking out of the bowl
-    c.poly([(20, 16), (25, 3), (30, 16)], CRY); c.poly([(25, 3), (27, 9), (25, 16)], CRYL)
-    c.poly([(29, 17), (36, 0), (43, 17)], CRY); c.poly([(36, 0), (39, 8), (36, 17)], CRYL); c.poly([(36, 0), (33, 8), (36, 17)], CRYD)
-    c.poly([(40, 16), (46, 5), (52, 16)], CRY); c.poly([(46, 5), (48, 10), (46, 16)], CRYL)
-    # the bowl
-    c.poly([(10, 16), (53, 16), (47, 33), (16, 33)], BASE)
-    c.poly([(10, 16), (20, 16), (24, 33), (16, 33)], SHADE)
-    c.rect(8, 14, 55, 18, LIGHT); c.rect(8, 17, 55, 18, SHADE)
-    for x in range(18, 48, 6):
-        c.rect(x, 21, x + 2, 30, DARK)
-    # the stem and pedestal
-    c.rect(26, 33, 37, 40, BASE); c.rect(26, 33, 28, 40, LIGHT); c.rect(35, 33, 37, 40, SHADE)
-    c.rect(10, 41, 53, 47, BASE); c.rect(10, 41, 53, 42, LIGHT); c.rect(10, 45, 53, 47, SHADE)
-    c.disc(32, 26, 3, GEM); c.set(31, 25, GEMLIGHT)
-    c.outline(); c.save("Tiles/HeavenlyBasket.png")
-    # The hover outline (a tile with TileID.Sets.HasOutlines needs a "_Highlight" sheet of the same size):
-    # the outermost pixels of the sprite in bright gold, everything else transparent.
-    hl = Canvas(4, 3)
-    a = c.px[..., 3] > 0
-    for y in range(c.h):
-        for x in range(c.w):
-            if a[y, x] and any(not (0 <= x + dx < c.w and 0 <= y + dy < c.h and a[y + dy, x + dx])
-                               for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
-                hl.set(x, y, (255, 240, 120, 255))
-    hl.save("Tiles/HeavenlyBasket_Highlight.png")
-
-
 if __name__ == "__main__":
-    bridge_post()
-    basket()
+    bridge_post()  # the Basket's art now comes from tools/make_basket_sprite.py

@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MotherOfTerraria.Common;
 using MotherOfTerraria.Items;
+using MotherOfTerraria.Systems;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -156,12 +158,18 @@ namespace MotherOfTerraria.Tiles
 		protected override Vector3 Glow => new Vector3(0.1f, 0.2f, 0.3f);
 	}
 
-	// The Heavenly Basket (4x3 tiles, PLACEHOLDER art): right-click it to put in Heavens Crystals.
-	// When it holds 50, the summon fight starts (see Common/HeavenlyBasketPlayer). It glows brighter as it fills.
+	// The Heavenly Basket (8x9 tiles, the owner's design): right-click it to put in Heavens Crystals.
+	// When it holds 50, the summon fight starts (see Common/HeavenlyBasketPlayer). The light in its bowl gets
+	// brighter as it fills: the base art has the light dimmed, and Tiles/HeavenlyBasket_Glow.png (the same sheet with
+	// only the light) is drawn on top in proportion to the fill, plus a soft orb and rising sparkles.
+	// Art is made by tools/make_basket_sprite.py from DesignRefs/basket_design.jpg.
 	public class HeavenlyBasket : HeavensObjectTile
 	{
-		public const int TilesWide = 4;
-		public const int TilesHigh = 3;
+		public const int TilesWide = 8;
+		public const int TilesHigh = 9;
+
+		// Where the bowl's opening is, in pixels from the top-left of the sprite.
+		private static readonly Vector2 BowlCentre = new Vector2(65f, 83f);
 
 		protected override int ObjectWidth => TilesWide;
 		protected override int ObjectHeight => TilesHigh;
@@ -189,13 +197,58 @@ namespace MotherOfTerraria.Tiles
 			player.cursorItemIconText = $"{player.GetModPlayer<HeavenlyBasketPlayer>().Crystals}/{HeavenlyBasketPlayer.CrystalsNeeded}";
 		}
 
+		// How full the local player's Basket is, from 0 to 1.
+		private static float Fill => Main.LocalPlayer.GetModPlayer<HeavenlyBasketPlayer>().Crystals / (float)HeavenlyBasketPlayer.CrystalsNeeded;
+
+		private static bool IsTopLeft(int i, int j) => Main.tile[i, j].TileFrameX == 0 && Main.tile[i, j].TileFrameY == 0;
+
 		// Dim when empty, bright blue-gold when full.
 		public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
 		{
-			float fill = Main.LocalPlayer.GetModPlayer<HeavenlyBasketPlayer>().Crystals / (float)HeavenlyBasketPlayer.CrystalsNeeded;
+			float fill = Fill;
 			r = 0.15f + 0.6f * fill;
 			g = 0.2f + 0.6f * fill;
 			b = 0.3f + 0.6f * fill;
+		}
+
+		// Sparkles rising from the bowl once it is filling up.
+		public override void NearbyEffects(int i, int j, bool closer)
+		{
+			float fill = Fill;
+			if (fill > 0.1f && IsTopLeft(i, j) && Main.rand.NextFloat() < 0.05f + 0.25f * fill)
+			{
+				Vector2 spot = new Vector2(i * 16f, j * 16f) + BowlCentre + new Vector2(Main.rand.NextFloat(-30f, 30f), Main.rand.NextFloat(-6f, 6f));
+				Dust dust = Dust.NewDustPerfect(spot, Main.rand.NextBool() ? DustID.GoldFlame : DustID.Frost, new Vector2(Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextFloat(-1.1f, -0.4f)), 120, default, 0.9f);
+				dust.noGravity = true;
+			}
+		}
+
+		// Draw the light of the bowl on top, brighter the fuller the Basket is. Each tile draws its own 16x16 piece.
+		public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+		{
+			float fill = Fill;
+			if (fill <= 0f)
+			{
+				return;
+			}
+
+			Tile tile = Main.tile[i, j];
+			Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+			Vector2 position = new Vector2(i * 16f, j * 16f) - Main.screenPosition + zero;
+			Texture2D glow = ModContent.Request<Texture2D>("MotherOfTerraria/Tiles/HeavenlyBasket_Glow").Value;
+			// A tint with alpha 0 adds light instead of covering the tile.
+			spriteBatch.Draw(glow, position, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), new Color(255, 255, 255, 0) * fill,
+				0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+
+			// A soft orb of light over the bowl, drawn once (by the top-left tile).
+			if (IsTopLeft(i, j) && HeavensSkyTextures.Ready)
+			{
+				float pulse = 1f + 0.08f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 2f);
+				float size = (50f + 170f * fill) * pulse;
+				Texture2D orb = HeavensSkyTextures.Soft;
+				spriteBatch.Draw(orb, position + BowlCentre, null, new Color(190, 235, 255, 0) * (0.15f + 0.65f * fill),
+					0f, orb.Size() / 2f, size / orb.Width, SpriteEffects.None, 0f);
+			}
 		}
 	}
 }
