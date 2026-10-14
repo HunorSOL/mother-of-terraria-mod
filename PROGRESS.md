@@ -135,5 +135,5 @@ Real art still wanted whenever the owner has it (generated placeholders): turf t
 - Unverified: the glow and orb position over the Basket's bowl were set by eye.
 
 ## Repo and GitHub
-- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Nothing pushed since; the branch is 27 commits ahead of origin (as of the end of session 2, 2026-10-14). Never push without the owner saying so.
+- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Pushed again on 2026-10-14 at the owner's request (main up to baef8fc: Phases 2C, 3 and 4 work). Never push without the owner saying so.
 - Open decision for the owner: scrub ROADMAP.md from the GitHub history, or make the repo private (the repo is public and an early commit contained ROADMAP.md before it was git-ignored).
