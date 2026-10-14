@@ -16,8 +16,9 @@ namespace MotherOfTerraria.Systems
 			return SubworldSystem.IsActive<HeavensSubworld>();
 		}
 
-		// Above normal biomes, below boss music (so the boss fight can take over later).
-		public override SceneEffectPriority Priority => SceneEffectPriority.BiomeHigh;
+		// Above every vanilla biome and environment (Space, Hell, Sandstorm) so the Heavens theme always plays,
+		// but below the boss priorities so the boss fight can take over the music later.
+		public override SceneEffectPriority Priority => SceneEffectPriority.Event;
 
 		// No mountains or hills behind the islands: this is the sky.
 		public override ModSurfaceBackgroundStyle SurfaceBackgroundStyle => ModContent.GetInstance<HeavensBackgroundStyle>();
@@ -32,6 +33,14 @@ namespace MotherOfTerraria.Systems
 		// same name and crashes the game when there is none. We only have a sky, so drive it directly.)
 		public override void SpecialVisuals(Player player, bool isActive)
 		{
+			// TEMPORARY music diagnostics (remove once the music is confirmed): one log line every 5 seconds in the Heavens.
+			if (isActive && Main.netMode != NetmodeID.Server && Main.GameUpdateCount % 300 == 0)
+			{
+				Mod.Logger.Info($"MUSIC DEBUG: curMusic={Main.curMusic} newMusic={Main.newMusic} ourSlot={Music} musicVolume={Main.musicVolume} " +
+					$"tileY={(int)(player.Center.Y / 16f)} worldSurface={Main.worldSurface} rockLayer={Main.rockLayer} " +
+					$"sky={player.ZoneSkyHeight} overworld={player.ZoneOverworldHeight} dirt={player.ZoneDirtLayerHeight} rock={player.ZoneRockLayerHeight}");
+			}
+
 			CustomSky sky = SkyManager.Instance[HeavensSkySystem.SkyKey];
 			if (sky == null || sky.IsActive() == isActive)
 			{
