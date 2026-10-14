@@ -85,7 +85,7 @@ namespace MotherOfTerraria.NPCs.Heavens
 			NPC.lifeMax = 35000;    // tuned 2026-10-14: about 8-15 s to kill at endgame damage
 			NPC.HitSound = SoundID.NPCHit4;
 			NPC.DeathSound = SoundID.NPCDeath14;
-			NPC.knockBackResist = 0.15f;
+			NPC.knockBackResist = 0.04f; // tuned 2026-10-14 (1 = full knockback, 0 = immune)
 			NPC.value = Item.buyPrice(gold: 2);
 			NPC.aiStyle = -1;       // our own AI below
 			NPC.noGravity = true;   // gravity is applied by hand in AI() so we control it exactly
