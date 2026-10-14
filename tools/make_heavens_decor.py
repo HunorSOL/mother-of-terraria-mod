@@ -106,6 +106,16 @@ def basket():
     c.rect(10, 41, 53, 47, BASE); c.rect(10, 41, 53, 42, LIGHT); c.rect(10, 45, 53, 47, SHADE)
     c.disc(32, 26, 3, GEM); c.set(31, 25, GEMLIGHT)
     c.outline(); c.save("Tiles/HeavenlyBasket.png")
+    # The hover outline (a tile with TileID.Sets.HasOutlines needs a "_Highlight" sheet of the same size):
+    # the outermost pixels of the sprite in bright gold, everything else transparent.
+    hl = Canvas(4, 3)
+    a = c.px[..., 3] > 0
+    for y in range(c.h):
+        for x in range(c.w):
+            if a[y, x] and any(not (0 <= x + dx < c.w and 0 <= y + dy < c.h and a[y + dy, x + dx])
+                               for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                hl.set(x, y, (255, 240, 120, 255))
+    hl.save("Tiles/HeavenlyBasket_Highlight.png")
 
 
 if __name__ == "__main__":
