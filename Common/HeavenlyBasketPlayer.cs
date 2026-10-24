@@ -115,6 +115,7 @@ namespace MotherOfTerraria.Common
 			FightActive = true;
 			summoning = true;
 			summonTimer = 0;
+			HeavensEnemyCleaner.Clear(); // the Heavens' own enemies vanish the moment the summon begins
 			SoundEngine.PlaySound(SoundID.Item119, Player.Center);
 		}
 
@@ -122,6 +123,10 @@ namespace MotherOfTerraria.Common
 		private void RunSummon()
 		{
 			summonTimer++;
+			if (summonTimer % 10 == 0)
+			{
+				HeavensEnemyCleaner.Clear(); // anything that still wanders in is removed too
+			}
 			switch (summonTimer)
 			{
 				case MiracleAt:

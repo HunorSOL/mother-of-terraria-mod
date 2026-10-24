@@ -23,7 +23,8 @@ namespace MotherOfTerraria.Projectiles
 		private const float BossTurnPerTick = MathHelper.Pi / 130f;
 		private const int BossHomingTicks = 150;
 		private const int BossLifeTicks = 330;
-		private bool FromBoss => Projectile.ai[0] == 1f;
+		protected virtual bool FromBoss => Projectile.ai[0] == 1f; // the Celestial Spear (below) is always the boss's
+		protected virtual float HalfLength => 36f;                 // half the length of the damaging line along the spear
 
 		public override void SetDefaults()
 		{
@@ -108,7 +109,7 @@ namespace MotherOfTerraria.Projectiles
 			float unused = 0f;
 			return Collision.CheckAABBvLineCollision(
 				targetHitbox.TopLeft(), targetHitbox.Size(),
-				Projectile.Center - direction * 36f, Projectile.Center + direction * 36f,
+				Projectile.Center - direction * HalfLength, Projectile.Center + direction * HalfLength,
 				14f, ref unused);
 		}
 

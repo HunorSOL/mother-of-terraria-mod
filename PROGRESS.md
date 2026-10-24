@@ -111,11 +111,19 @@ Owner feedback: "good start", but the boss is far from final. Asked for: double 
 ### Boss sprite (2026-10-24, owner's design; BUILT, NOT YET SEEN IN-GAME)
 - The owner sent the boss sheet (DesignRefs/boss_design.jpg). tools/make_boss_sheet.py cuts the boss out, shrinks her to 296 px wide with a small 56-colour palette (Terraria look), and animates it: 8 frames, wings beat, hair and robe sway, body breathes. Frame 296x220 (the placeholder was 160x160, so she is much bigger). 6 ticks per frame.
 - Hitbox is her body only, 110x170; the picture is centred on it, wings are scenery. She faces the front, so the picture is never flipped. Hover height raised to 300 px to suit the size. The beam and spears still start at her centre (chest).
-- The same script also cuts out the Trophy, Treasure Bag, Celestial Spear and Gold Crystal Star into DesignRefs/ (not used yet). The owner says the stars are for the NEXT attack. Question for the owner: should the Celestial Spear replace the Heavenly Spear art on her spear attacks?
+- The same script also cuts out the Trophy, Treasure Bag, Celestial Spear and Gold Crystal Star into DesignRefs/ (not used yet). The owner says the stars are for the NEXT attack. Owner answered: yes, it replaces the spear art (done, see below).
 - Removed tools/make_boss_placeholder.py (the old placeholder sprite).
 - To tune if it looks off: WIDTH, COLOURS, flap strength in make_frame (tools/make_boss_sheet.py); hitbox and TicksPerFrame in the boss class.
 
+### Celestial Spear, enemy clearing and Empress-style movement (2026-10-24; BUILT, NOT YET TESTED)
+Owner: the Celestial Spear replaces the boss's spear art; the Heavens enemies must disappear when the summon sequence starts; she should move fast but in an organized way, like the Empress of Light.
+- Projectiles/CelestialSpear.cs (art Projectiles/CelestialSpear.png from the owner's design, 42x104, made by tools/make_celestial_spear.py). It inherits HeavenlySpear (same flight and hit, the boss's stronger homing, longer hit line). All three boss spear attacks now throw it. The knight keeps the Heavenly Spear.
+- Enemies: Common/HeavensEnemyCleaner.cs removes every knight and dragon (gold dust, no drops). It runs when the Basket becomes full (summon start), every 10 ticks during the 30 s sequence, and every 10 ticks while the boss lives. The spawner is paused for the whole sequence and fight (HeavensEnemyCleaner.FightRunning). If the sequence is cancelled, spawning resumes.
+- Movement (NPCs/Bosses/MotherOfTerrariaBoss.cs, Stations, MaxSpeed, DashEase): the old slow sway is gone. She keeps a list of five stations around the player (high left, high right, far above, low right, low left; offsets from the player, so she follows him) and dashes to the next one at the start of every attack (top speed 26 px/tick, eases in), with a gentle bob and a fading golden after-image trail while dashing. During the burst she also flips to the mirror-image side between the two rings. The beam waits 0.5 s (BeamStart) so she is in place, and she holds still while it fires. Five stations versus three attacks means every attack is thrown from every station over time.
+- To tune: station offsets, MaxSpeed, DashEase, trail strength, the BeamStart wait.
+
 ## Not yet tested in-game
+0d. Celestial Spear look and hit line, enemies vanishing at the start of the summon, the dashes (speed, readability, after-images).
 0c. The boss's real sprite and its animation, and whether the hitbox (110x170) feels right against her size.
 0b. The boss's first-stage attacks and the doubled health (the section above).
 0a. PHASE 5 (2026-10-24): see the section above. Test steps are in the message that closed that session.

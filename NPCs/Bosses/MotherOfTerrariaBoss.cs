@@ -2,7 +2,9 @@ using Microsoft.Xna.Framework;
 using MotherOfTerraria.Common;
 using MotherOfTerraria.NPCs.Heavens;
 using MotherOfTerraria.Projectiles;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -12,11 +14,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 {
 	// The Mother of Terraria: the mod's final boss. Phase 5 built the skeleton; this is the FIRST STAGE with a looping
 	// attack cycle (more attacks and a second stage come later, and the final balance is Phase 6):
-	//   1. SPEAR FAN:   a short gold glow, then three slightly homing Heavenly Spears aimed at the player.
+	//   1. SPEAR FAN:   a short gold glow, then three slightly homing Celestial Spears aimed at the player.
 	//   2. SPEAR BURST: she gathers light, then throws rings of slightly homing spears in ALL directions (two waves,
 	//                   the second ring offset so it fills the gaps of the first).
 	//   3. DEATH BEAM:  a thin line follows the player (the tell), then locks and a huge golden beam sweeps across.
-	//   ...then back to 1.
+	//   ...then back to 1. Before each attack she dashes to the next of five fixed spots around the player (see Stations).
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
 	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 296x220 made by tools/make_boss_sheet.py: wings flap, hair and robe sway).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS; the real balance is Phase 6.
@@ -26,9 +28,21 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int FrameCount = 8;
 		private const int TicksPerFrame = 6;        // wing-beat speed: one full flap takes 8 x 6 = 48 ticks
 
-		private const float HoverHeight = 300f;     // how far above the player she floats (pixels)
-		private const float SideSwing = 320f;       // how far she drifts left and right of the player
-		private const float MoveSpeed = 9f;
+		// MOVEMENT (like the Empress of Light: fast, but always to a planned spot). She works through a fixed list of
+		// "stations" around the player (offsets in pixels from the player: x to the right, y down). Each new attack she
+		// dashes to the next station; the burst also flips her to the mirror-image side between its two rings.
+		// Five stations and three attacks means every attack is eventually thrown from every station.
+		private static readonly Vector2[] Stations =
+		{
+			new Vector2(-480f, -290f),  // high left
+			new Vector2(480f, -290f),   // high right
+			new Vector2(0f, -400f),     // straight above, far
+			new Vector2(540f, -110f),   // low right
+			new Vector2(-540f, -110f),  // low left
+		};
+		private const float MaxSpeed = 26f;         // top dash speed (pixels per tick)
+		private const float DashEase = 0.16f;       // slows her down as she arrives (bigger = later braking)
+		private const float DashTrailSpeed = 11f;   // above this speed she leaves a golden after-image trail
 
 		private const float SpearSpeed = 9f;
 		private const int SpearDamage = 150;
@@ -37,12 +51,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int RingSpears = 18;          // spears per ring in the burst
 		private const float RingSpearSpeed = 7f;
 
+		private const int BeamStart = 30;           // the beam attack waits this long first so she can reach her station
 		private const int LaserDamage = 700;        // "super punishing": about three beam hits kill an unbuffed player
 
 		// Times in ticks (60 per second), counted from the start of each attack.
 		private const int FanTell = 30, FanEnd = 90;
 		private const int BurstTell = 45, BurstSecondWave = 80, BurstEnd = 130;
-		private const int LaserEnd = GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 50;
+		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 50;
 
 		private enum Attack
 		{
@@ -58,10 +73,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 		}
 
 		private ref float Timer => ref NPC.ai[1];
+		private ref float StationIndex => ref NPC.ai[2];
+		private ref float Mirrored => ref NPC.ai[3]; // 1 = the station is flipped left-to-right
 
 		public override void SetStaticDefaults()
 		{
 			Main.npcFrameCount[Type] = FrameCount;
+			NPCID.Sets.TrailCacheLength[Type] = 12; // remembers where she was, for the dash after-images
+			NPCID.Sets.TrailingMode[Type] = 0;
 			NPCID.Sets.MPAllowedEnemies[Type] = true;
 			NPCID.Sets.BossBestiaryPriority.Add(Type);
 			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new() { Hide = true }; // no bestiary entry until the real design exists
@@ -95,6 +114,27 @@ namespace MotherOfTerraria.NPCs.Bosses
 			SceneEffectPriority = SceneEffectPriority.BossMedium;
 		}
 
+		// While dashing she leaves a fading golden after-image trail, then she is drawn normally.
+		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+		{
+			if (NPC.velocity.Length() > DashTrailSpeed)
+			{
+				Texture2D texture = TextureAssets.Npc[Type].Value;
+				Vector2 origin = NPC.frame.Size() / 2f;
+				for (int i = NPC.oldPos.Length - 1; i >= 1; i--)
+				{
+					if (NPC.oldPos[i] == Vector2.Zero)
+					{
+						continue;
+					}
+					float fade = 1f - i / (float)NPC.oldPos.Length;
+					Vector2 position = NPC.oldPos[i] + NPC.Size / 2f - screenPos + new Vector2(0f, NPC.gfxOffY);
+					spriteBatch.Draw(texture, position, NPC.frame, new Color(255, 215, 110, 0) * (0.45f * fade), 0f, origin, 1f, SpriteEffects.None, 0f);
+				}
+			}
+			return true;
+		}
+
 		// Plays the wing-beat animation on a loop.
 		public override void FindFrame(int frameHeight)
 		{
@@ -117,16 +157,24 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.timeLeft = 600; // a boss never despawns just for being far away
 
 			Lighting.AddLight(NPC.Center, 1f, 0.85f, 0.4f);
-			ClearOtherEnemies();
+			if (Main.GameUpdateCount % 10 == 0)
+			{
+				HeavensEnemyCleaner.Clear(); // the fight is the boss alone
+			}
 
-			// Float above the player, swinging slowly from side to side. During the beam she holds still.
-			bool holding = CurrentAttack == Attack.DeathBeam;
-			float swing = (float)System.Math.Sin(Main.GameUpdateCount / 90f) * SideSwing;
-			Vector2 goal = target.Center + new Vector2(swing, -HoverHeight);
+			// Dash to the current station (relative to the player, so she follows when the player moves). During the
+			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
+			bool holding = CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5;
+			Vector2 station = Stations[(int)StationIndex % Stations.Length];
+			if (Mirrored == 1f)
+			{
+				station.X = -station.X;
+			}
+			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 20f)); // a gentle bob
 			Vector2 toGoal = goal - NPC.Center;
-			float speed = holding ? 0f : System.Math.Min(MoveSpeed, toGoal.Length() * 0.1f);
-			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.05f : 0.1f);
-			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1; // she faces the front, so the picture is never flipped
+			float speed = holding ? 0f : System.Math.Min(MaxSpeed, toGoal.Length() * DashEase);
+			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.15f : 0.25f);
+			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
 
 			Timer++;
 			switch (CurrentAttack)
@@ -148,6 +196,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		{
 			Timer = 0;
 			CurrentAttack = (Attack)(((int)CurrentAttack + 1) % 3);
+			StationIndex = (StationIndex + 1) % Stations.Length; // dash to the next station
 			NPC.netUpdate = true;
 		}
 
@@ -191,6 +240,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				GatherLight(1.5f + Timer / BurstTell);
 			}
+			if (Timer == BurstTell + 8)
+			{
+				Mirrored = 1f - Mirrored; // dash across to the mirror-image side before the second ring
+				NPC.netUpdate = true;
+			}
 			if (Timer == BurstTell || Timer == BurstSecondWave)
 			{
 				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
@@ -213,7 +267,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// A thin line that follows the player, then a huge sweeping golden beam (see Projectiles/GoldenDeathray.cs).
 		private void DoDeathBeam(Player target)
 		{
-			if (Timer == 1)
+			if (Timer == BeamStart)
 			{
 				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
 				if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -225,7 +279,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 						damage, 0f, Main.myPlayer, NPC.whoAmI, angle, sweepDirection);
 				}
 			}
-			if (Timer < GoldenDeathray.TellTicks)
+			if (Timer >= BeamStart && Timer < BeamStart + GoldenDeathray.TellTicks)
 			{
 				GatherLight(0.8f);
 			}
@@ -235,40 +289,12 @@ namespace MotherOfTerraria.NPCs.Bosses
 			}
 		}
 
-		// One Heavenly Spear, with ai[0] = 1 so it uses the boss's stronger homing (see Projectiles/HeavenlySpear.cs).
+		// One Celestial Spear: her own spear, which uses the boss's stronger homing (see Projectiles/HeavenlySpear.cs).
 		private void ThrowSpear(Vector2 velocity)
 		{
 			int damage = NPC.GetAttackDamage_ForProjectiles(SpearDamage, SpearDamage * 0.8f);
 			Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity,
-				ModContent.ProjectileType<HeavenlySpear>(), damage, 2f, Main.myPlayer, 1f);
-		}
-
-		// The fight is the boss alone: any Heavens enemy that is still around (or that arrives some other way)
-		// is removed. They vanish without dying, so they drop nothing. The spawner is also paused while she lives.
-		private void ClearOtherEnemies()
-		{
-			if (Main.netMode == NetmodeID.MultiplayerClient || Main.GameUpdateCount % 10 != 0)
-			{
-				return;
-			}
-			int knight = ModContent.NPCType<HeavenlyKnight>();
-			int dragon = ModContent.NPCType<HeavensDragon>();
-			foreach (NPC npc in Main.ActiveNPCs)
-			{
-				if (npc.type == knight || npc.type == dragon)
-				{
-					for (int i = 0; i < 12; i++)
-					{
-						Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.GoldCoin, 0f, 0f, 0, default, 1.3f);
-						dust.noGravity = true;
-					}
-					npc.active = false;
-					if (Main.netMode == NetmodeID.Server)
-					{
-						NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
-					}
-				}
-			}
+				ModContent.ProjectileType<CelestialSpear>(), damage, 2f, Main.myPlayer);
 		}
 
 		// Owner rule (2026-10-14): the Basket empties when the boss is KILLED (and when the player dies, which

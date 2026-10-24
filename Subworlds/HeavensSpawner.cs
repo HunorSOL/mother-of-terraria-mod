@@ -26,8 +26,8 @@ namespace MotherOfTerraria.Subworlds
 				return;
 			}
 
-			// No new Heavens enemies while the Mother of Terraria is alive: the fight is the boss alone.
-			if (NPC.AnyNPCs(ModContent.NPCType<NPCs.Bosses.MotherOfTerrariaBoss>()))
+			// No new Heavens enemies during the summon sequence or while the Mother of Terraria is alive: the fight is the boss alone.
+			if (Common.HeavensEnemyCleaner.FightRunning() || NPC.AnyNPCs(ModContent.NPCType<NPCs.Bosses.MotherOfTerrariaBoss>()))
 			{
 				return;
 			}
