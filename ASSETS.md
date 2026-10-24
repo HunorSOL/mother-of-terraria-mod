@@ -39,7 +39,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Vanilla loading screen text | Subworlds/HeavensTerrainPass.cs | Optional custom loading screen, Phase 2C. |
 | Gold dust when hitting the statue | Tiles/GoldenStatue.cs | Custom dust, optional. |
 
-| Mother of Terraria sprite | NPCs/Bosses/MotherOfTerrariaBoss.png | PLACEHOLDER (2026-10-24): 160x160 single frame, golden robed figure with blue wings, made by tools/make_boss_placeholder.py. Needs the owner's design, with animation frames. Hitbox is 90x130 (NPC.width/height); adjust when the real art arrives. |
+| Mother of Terraria sprite | NPCs/Bosses/MotherOfTerrariaBoss.png | OWNER'S DESIGN (2026-10-24), made game-ready by tools/make_boss_sheet.py: 8 frames of 296x220 stacked vertically, shrunk to a small palette, animated by warping the one picture (wings flap, hair and robe sway). Not hand-drawn frames: the owner may send real ones (same size, 8 frames, or update the constants in MotherOfTerrariaBoss.cs). Hitbox is her body, 110x170, centred on the picture. |
 | Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 
@@ -55,6 +55,13 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Mother of Terraria boss: REAL sprite and animation, her own attack projectiles, boss bar icon, treasure bag, trophy, relic, real drops, boss music (vanilla Boss2 stands in) | 6, 7 |
 
 ## Design references (not used by the game directly)
+
+| Reference | File | Notes |
+|---|---|---|
+| Boss design sheet | DesignRefs/boss_design.jpg | 2752x1536: the Mother of Terraria plus her Trophy, Treasure Bag, Celestial Spear and Gold Crystal Star. The boss is in the game. |
+| Boss Trophy and Treasure Bag | DesignRefs/boss_trophy.png, boss_bag.png | Cut out (original resolution). NOT built yet: need item/tile sprites in Terraria size. |
+| Celestial Spear | DesignRefs/boss_spear.png | Cut out. Not used yet (the boss's spear attack still uses the knight's Heavenly Spear art). The owner called it hers; decide if it replaces the boss's projectile. |
+| Gold Crystal Star | DesignRefs/boss_star.png | Cut out. Owner: "useful for the next attack" (a star projectile). Not built yet. |
 
 | Reference | File | Notes |
 |---|---|---|

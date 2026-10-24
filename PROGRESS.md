@@ -108,7 +108,15 @@ Owner feedback: "good start", but the boss is far from final. Asked for: double 
 - SINGLEPLAYER-ONLY note unchanged: the beam angle is synced every tick by the owner machine, which should work in multiplayer, but that is untested.
 - To tune: beam sweep speed and length, beam damage, ring size, homing, cycle order and rests.
 
+### Boss sprite (2026-10-24, owner's design; BUILT, NOT YET SEEN IN-GAME)
+- The owner sent the boss sheet (DesignRefs/boss_design.jpg). tools/make_boss_sheet.py cuts the boss out, shrinks her to 296 px wide with a small 56-colour palette (Terraria look), and animates it: 8 frames, wings beat, hair and robe sway, body breathes. Frame 296x220 (the placeholder was 160x160, so she is much bigger). 6 ticks per frame.
+- Hitbox is her body only, 110x170; the picture is centred on it, wings are scenery. She faces the front, so the picture is never flipped. Hover height raised to 300 px to suit the size. The beam and spears still start at her centre (chest).
+- The same script also cuts out the Trophy, Treasure Bag, Celestial Spear and Gold Crystal Star into DesignRefs/ (not used yet). The owner says the stars are for the NEXT attack. Question for the owner: should the Celestial Spear replace the Heavenly Spear art on her spear attacks?
+- Removed tools/make_boss_placeholder.py (the old placeholder sprite).
+- To tune if it looks off: WIDTH, COLOURS, flap strength in make_frame (tools/make_boss_sheet.py); hitbox and TicksPerFrame in the boss class.
+
 ## Not yet tested in-game
+0c. The boss's real sprite and its animation, and whether the hitbox (110x170) feels right against her size.
 0b. The boss's first-stage attacks and the doubled health (the section above).
 0a. PHASE 5 (2026-10-24): see the section above. Test steps are in the message that closed that session.
 

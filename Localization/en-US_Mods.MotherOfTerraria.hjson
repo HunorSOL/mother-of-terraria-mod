@@ -58,5 +58,7 @@ NPCs: {
 	MotherOfTerrariaBoss.DisplayName: Mother of Terraria
 }
 
-Projectiles.HeavenlySpear.DisplayName: Heavenly Spear
-Projectiles.GoldenDeathray.DisplayName: Golden Deathray
+Projectiles: {
+	HeavenlySpear.DisplayName: Heavenly Spear
+	GoldenDeathray.DisplayName: Golden Deathray
+}

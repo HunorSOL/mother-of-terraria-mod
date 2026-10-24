@@ -18,12 +18,15 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//   3. DEATH BEAM:  a thin line follows the player (the tell), then locks and a huge golden beam sweeps across.
 	//   ...then back to 1.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
-	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (PLACEHOLDER, 160x160, made by tools/make_boss_placeholder.py).
+	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 296x220 made by tools/make_boss_sheet.py: wings flap, hair and robe sway).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS; the real balance is Phase 6.
 	// SINGLEPLAYER-ONLY: OnKill talks to the local player's Basket (see HeavenlyBasketPlayer); multiplayer needs the server to do that.
 	public class MotherOfTerrariaBoss : ModNPC
 	{
-		private const float HoverHeight = 260f;     // how far above the player she floats (pixels)
+		private const int FrameCount = 8;
+		private const int TicksPerFrame = 6;        // wing-beat speed: one full flap takes 8 x 6 = 48 ticks
+
+		private const float HoverHeight = 300f;     // how far above the player she floats (pixels)
 		private const float SideSwing = 320f;       // how far she drifts left and right of the player
 		private const float MoveSpeed = 9f;
 
@@ -58,7 +61,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		public override void SetStaticDefaults()
 		{
-			Main.npcFrameCount[Type] = 1;
+			Main.npcFrameCount[Type] = FrameCount;
 			NPCID.Sets.MPAllowedEnemies[Type] = true;
 			NPCID.Sets.BossBestiaryPriority.Add(Type);
 			NPCID.Sets.NPCBestiaryDrawModifiers drawModifiers = new() { Hide = true }; // no bestiary entry until the real design exists
@@ -67,8 +70,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		public override void SetDefaults()
 		{
-			NPC.width = 90;
-			NPC.height = 130;
+			NPC.width = 110;         // her body (the wings are scenery, not a hitbox); the 296x220 picture is centred on it
+			NPC.height = 170;
 			NPC.damage = 200;        // contact damage (placeholder)
 			NPC.defense = 100;       // placeholder
 			NPC.lifeMax = 600000;    // placeholder, doubled by the owner on 2026-10-24 (Phase 6 balances it)
@@ -90,6 +93,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 			// theme (priority Event) while she is alive, and the theme returns when she is gone.
 			Music = MusicID.Boss2;
 			SceneEffectPriority = SceneEffectPriority.BossMedium;
+		}
+
+		// Plays the wing-beat animation on a loop.
+		public override void FindFrame(int frameHeight)
+		{
+			NPC.frameCounter++;
+			NPC.frame.Y = (int)(NPC.frameCounter / TicksPerFrame % FrameCount) * frameHeight;
 		}
 
 		public override void AI()
@@ -116,7 +126,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			Vector2 toGoal = goal - NPC.Center;
 			float speed = holding ? 0f : System.Math.Min(MoveSpeed, toGoal.Length() * 0.1f);
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.05f : 0.1f);
-			NPC.spriteDirection = NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
+			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1; // she faces the front, so the picture is never flipped
 
 			Timer++;
 			switch (CurrentAttack)
