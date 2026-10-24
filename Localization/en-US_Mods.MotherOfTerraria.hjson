@@ -68,4 +68,5 @@ Projectiles: {
 	LightWall.DisplayName: Light Wall
 	WingBeamLeft.DisplayName: Wing Beam Left
 	WingBeamRight.DisplayName: Wing Beam Right
+	HaloRing.DisplayName: Halo Ring
 }

@@ -250,6 +250,9 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 ### Decision: stage 2 starts at 60% health (owner, 2026-10-24)
 - The owner chose 60% (not the 50% I suggested) as the point where stage 2 begins. Nothing is built yet; the design is being discussed (the open questions are listed in the conversation: transition, look, which attacks, combos). Record the owner's answers here and in ROADMAP.md (Phase 6) before building.
 
+### Health +30% again (2026-10-24, owner; the boss bar now shows, confirmed by the owner)
+- 780000 -> 1014000 (placeholder). The boss health bar works (the [AutoloadBossHead] fix). Stage 2 at 60% health is now at about 608400 health lost, i.e. when 405600 remain.
+
 ## Not yet tested in-game
 0ab. Boss bar shows (with her icon); Halo Rings readable and fair.
 0aa. The fight is back to the pre-speed-up pace.

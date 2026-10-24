@@ -149,7 +149,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.height = 210;
 			NPC.damage = 200;        // contact damage (placeholder)
 			NPC.defense = 100;       // placeholder
-			NPC.lifeMax = 780000;    // placeholder: doubled to 600000 and then +30% to 780000 by the owner on 2026-10-24 (Phase 6 balances it)
+			NPC.lifeMax = 1014000;   // placeholder: doubled to 600000, +30% to 780000, +30% again to 1014000 by the owner on 2026-10-24 (Phase 6 balances it)
 			NPC.HitSound = SoundID.NPCHit5;
 			NPC.DeathSound = SoundID.NPCDeath6;
 			NPC.knockBackResist = 0f; // immune to knockback
