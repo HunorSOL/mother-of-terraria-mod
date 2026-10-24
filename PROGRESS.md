@@ -247,6 +247,9 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - NEW ATTACK 7: HALO RINGS (owner approved the design, gap 45 and damage 280, 2026-10-24): her halo flares gold for 0.7 s (a glow above her head), then 4 rings spread out from her, one every 0.7 s, at 6 px/tick (slow). Each ring is thin (28 px band) and has one 45-degree gap whose edges are marked by brighter bars; the gap is turned 30-90 degrees away from the direction of the player, alternating sides, so the player has to move along the ring. A player half in the gap is not hit. Damage 280. Code: Projectiles/HaloRing.cs (drawn in code, no art file), DoHaloRings in the boss class (HaloDamage, HaloTell, HaloRingsCount 4, HaloEvery 42). It ends 60 ticks after the last ring. The cycle is now: fan, burst, beam, stars, feathers, wing beams, halo rings.
 - To tune: ring speed and thickness (HaloRing.cs), gap width (GapWidth), count and spacing (boss class).
 
+### Decision: stage 2 starts at 60% health (owner, 2026-10-24)
+- The owner chose 60% (not the 50% I suggested) as the point where stage 2 begins. Nothing is built yet; the design is being discussed (the open questions are listed in the conversation: transition, look, which attacks, combos). Record the owner's answers here and in ROADMAP.md (Phase 6) before building.
+
 ## Not yet tested in-game
 0ab. Boss bar shows (with her icon); Halo Rings readable and fair.
 0aa. The fight is back to the pre-speed-up pace.
