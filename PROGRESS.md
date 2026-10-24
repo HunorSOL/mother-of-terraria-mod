@@ -232,7 +232,12 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - NEW: the tell line now FREEZES for the last 12 ticks before the beam fires (AimFreezeTicks in GoldenDeathray.cs), so the player can step off the marked line. The follow-then-freeze is the readable version of "the mark that follows you". If it is still too hard, raise AimFreezeTicks or lower TrackTurnPerTick; if too easy, the reverse.
 - The faster cycle is therefore a bit slower again in the beam attacks (a cycle is about 18.5 s of attack time). The other attacks keep their faster timings.
 
+### Stars back on the screen (2026-10-24, owner: "the stars are still too high up, they used to be in your screen when they started falling, roll back to that"; NOT YET TESTED)
+- ROLLED BACK: the stars hang 520 px above the player again (StarHeight in the boss class, never above row 200 px), so they are on the screen when they start to fall, and the fall speed is the original (acceleration 0.9, top speed 22). This undoes the "from the top of the map" change; flying above the stars dodges them again (the owner's decision). Kept: single row, the thick visible marks (the line scan to the bottom of the world is harmless).
+- If flying above them has to be stopped again later, an option that keeps them on screen: make the star keep falling from its hover point but ALSO have it hit anything it crosses on the way (it already does), or make a second set come from below. Ask before building.
+
 ## Not yet tested in-game
+0z. Stars start on the screen.
 0y. The beams are dodgeable again.
 0x. Star fall speed fair?
 0w. Single-row Falling Stars: back to a fair difficulty?
