@@ -144,7 +144,12 @@ Owner picked it from the idea list (next: Feather Storm, Halo Rings, then stage 
 - Not changed: the attacks themselves. The stars still hang 520 px above the player so they stay on screen; the beam and spears still start at her centre.
 - Texture note: the sheet is large (about 30 MB in memory); fine on a normal PC, but remember it for the performance check.
 
+### Smaller (fits the screen) and appears above the Basket (2026-10-24; BUILT, NOT YET TESTED)
+- Owner: 4x was too big, did not fit the screen. Now UPSCALE 3: frames 840x630 (about 52 x 39 tiles), sheet 840x5040; hitbox 260x420; stations pulled in about 20% (straight above -460, high left/right +-560,-350, above-left/right +-300,-500). Tuning: UPSCALE in tools/make_boss_sheet.py, hitbox in SetDefaults, Stations.
+- She now spawns 450 px above the Heavenly Basket (found by scanning the tiles around the player: HeavenlyBasketPlayer.FindBasketTop; falls back to the player) and flies to her stations from there.
+
 ## Not yet tested in-game
+0i. Her size on the screen and the spawn above the Basket.
 0h. The new size and hitbox, whether she fits the screen, and the calmer movement with occasional dashes.
 0g. Falling Stars: readable tell, fair gaps between the patches, star art, the tracking star.
 0f. The beam is thin and straight now.

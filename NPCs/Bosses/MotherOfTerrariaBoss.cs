@@ -22,7 +22,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//                  of light on the ground, and one last star follows you.
 	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
-	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 1120x840 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
+	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 840x630 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS; the real balance is Phase 6.
 	// SINGLEPLAYER-ONLY: OnKill talks to the local player's Basket (see HeavenlyBasketPlayer); multiplayer needs the server to do that.
 	public class MotherOfTerrariaBoss : ModNPC
@@ -36,11 +36,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// a slow drift, but every third attack (StationIndex divisible by 3) a fast dash with a golden after-image trail.
 		private static readonly Vector2[] Stations =
 		{
-			new Vector2(0f, -560f),      // straight above (a DASH goes here first)
-			new Vector2(-700f, -430f),   // high left
-			new Vector2(700f, -430f),    // high right
-			new Vector2(-380f, -600f),   // above, a little left
-			new Vector2(380f, -600f),    // above, a little right
+			new Vector2(0f, -460f),      // straight above (a DASH goes here first)
+			new Vector2(-560f, -350f),   // high left
+			new Vector2(560f, -350f),    // high right
+			new Vector2(-300f, -500f),   // above, a little left
+			new Vector2(300f, -500f),    // above, a little right
 		};
 		private const float DriftSpeed = 8f;        // normal speed between attacks (pixels per tick)
 		private const float DashSpeed = 24f;        // speed of the occasional dash
@@ -105,8 +105,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		public override void SetDefaults()
 		{
-			NPC.width = 340;         // her body (the wings are scenery, not a hitbox); the 1120x840 picture is centred on it
-			NPC.height = 560;
+			NPC.width = 260;         // her body (the wings are scenery, not a hitbox); the 840x630 picture is centred on it
+			NPC.height = 420;
 			NPC.damage = 200;        // contact damage (placeholder)
 			NPC.defense = 100;       // placeholder
 			NPC.lifeMax = 600000;    // placeholder, doubled by the owner on 2026-10-24 (Phase 6 balances it)

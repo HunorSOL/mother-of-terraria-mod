@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using MotherOfTerraria.Items;
 using MotherOfTerraria.NPCs.Bosses;
+using MotherOfTerraria.Tiles;
 using MotherOfTerraria.Subworlds;
 using SubworldLibrary;
 using Terraria;
@@ -151,15 +152,42 @@ namespace MotherOfTerraria.Common
 			}
 		}
 
-		// Spawns the Mother of Terraria above the player and hands over to the fight: FightActive stays true until
-		// she is killed (EndFight(true) from her OnKill) or the player dies (EndFight(false) from PostUpdate).
+		// Spawns the Mother of Terraria high above the Heavenly Basket and hands over to the fight: FightActive stays true
+		// until she is killed (EndFight(true) from her OnKill) or the player dies (EndFight(false) from PostUpdate).
 		// SINGLEPLAYER-ONLY: spawned from the local client; in multiplayer the server must do this.
 		private void SpawnBoss()
 		{
 			summoning = false;
-			NPC.NewNPC(Player.GetSource_Misc("MotherOfTerraria:Basket"), (int)Player.Center.X, (int)Player.Center.Y - 300,
-				ModContent.NPCType<MotherOfTerrariaBoss>());
+			Vector2 spawn = FindBasketTop() - new Vector2(0f, 450f);
+			NPC.NewNPC(Player.GetSource_Misc("MotherOfTerraria:Basket"), (int)spawn.X, (int)spawn.Y, ModContent.NPCType<MotherOfTerrariaBoss>());
 			SoundEngine.PlaySound(SoundID.Roar, Player.Center);
+		}
+
+		// The top middle of the Heavenly Basket (world pixels), found by looking for its tiles near the player.
+		// If none is found (the player is far away), the player's own position is used.
+		private Vector2 FindBasketTop()
+		{
+			int basket = ModContent.TileType<HeavenlyBasket>();
+			int px = (int)(Player.Center.X / 16f);
+			int py = (int)(Player.Center.Y / 16f);
+			int minX = int.MaxValue, maxX = int.MinValue, minY = int.MaxValue;
+			for (int i = px - 60; i <= px + 60; i++)
+			{
+				for (int j = py - 40; j <= py + 40; j++)
+				{
+					if (WorldGen.InWorld(i, j, 2) && Main.tile[i, j].HasTile && Main.tile[i, j].TileType == basket)
+					{
+						minX = System.Math.Min(minX, i);
+						maxX = System.Math.Max(maxX, i);
+						minY = System.Math.Min(minY, j);
+					}
+				}
+			}
+			if (minX == int.MaxValue)
+			{
+				return Player.Center;
+			}
+			return new Vector2((minX + maxX + 1) * 8f, minY * 16f);
 		}
 
 		// Ends the fight and empties the Basket: the boss calls it when killed (true); PostUpdate calls it when the player dies (false).
