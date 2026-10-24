@@ -4,13 +4,12 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
-using MotherOfTerraria.Systems;
 using Terraria.ModLoader;
 
 namespace MotherOfTerraria.Projectiles
 {
 	// One star of the Mother of Terraria's FALLING STARS attack (the owner's "Gold Crystal Star").
-	// 1. It appears high above the arena and HOVERS, pulsing, with a soft golden glow on the ground where it will land (the tell).
+	// 1. It appears high above the arena and HOVERS, pulsing, with a thin golden line down to the ground where it will land (the tell; the owner likes these marks, 2026-10-24: keep them).
 	// 2. When its delay is over it FALLS, faster and faster. The stars are given increasing delays, so they fall in a sweep (a rhythm).
 	// 3. Where it lands it explodes and leaves a burning patch of light (StarfirePatch) that stays for a few seconds.
 	// ai[0] = ticks to hover before falling, ai[1] = 1 for the "tracking" star that follows the player's sideways position
@@ -133,20 +132,18 @@ namespace MotherOfTerraria.Projectiles
 
 			if (!Falling)
 			{
-				// The tell: a soft golden glow on the ground where it will land, pulsing and brightening as the drop gets near
-				// (no beam or line: she only fires beams out of herself).
+				// The tell: a thin line to where it will land (it brightens as the drop gets near) and a pulsing star.
 				float ramp = Projectile.ai[0] <= 0f ? 1f : MathHelper.Clamp(Projectile.localAI[0] / Projectile.ai[0], 0f, 1f);
 				scale = 1f + 0.12f * (float)System.Math.Sin(Projectile.localAI[0] * 0.35f);
-				if (groundY > Projectile.Center.Y && HeavensSkyTextures.Ready)
+				float length = groundY - Projectile.Center.Y;
+				if (length > 0f)
 				{
 					Main.spriteBatch.End();
 					Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None,
 						RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-					Texture2D glow = HeavensSkyTextures.Soft;
-					float pulse = 1f + 0.15f * (float)System.Math.Sin(Projectile.localAI[0] * 0.3f);
-					Vector2 spot = new Vector2(Projectile.Center.X, groundY) - Main.screenPosition;
-					Main.spriteBatch.Draw(glow, spot, null, new Color(255, 210, 90, 0) * (0.25f + 0.55f * ramp), 0f, glow.Size() / 2f,
-						new Vector2(150f, 44f) * pulse * (0.6f + 0.4f * ramp) / glow.Width, SpriteEffects.None, 0f);
+					// Only the 1x1 corner of the magic pixel is used (the texture is bigger).
+					Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, position, new Rectangle(0, 0, 1, 1), new Color(255, 225, 120) * (0.15f + 0.45f * ramp),
+						MathHelper.PiOver2, new Vector2(0f, 0.5f), new Vector2(length, 2f + 3f * ramp), SpriteEffects.None, 0f);
 					Main.spriteBatch.End();
 					Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None,
 						RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

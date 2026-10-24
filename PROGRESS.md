@@ -191,6 +191,9 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
 - The owner sent a feather sheet (DesignRefs/feather_design.jpg: a big "2D main projectile" feather, an individual feather with a trail, a three-feather "spread shot / barrage", and an "impact effect"). The main feather is now the Feather Storm projectile: tools/make_feather.py cuts it out by colour (no glow, no sparkles), turns it to point up, shrinks it to 25x80 with 40 colours (Terraria look). The earlier placeholder is gone. Hit line lengthened to match (+-30 px).
 - NOT used yet: the spread-shot picture and the impact burst (a possible hit effect when a feather ends; for now it just fades). Ask the owner if they want them.
 
+### Star landing marks restored (2026-10-24, owner: "the marks for the landing stars were good, those can stay")
+- The thin golden line from each hovering star down to where it will land is BACK exactly as it was (I had replaced it with a ground glow, which is removed again). OWNER DECISION: keep these marks. The "no beams except out of her" rule therefore does not apply to these guide lines; it still applies to the attacks themselves (the Wing Wall stays removed).
+
 ## Not yet tested in-game
 0q. The feather art in the storm.
 0p. Feather look; Wing Beams (gap readable, follow it fair); star landing glow.

@@ -66,4 +66,6 @@ Projectiles: {
 	StarfirePatch.DisplayName: Starfire Patch
 	GoldenFeather.DisplayName: Golden Feather
 	LightWall.DisplayName: Light Wall
+	WingBeamLeft.DisplayName: Wing Beam Left
+	WingBeamRight.DisplayName: Wing Beam Right
 }
