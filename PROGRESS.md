@@ -224,7 +224,11 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - KEPT because the owner asked for them after the original: the stars fall from the very top of the map, and the line and ground marks are the thick visible ones. The faster fall speed also stays (it is needed for the long fall).
 - I read "the old falling star thing" as the single row. If the owner meant going back further (stars 520 px above the player, the thin faint marks, the slow fall), say so.
 
+### Falling stars slower (2026-10-24, owner: keep falling from the top of the map, reduce the falling speed; NOT YET TESTED)
+- Top-of-map spawn kept. Fall acceleration 1.5 -> 1.0 and top speed 34 -> 24 px/tick (GoldCrystalStar.cs: FallAcceleration, MaxFallSpeed), so the fall from the top to the islands takes about 2.5 s (was about 2 s). The first version was 0.9 and 22. Tune those two numbers if needed.
+
 ## Not yet tested in-game
+0x. Star fall speed fair?
 0w. Single-row Falling Stars: back to a fair difficulty?
 0v. The faster cycle: still readable? still beatable?
 0u. The star marks are clearly visible, from the top of the screen to the landing spot.

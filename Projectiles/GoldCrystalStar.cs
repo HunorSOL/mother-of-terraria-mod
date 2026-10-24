@@ -19,8 +19,8 @@ namespace MotherOfTerraria.Projectiles
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them). SINGLEPLAYER-ONLY: the patch is made on the owner's machine.
 	public class GoldCrystalStar : ModProjectile
 	{
-		private const float FallAcceleration = 1.5f;  // pixels per tick, per tick
-		private const float MaxFallSpeed = 34f;       // fast, because the stars now fall from the very top of the map (about 2 seconds to the islands)
+		private const float FallAcceleration = 1.0f;  // pixels per tick, per tick
+		private const float MaxFallSpeed = 24f;       // owner: slower (34 was too fast); the stars fall from the very top of the map, about 2.5 seconds to the islands
 		private const int LockBeforeFall = 25;        // the tracking star stops following this long before it drops
 		private const float FollowSpeed = 9f;
 		private static readonly Vector2 StarCentre = new Vector2(40.5f, 41.5f); // the middle of the 81x83 picture (the star only; the game draws the trail as sparks)
