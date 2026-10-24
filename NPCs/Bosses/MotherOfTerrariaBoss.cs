@@ -72,7 +72,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int StarDamage = 320;
 		private const int StarColumns = 7;
 		private const float StarSpacing = 190f;     // sideways gap between neighbouring stars
-		private const float StarHeight = 520f;      // how far above the player the stars hang
+		private const float StarTopY = 100f;        // the stars hang at the very top of the map (world pixels), so flying above them does not help
 		private const int StarSpawnAt = 30;         // she gathers light first
 		private const int StarHoverTicks = 45;      // how long the first star hangs before it drops (time to read the pattern)
 		private const int StarGap = 12;             // ticks between one star's drop and the next
@@ -357,7 +357,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 				if (Main.netMode != NetmodeID.MultiplayerClient)
 				{
 					int damage = NPC.GetAttackDamage_ForProjectiles(StarDamage, StarDamage * 0.8f);
-					float y = System.Math.Max(target.Center.Y - StarHeight, 200f);
+					float y = StarTopY;
 					bool leftToRight = Main.rand.NextBool();
 					for (int i = 0; i < StarColumns; i++)
 					{

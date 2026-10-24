@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 namespace MotherOfTerraria.Projectiles
 {
 	// One star of the Mother of Terraria's FALLING STARS attack (the owner's "Gold Crystal Star").
-	// 1. It appears high above the arena and HOVERS, pulsing, with a thin golden line down to the ground where it will land (the tell; the owner likes these marks, 2026-10-24: keep them).
+	// 1. It appears at the very TOP OF THE MAP (so flying above it never helps) and HOVERS (offscreen; the line below is what you see), pulsing, with a thin golden line down to the ground where it will land (the tell; the owner likes these marks, 2026-10-24: keep them).
 	// 2. When its delay is over it FALLS, faster and faster. The stars are given increasing delays, so they fall in a sweep (a rhythm).
 	// 3. Where it lands it explodes and leaves a burning patch of light (StarfirePatch) that stays for a few seconds.
 	// ai[0] = ticks to hover before falling, ai[1] = 1 for the "tracking" star that follows the player's sideways position
@@ -18,8 +18,8 @@ namespace MotherOfTerraria.Projectiles
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them). SINGLEPLAYER-ONLY: the patch is made on the owner's machine.
 	public class GoldCrystalStar : ModProjectile
 	{
-		private const float FallAcceleration = 0.9f;  // pixels per tick, per tick
-		private const float MaxFallSpeed = 22f;
+		private const float FallAcceleration = 1.5f;  // pixels per tick, per tick
+		private const float MaxFallSpeed = 34f;       // fast, because the stars now fall from the very top of the map (about 2 seconds to the islands)
 		private const int LockBeforeFall = 25;        // the tracking star stops following this long before it drops
 		private const float FollowSpeed = 9f;
 		private static readonly Vector2 StarCentre = new Vector2(40.5f, 41.5f); // the middle of the 81x83 picture (the star only; the game draws the trail as sparks)

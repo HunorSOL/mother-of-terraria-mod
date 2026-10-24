@@ -194,7 +194,11 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
 ### Star landing marks restored (2026-10-24, owner: "the marks for the landing stars were good, those can stay")
 - The thin golden line from each hovering star down to where it will land is BACK exactly as it was (I had replaced it with a ground glow, which is removed again). OWNER DECISION: keep these marks. The "no beams except out of her" rule therefore does not apply to these guide lines; it still applies to the attacks themselves (the Wing Wall stays removed).
 
+### Falling Stars from the top of the map (2026-10-24, owner: so they cannot be dodged by going above them; NOT YET TESTED)
+- The stars now spawn at the very top of the map (y = 100 px, StarTopY in the boss class) instead of 520 px above the player, so a player who flies high is still in their path. The thin tell lines now run from the top of the screen down to the landing spot. Fall acceleration 0.9 -> 1.5 and top speed 22 -> 34 (GoldCrystalStar.cs) so a fall of about 3700 px takes about 2 s instead of dragging on. Things to watch: stars hover offscreen so only the lines are visible; an island above a player still shelters them (a star lands on the first solid thing, as before); the tracking star now has a long fall, so the player can still step aside after it locks (lock is 25 ticks before the drop; shorten the fall or raise LockBeforeFall if it feels too easy).
+
 ## Not yet tested in-game
+0r. Falling Stars from the top: still fair? readable lines?
 0q. The feather art in the storm.
 0p. Feather look; Wing Beams (gap readable, follow it fair); star landing glow.
 0o. The new star art; the shorter rests (does it feel fast but fair?).
