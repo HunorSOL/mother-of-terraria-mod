@@ -125,7 +125,11 @@ Owner: the Celestial Spear replaces the boss's spear art; the Heavens enemies mu
 ### Beam retune (2026-10-24, owner: thinner, slower, not one hit but punishing; NOT YET TESTED)
 - Hit width 70 -> 28 px, drawn glow 130 -> 56 px, sweep 29 -> 14 degrees a second, damage 700 -> 350 base (no longer a near one-hit). It still burns (Hellfire 6 s) and a beam you stay in keeps hitting, so it stays punishing. Constants: GoldenDeathray.cs (SweepPerTick, BeamHitWidth, BeamDrawWidth) and LaserDamage in the boss class.
 
+### Beam fix (2026-10-24, owner: dashes good; beam too wide and not straight; NOT YET TESTED)
+- Cause: the beam was drawn by stretching the game's "magic pixel" texture as if it were 1x1, but that texture is bigger, so the beam was far wider than its numbers and its rotation origin was off (crooked). Now only the 1x1 corner is drawn (GoldenDeathray.Draw), so the drawn width is real (56 px glow, 16 px core) and it is a straight line from her centre. Sparks stay on the line. The hit width (28 px) was already a straight line.
+
 ## Not yet tested in-game
+0f. The beam is thin and straight now.
 0e. The retuned beam (thin, slow, 350 damage).
 0d. Celestial Spear look and hit line, enemies vanishing at the start of the summon, the dashes (speed, readability, after-images).
 0c. The boss's real sprite and its animation, and whether the hitbox (110x170) feels right against her size.

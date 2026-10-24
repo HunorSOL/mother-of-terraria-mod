@@ -105,7 +105,7 @@ namespace MotherOfTerraria.Projectiles
 				for (int i = 0; i < 3; i++)
 				{
 					Vector2 position = Projectile.Center + direction * Main.rand.NextFloat(80f, 1400f);
-					Dust dust = Dust.NewDustPerfect(position, DustID.GoldCoin, Main.rand.NextVector2Circular(2f, 2f), 0, default, 1.6f);
+					Dust dust = Dust.NewDustPerfect(position, DustID.GoldCoin, direction * 1.5f, 0, default, 1.2f); // sparks stay on the line
 					dust.noGravity = true;
 				}
 			}
@@ -163,7 +163,8 @@ namespace MotherOfTerraria.Projectiles
 
 		private static void Draw(Texture2D pixel, Vector2 start, float rotation, Vector2 origin, float length, float width, Color color)
 		{
-			Main.spriteBatch.Draw(pixel, start, null, color, rotation, origin, new Vector2(length, width), SpriteEffects.None, 0f);
+			// Only the 1x1 corner of the magic pixel is used (the texture itself is bigger), so the scale below is the real size in pixels.
+			Main.spriteBatch.Draw(pixel, start, new Rectangle(0, 0, 1, 1), color, rotation, origin, new Vector2(length, width), SpriteEffects.None, 0f);
 		}
 
 		public override bool ShouldUpdatePosition() => false;

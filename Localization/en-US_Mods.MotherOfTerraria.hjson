@@ -61,4 +61,5 @@ NPCs: {
 Projectiles: {
 	HeavenlySpear.DisplayName: Heavenly Spear
 	GoldenDeathray.DisplayName: Golden Deathray
+	CelestialSpear.DisplayName: Celestial Spear
 }
