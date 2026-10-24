@@ -151,7 +151,11 @@ Owner picked it from the idea list (next: Feather Storm, Halo Rings, then stage 
 ### Less movement (2026-10-24, owner: size is fine, she moves too much; NOT YET TESTED)
 - She now changes station only every 3rd attack (StationEvery), so she hangs in place for a whole fan-burst-beam run; one station change in three is the fast dash, the others a drift (7 px/tick). While she is within 110 px of her station she stays still even if the player moves a little (StayWithin), and the bob is smaller and slower. If it is still too much, raise StationEvery or StayWithin; if too still, lower them.
 
+### Smaller again (2026-10-24, owner: still out of the screen; NOT YET TESTED)
+- UPSCALE 3 -> 2: frames 560x420 (about 35 x 26 tiles), sheet 560x3360, hitbox 175x280 (two thirds of before). Stations pulled in to two thirds (straight above -310, high left/right +-375,-235, above-left/right +-200,-335), dead zone 80 px, spawn 330 px above the Basket. If it is still too big or now too small, change UPSCALE in tools/make_boss_sheet.py (and the hitbox, stations); for a size between 2 and 3, change WIDTH too (240 with UPSCALE 3 is about 630 wide).
+
 ## Not yet tested in-game
+0k. Her size after the second shrink.
 0j. She moves much less.
 0i. Her size on the screen and the spawn above the Basket.
 0h. The new size and hitbox, whether she fits the screen, and the calmer movement with occasional dashes.
