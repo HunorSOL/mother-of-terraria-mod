@@ -227,7 +227,13 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 ### Falling stars slower (2026-10-24, owner: keep falling from the top of the map, reduce the falling speed; NOT YET TESTED)
 - Top-of-map spawn kept. Fall acceleration 1.5 -> 1.0 and top speed 34 -> 24 px/tick (GoldCrystalStar.cs: FallAcceleration, MaxFallSpeed), so the fall from the top to the islands takes about 2.5 s (was about 2 s). The first version was 0.9 and 22. Tune those two numbers if needed.
 
+### Beams easier to dodge again (2026-10-24, owner: the beams became impossible to dodge, there used to be a mark that followed you; NOT YET TESTED)
+- Cause: in the "faster cycle" change I shortened the beam tell (75 -> 55 ticks), made the tell line follow faster (0.035 -> 0.045 rad/tick), and made the sweep faster, so the line stayed glued to the player right until it fired. Put back: tell 75, firing 150, follow speed 0.035, sweep 0.004 rad/tick (14 deg/s); Death Beam starts after 20 ticks, Wing Beams after 45, rests 15 (all as they were before the speed-up). This applies to the Wing Beams too (same projectile).
+- NEW: the tell line now FREEZES for the last 12 ticks before the beam fires (AimFreezeTicks in GoldenDeathray.cs), so the player can step off the marked line. The follow-then-freeze is the readable version of "the mark that follows you". If it is still too hard, raise AimFreezeTicks or lower TrackTurnPerTick; if too easy, the reverse.
+- The faster cycle is therefore a bit slower again in the beam attacks (a cycle is about 18.5 s of attack time). The other attacks keep their faster timings.
+
 ## Not yet tested in-game
+0y. The beams are dodgeable again.
 0x. Star fall speed fair?
 0w. Single-row Falling Stars: back to a fair difficulty?
 0v. The faster cycle: still readable? still beatable?

@@ -19,10 +19,11 @@ namespace MotherOfTerraria.Projectiles
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them).
 	public class GoldenDeathray : ModProjectile
 	{
-		public const int TellTicks = 55;
-		public const int BeamTicks = 105;
-		private const float TrackTurnPerTick = 0.045f;  // how fast the tell line follows the player (radians per tick)
-		private const float SweepPerTick = 0.0055f;     // how fast the locked beam sweeps (about 19 degrees a second; was 29 at first, then 14)
+		public const int TellTicks = 75;
+		public const int BeamTicks = 150;
+		private const int AimFreezeTicks = 12;         // the tell line stops following this long before the beam fires, so it can be dodged
+		private const float TrackTurnPerTick = 0.035f;  // how fast the tell line follows the player (radians per tick)
+		private const float SweepPerTick = 0.004f;      // how fast the locked beam sweeps (about 14 degrees a second)
 		private const float BeamLength = 2600f;         // long enough to cross the screen
 		private const float BeamHitWidth = 28f;         // the damaging thickness (pixels; was 70)
 		private const float BeamDrawWidth = 56f;        // the glowing outer thickness (was 130)
@@ -79,9 +80,9 @@ namespace MotherOfTerraria.Projectiles
 			{
 				if (!Firing)
 				{
-					// The tell: swing the line toward the nearest player.
+					// The tell: swing the line toward the nearest player, until the last few ticks, when it holds still.
 					Player target = Main.player[owner.target];
-					if (target.active && !target.dead)
+					if (target.active && !target.dead && Projectile.localAI[0] < TellTicks - AimFreezeTicks)
 					{
 						float wanted = (target.Center - Projectile.Center).ToRotation() + AimOffset;
 						float turn = MathHelper.Clamp(MathHelper.WrapAngle(wanted - Projectile.ai[1]), -TrackTurnPerTick, TrackTurnPerTick);

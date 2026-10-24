@@ -61,7 +61,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int RingSpears = 18;          // spears per ring in the burst
 		private const float RingSpearSpeed = 8.5f;
 
-		private const int BeamStart = 12;           // the beam attack waits this long first so she can reach her station
+		private const int BeamStart = 20;           // the beam attack waits this long first so she can reach her station
 		private const int LaserDamage = 350;        // punishing but NOT a one-hit kill (was 700): it hurts hard, burns (Hellfire), and a beam you stay in hits again and again
 
 		// Times in ticks (60 per second), counted from the start of each attack.
@@ -94,9 +94,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// then a golden beam fires OUT OF EACH WING TIP. They are aimed to either side of you (you stand in the gap between
 		// them) and sweep the same way, so the gap slides sideways and you have to move with it. Nothing but her own beams.
 		private const int WingBeamDamage = 280;
-		private const int WingBeamsStart = 32;      // she spreads her wings first; the beams' own tell (thin lines) runs after that
-		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 6;
-		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 6;
+		private const int WingBeamsStart = 45;      // she spreads her wings first; the beams' own tell (thin lines) runs after that
+		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
+		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
 		private const int AttackCount = 6;
 
