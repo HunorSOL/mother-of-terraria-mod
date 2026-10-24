@@ -167,7 +167,16 @@ Owner: saving the Heavens works ("good job"); make the boss smaller; continue wi
 - NEW ATTACK 5: FEATHER STORM (boss class: FeatherDamage 180, FeatherTell 40, FeatherEmits 70, FeatherEvery 4, FeatherArms 3, FeatherTurn 0.04). The wings beat twice as fast for the tell, with gold dust at the wing tips; then every 4 ticks she throws one feather per arm (3 arms, 120 degrees apart) and the whole spiral turns slowly one way for the first half and back the other way for the second half. Feathers (Projectiles/GoldenFeather.cs, placeholder art Projectiles/GoldenFeather.png made by tools/make_feather.py) start slow (5) and speed up to 11, pass through walls, last 7 s. The cycle is now fan, burst, beam, stars, feathers.
 - Next planned (owner liked them): Halo Rings, then stage 2 (Star Constellation, Judgment Mark, Protective Barrier; Healing Orbs and Guardians optional). The stage 2 trigger (suggested: 50% health) still needs the owner's OK.
 
+### New attack: Wing Wall (2026-10-24; BUILT, NOT YET TESTED)
+Owner: "lets do the wing one" (idea 5 of the list: wings spread, a golden wall of light sweeps in with a single gap).
+- Sixth attack in the cycle: fan, burst, beam, stars, feathers, WALL. Boss class: WallDamage 260, WallTell 45, WallFirstDelay 50, WallSecondDelay 150, WallStartDistance 1000, WallGapRange 250, WallGapShift 240.
+- Tell: she holds her wings spread (animation frame 2, WingsSpreadFrame) with gold dust at the wing tips for 0.75 s. Then two walls appear at the edge of the screen (1000 px to the side of the player, same side for both). Each wall is faint, with the gap marked by bright caps, for 50 ticks (first) or 150 ticks (second), then turns solid and sweeps across at 12 px/tick (about 3.2 s to cross 2300 px). The first gap is near the player's height (within +-250 px), the second is 240-330 px higher or lower, so the player has to change height between the walls. The gap is 230 px tall.
+- Why same side: walls from opposite sides would cross in the middle with gaps at different heights, which can be impossible to survive.
+- Code: Projectiles/LightWall.cs (drawn in code, no art file). Parameters in ai[]: direction, gap height, delay.
+- To tune: gap size (HalfGap in LightWall.cs), speed, delays, damage.
+
 ## Not yet tested in-game
+0n. Wing Wall: readable gaps, enough time to change height, fair damage.
 0m. The smaller boss; the island above the Basket is gone (try both a NEW world and the already-saved one); Feather Storm: readable tell, fair gaps, spiral turns back.
 0l. Blocks placed in the Heavens survive leaving and returning.
 0k. Her size after the second shrink.

@@ -22,6 +22,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//                  of light on the ground, and one last star follows you.
 	//   5. FEATHER STORM: she beats her wings hard (the tell), then three spiral arms of golden feathers turn slowly one way
 	//                  and then the other.
+	//   6. WING WALL:   she spreads her wings wide (the tell), then two walls of golden light sweep across the arena, each with one gap
+	//                  at a different height.
 	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
 	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 420x332 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
@@ -30,6 +32,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 	public class MotherOfTerrariaBoss : ModNPC
 	{
 		private const int FrameCount = 8;
+		private const int WingsSpreadFrame = 2;   // the animation frame where the wings are raised highest
 		private const int TicksPerFrame = 6;        // wing-beat speed: one full flap takes 8 x 6 = 48 ticks
 
 		// MOVEMENT (like the big, calm final bosses of Calamity: she is huge, drifts slowly above the player, and only
@@ -85,9 +88,19 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
 		private const float FeatherStartSpeed = 5f;
 		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 110;  // + time for the last feathers to clear and a rest
+		// WING WALL: she spreads her wings wide and holds them there (the tell), then two walls of golden light sweep across
+		// the arena one after the other, from the same side, each with a single gap at a different height.
+		private const int WallDamage = 260;
+		private const int WallTell = 45;
+		private const int WallFirstDelay = 50;      // how long the first wall waits at the screen edge (faint, with its gap marked)
+		private const int WallSecondDelay = 150;    // the second wall waits longer, so the two come 100 ticks apart
+		private const float WallStartDistance = 1000f; // how far to the side of the player the walls wait
+		private const float WallGapRange = 250f;    // how far above or below the player's height the first gap may be
+		private const float WallGapShift = 240f;    // the second gap is at least this far from the first
+		private const int WallEnd = WallTell + WallSecondDelay + (int)(LightWall.TravelDistance / LightWall.Speed) + 40;
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 50;
 
-		private const int AttackCount = 5;
+		private const int AttackCount = 6;
 
 		private enum Attack
 		{
@@ -96,6 +109,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			DeathBeam = 2,
 			FallingStars = 3,
 			FeatherStorm = 4,
+			WingWall = 5,
 		}
 
 		private Attack CurrentAttack
@@ -173,6 +187,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 			bool beatingHard = CurrentAttack == Attack.FeatherStorm && Timer < FeatherTell + 30; // the wings beat twice as fast before the storm
 			NPC.frameCounter += beatingHard ? 2 : 1;
 			NPC.frame.Y = (int)(NPC.frameCounter / TicksPerFrame % FrameCount) * frameHeight;
+			if (CurrentAttack == Attack.WingWall && Timer > 8 && Timer < WallTell + 90)
+			{
+				NPC.frame.Y = WingsSpreadFrame * frameHeight; // wings held wide for the Wing Wall
+			}
 		}
 
 		public override void AI()
@@ -223,6 +241,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.FeatherStorm:
 					DoFeatherStorm();
+					break;
+				case Attack.WingWall:
+					DoWingWall(target);
 					break;
 			}
 		}
@@ -398,6 +419,43 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= FeatherEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// She holds her wings spread (see FindFrame), then two walls of light cross the arena. Each has one gap: the first is
+		// near the player's height (a short move), the second is clearly higher or lower, so you must change height between them.
+		private void DoWingWall(Player target)
+		{
+			if (Timer > 0 && Timer < WallTell)
+			{
+				GatherLight(1.2f);
+				for (int side = -1; side <= 1; side += 2)
+				{
+					Dust dust = Dust.NewDustPerfect(NPC.Center + new Vector2(side * Main.rand.NextFloat(120f, 210f), Main.rand.NextFloat(-110f, 20f)),
+						DustID.GoldCoin, new Vector2(side * 1.5f, -1f), 0, default, 1.4f);
+					dust.noGravity = true;
+				}
+			}
+			if (Timer == WallTell)
+			{
+				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					int damage = NPC.GetAttackDamage_ForProjectiles(WallDamage, WallDamage * 0.8f);
+					float direction = Main.rand.NextBool() ? 1f : -1f;
+					float startX = target.Center.X - direction * WallStartDistance;
+					float gap1 = target.Center.Y + Main.rand.NextFloat(-WallGapRange, WallGapRange);
+					float shift = Main.rand.NextFloat(WallGapShift, WallGapShift + 90f) * (Main.rand.NextBool() ? 1f : -1f);
+					float gap2 = gap1 + shift;
+					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(startX, gap1), Vector2.Zero, ModContent.ProjectileType<LightWall>(),
+						damage, 0f, Main.myPlayer, direction, gap1, WallFirstDelay);
+					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(startX, gap2), Vector2.Zero, ModContent.ProjectileType<LightWall>(),
+						damage, 0f, Main.myPlayer, direction, gap2, WallSecondDelay);
+				}
+			}
+			if (Timer >= WallEnd)
 			{
 				NextAttack();
 			}
