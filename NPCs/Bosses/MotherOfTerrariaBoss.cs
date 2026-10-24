@@ -76,8 +76,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int StarSpawnAt = 30;         // she gathers light first
 		private const int StarHoverTicks = 45;      // how long the first star hangs before it drops (time to read the pattern)
 		private const int StarGap = 12;             // ticks between one star's drop and the next
+		private const int StarRowPause = 25;       // pause between the first row of stars and the second
 		private const int StarTrackerExtra = 40;    // the following star drops this long after the last row star
-		private const int StarsEnd = StarSpawnAt + StarHoverTicks + StarColumns * StarGap + StarTrackerExtra + 25; // the last star has just dropped; she does not wait for it to land
+		private const int StarsEnd = StarSpawnAt + StarHoverTicks + 2 * (StarColumns * StarGap + StarRowPause) + StarTrackerExtra + 25; // the last star has just dropped; she does not wait for it to land
 		// FEATHER STORM: she beats her wings hard (the flap speeds up: the tell), then throws three spiral arms of golden
 		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
 		private const int FeatherDamage = 180;
@@ -358,16 +359,24 @@ namespace MotherOfTerraria.NPCs.Bosses
 				{
 					int damage = NPC.GetAttackDamage_ForProjectiles(StarDamage, StarDamage * 0.8f);
 					float y = StarTopY;
+					// TWO rows of stars (doubled, owner request 2026-10-24): the first row, then a second row half a gap to the side
+					// that fills in the spaces and sweeps the opposite way, then the one star that follows the player.
 					bool leftToRight = Main.rand.NextBool();
-					for (int i = 0; i < StarColumns; i++)
+					float secondRowShift = StarSpacing / 2f * (Main.rand.NextBool() ? 1f : -1f);
+					int secondRowDelay = StarColumns * StarGap + StarRowPause;
+					for (int row = 0; row < 2; row++)
 					{
-						int order = leftToRight ? i : StarColumns - 1 - i; // which star drops first
-						float x = target.Center.X + (i - (StarColumns - 1) / 2f) * StarSpacing;
-						Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(x, y), Vector2.Zero, ModContent.ProjectileType<GoldCrystalStar>(),
-							damage, 0f, Main.myPlayer, StarHoverTicks + order * StarGap, 0f);
+						for (int i = 0; i < StarColumns; i++)
+						{
+							bool forward = (row == 0) == leftToRight;
+							int order = forward ? i : StarColumns - 1 - i; // which star of the row drops first
+							float x = target.Center.X + (i - (StarColumns - 1) / 2f) * StarSpacing + (row == 1 ? secondRowShift : 0f);
+							Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(x, y), Vector2.Zero, ModContent.ProjectileType<GoldCrystalStar>(),
+								damage, 0f, Main.myPlayer, StarHoverTicks + row * secondRowDelay + order * StarGap, 0f);
+						}
 					}
 					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(target.Center.X, y), Vector2.Zero, ModContent.ProjectileType<GoldCrystalStar>(),
-						damage, 0f, Main.myPlayer, StarHoverTicks + StarColumns * StarGap + StarTrackerExtra, 1f);
+						damage, 0f, Main.myPlayer, StarHoverTicks + 2 * secondRowDelay + StarTrackerExtra, 1f);
 				}
 			}
 			if (Timer >= StarsEnd)

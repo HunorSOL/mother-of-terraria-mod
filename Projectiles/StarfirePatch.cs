@@ -14,10 +14,10 @@ namespace MotherOfTerraria.Projectiles
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them).
 	public class StarfirePatch : ModProjectile
 	{
-		public const float PatchWidth = 104f;
+		public const float PatchWidth = 96f;
 		public const float PatchHeight = 44f;
 		public const float DamageFraction = 0.4f;   // the patch hurts 40% as much as the star's direct hit
-		private const int LifeTicks = 60 * 5;
+		private const int LifeTicks = 60 * 4;
 		private const int LightUpTicks = 20;
 		private const int FadeTicks = 45;
 

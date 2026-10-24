@@ -201,7 +201,12 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
 - Likely cause: tModLoader's standard boss bar needs the boss to have a boss head icon, and she had none (NPC.boss = true alone is not enough). Added NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png (48x48, her face, crown and halo, cut from the first sprite frame by tools/make_boss_sheet.py; tModLoader loads files named <NPC>_Head_Boss.png on its own). That gives her the standard bar with her icon, and also shows her icon on the map. If the bar is STILL missing in-game, the next step is a custom ModBossBar class; check the client.log for errors.
 - The icon is a placeholder crop; the owner may want a hand-made icon.
 
+### Falling Stars doubled (2026-10-24, owner: "have more stars, double them"; NOT YET TESTED)
+- Now TWO rows of 7 stars (14, plus the tracking star): the first row as before, then after a 25 tick pause a second row shifted half a gap (95 px, to a random side) so it lands in the spaces, sweeping the OPPOSITE way. Constants: StarRowPause 25 in the boss class (StarColumns 7, StarSpacing 190, StarGap 12 unchanged). The tracking star drops last. The attack lasts about 2 s longer.
+- To keep the ground from burning all attack, the patches are a little narrower (104 -> 96 px) and burn 4 s instead of 5 (StarfirePatch.cs). With two rows the second row's patches land between the first row's, so the whole floor is on fire for a moment: players can fly above the flames (the stars still come from the top of the map). If it is too much, raise StarSpacing, drop the second row to fewer stars, or shorten the patch life further.
+
 ## Not yet tested in-game
+0t. Doubled falling stars: fair? is the burning floor too much?
 0s. The boss health bar appears (with her face) when she spawns.
 0r. Falling Stars from the top: still fair? readable lines?
 0q. The feather art in the storm.
