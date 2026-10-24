@@ -14,7 +14,7 @@ namespace MotherOfTerraria.Projectiles
 	// 3. Where it lands it explodes and leaves a burning patch of light (StarfirePatch) that stays for a few seconds.
 	// ai[0] = ticks to hover before falling, ai[1] = 1 for the "tracking" star that follows the player's sideways position
 	// while it hovers and locks 25 ticks before it falls.
-	// Texture: Projectiles/GoldCrystalStar.png (51x72, the comet trail streams UP; made by tools/make_gold_star.py).
+	// Texture: Projectiles/GoldCrystalStar.png (81x83, the star only; made by tools/make_gold_star.py). The comet trail is made of sparks while it falls.
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them). SINGLEPLAYER-ONLY: the patch is made on the owner's machine.
 	public class GoldCrystalStar : ModProjectile
 	{
@@ -22,15 +22,15 @@ namespace MotherOfTerraria.Projectiles
 		private const float MaxFallSpeed = 22f;
 		private const int LockBeforeFall = 25;        // the tracking star stops following this long before it drops
 		private const float FollowSpeed = 9f;
-		private static readonly Vector2 StarCentre = new Vector2(25.5f, 46f); // the star's middle on the 51x72 picture
+		private static readonly Vector2 StarCentre = new Vector2(40.5f, 41.5f); // the middle of the 81x83 picture (the star only; the game draws the trail as sparks)
 
 		private bool Falling => Projectile.localAI[0] >= Projectile.ai[0];
 		private float groundY; // where the line to the ground ends (a world position)
 
 		public override void SetDefaults()
 		{
-			Projectile.width = 34;
-			Projectile.height = 34;
+			Projectile.width = 52;
+			Projectile.height = 52;
 			Projectile.hostile = true;
 			Projectile.friendly = false;
 			Projectile.penetrate = 1;
@@ -72,9 +72,11 @@ namespace MotherOfTerraria.Projectiles
 				Projectile.tileCollide = true;
 			}
 
-			if (Main.rand.NextBool(2))
+			// A comet trail of blue and gold sparks streaming up behind it.
+			for (int i = 0; i < 2; i++)
 			{
-				Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(Main.rand.NextFloat(-10f, 10f), -18f), DustID.GoldCoin, new Vector2(0f, -1.5f), 0, default, 1.2f);
+				Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(Main.rand.NextFloat(-18f, 18f), Main.rand.NextFloat(-45f, -20f)),
+					Main.rand.NextBool(3) ? DustID.GoldCoin : DustID.GemSapphire, new Vector2(0f, -Main.rand.NextFloat(1f, 3f)), 0, default, 1.3f);
 				dust.noGravity = true;
 			}
 		}

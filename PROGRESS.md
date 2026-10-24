@@ -175,7 +175,12 @@ Owner: "lets do the wing one" (idea 5 of the list: wings spread, a golden wall o
 - Code: Projectiles/LightWall.cs (drawn in code, no art file). Parameters in ai[]: direction, gap height, delay.
 - To tune: gap size (HalfGap in LightWall.cs), speed, delays, damage.
 
+### Star art and a faster boss (2026-10-24, owner: the stars she shoots look ugly and are not my designs; make her faster, she is vulnerable after her attacks; NOT YET TESTED)
+- Stars: the earlier sprite shrank the owner's star WITH its blue trail to 51x72 px and 32 colours, so it looked muddy. Now tools/make_gold_star.py crops to the star only (the trail removed, including leftover blue bits), 81x83 px, 64 colours, so the gold shading and blue crystal survive; the comet trail is sparks drawn in code. Hitbox 52 px (was 34). I read "the stars thing" as the Falling Stars (made from the owner's Gold Crystal Star). The FEATHERS are my own placeholder drawing (the owner's sheet has no feather), so they may be what looked ugly: ask the owner; if so, a feather cut from the wing art or a real design is the fix.
+- Faster: the rests after attacks are cut. Fan ends 55 (was 90), burst 100 (was 130), beam 15 after (was 50) and it starts after 20 ticks (was 30), stars end 25 after the last drop (was 120), feathers 25 after the last throw (was 110), wall 30 after the second wall starts moving (was 40 after it finished crossing). She moves on while the last projectiles are still flying. Tells are unchanged, so every attack stays readable. The whole cycle is roughly 40% shorter. If it is still too slow, shorten the tells and rests (constants at the top of the boss class); if too hectic, add a few ticks back.
+
 ## Not yet tested in-game
+0o. The new star art; the shorter rests (does it feel fast but fair?).
 0n. Wing Wall: readable gaps, enough time to change height, fair damage.
 0m. The smaller boss; the island above the Basket is gone (try both a NEW world and the already-saved one); Feather Storm: readable tell, fair gaps, spiral turns back.
 0l. Blocks placed in the Heavens survive leaving and returning.

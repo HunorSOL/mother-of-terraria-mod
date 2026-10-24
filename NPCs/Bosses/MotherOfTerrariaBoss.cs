@@ -61,12 +61,12 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int RingSpears = 18;          // spears per ring in the burst
 		private const float RingSpearSpeed = 7f;
 
-		private const int BeamStart = 30;           // the beam attack waits this long first so she can reach her station
+		private const int BeamStart = 20;           // the beam attack waits this long first so she can reach her station
 		private const int LaserDamage = 350;        // punishing but NOT a one-hit kill (was 700): it hurts hard, burns (Hellfire), and a beam you stay in hits again and again
 
 		// Times in ticks (60 per second), counted from the start of each attack.
-		private const int FanTell = 30, FanEnd = 90;
-		private const int BurstTell = 45, BurstSecondWave = 80, BurstEnd = 130;
+		private const int FanTell = 30, FanEnd = 55;
+		private const int BurstTell = 45, BurstSecondWave = 80, BurstEnd = 100;
 		// FALLING STARS: a row of stars hangs high above the arena (each with a line down to where it will land), then they
 		// fall one after another in a sweep, and each leaves a burning patch of light on the ground. One extra star follows you.
 		private const int StarDamage = 320;
@@ -77,7 +77,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int StarHoverTicks = 45;      // how long the first star hangs before it drops (time to read the pattern)
 		private const int StarGap = 12;             // ticks between one star's drop and the next
 		private const int StarTrackerExtra = 40;    // the following star drops this long after the last row star
-		private const int StarsEnd = StarSpawnAt + StarHoverTicks + StarColumns * StarGap + StarTrackerExtra + 50 + 70; // + fall time + a rest
+		private const int StarsEnd = StarSpawnAt + StarHoverTicks + StarColumns * StarGap + StarTrackerExtra + 25; // the last star has just dropped; she does not wait for it to land
 		// FEATHER STORM: she beats her wings hard (the flap speeds up: the tell), then throws three spiral arms of golden
 		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
 		private const int FeatherDamage = 180;
@@ -87,7 +87,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int FeatherArms = 3;
 		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
 		private const float FeatherStartSpeed = 5f;
-		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 110;  // + time for the last feathers to clear and a rest
+		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 25;  // she moves on while the last feathers are still flying
 		// WING WALL: she spreads her wings wide and holds them there (the tell), then two walls of golden light sweep across
 		// the arena one after the other, from the same side, each with a single gap at a different height.
 		private const int WallDamage = 260;
@@ -97,8 +97,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float WallStartDistance = 1000f; // how far to the side of the player the walls wait
 		private const float WallGapRange = 250f;    // how far above or below the player's height the first gap may be
 		private const float WallGapShift = 240f;    // the second gap is at least this far from the first
-		private const int WallEnd = WallTell + WallSecondDelay + (int)(LightWall.TravelDistance / LightWall.Speed) + 40;
-		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 50;
+		private const int WallEnd = WallTell + WallSecondDelay + 30; // she moves on as the second wall starts to cross
+		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
 		private const int AttackCount = 6;
 
