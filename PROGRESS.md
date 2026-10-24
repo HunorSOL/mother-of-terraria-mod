@@ -1,13 +1,32 @@
 # Progress
 
-Last updated: 2026-10-24 (Phase 5 skeleton plus first-stage attack cycle).
+Last updated: end of day 2026-10-24 (session 3: Phase 5 boss built with a seven-attack first stage; pushed to GitHub at the owner's request).
 Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
 ## Where we are
 - Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
 - Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Built and seen in-game: enemies (tuned), island look, atmosphere, island details, theme music. Skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up).
-- Phase 3 (the Heavenly Basket) COMPLETE (owner, 2026-10-14). Phase 4 (summon sequence) CONFIRMED working by the owner (2026-10-24, along with everything else on the test list). Phase 5 (boss skeleton) BUILT 2026-10-24, awaiting the owner's test; the Basket-emptying rule is hooked up. Phase 6 onward not started.
+- Phase 3 (the Heavenly Basket) COMPLETE (owner, 2026-10-14). Phase 4 (summon sequence) CONFIRMED working (owner, 2026-10-24).
+- Phase 5 (boss skeleton) and the FIRST STAGE of Phase 6 are BUILT and being tested by the owner: the Mother of Terraria with seven attacks in a loop, her real sprite, a health bar, loot placeholder, and the Basket-emptying rule hooked up. The owner has tested most of it and tuned it (see "Current state of the boss" just below, then the dated sections further down for the history and the reasons). NEXT: stage 2 (starts at 60% health, owner decision); the design is waiting for the owner's answers to five questions (see "Next").
+- The Heavens is now SAVED with the world (the owner can build there); the floater above the Basket was removed.
+
+## Current state of the boss (end of 2026-10-24; the dated sections below explain each change and why)
+- **Where it lives:** NPCs/Bosses/MotherOfTerrariaBoss.cs (class name is not MotherOfTerraria because that is the mod's name). Marked [AutoloadBossHead] (needed for the boss bar), head icon NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png.
+- **Body:** health EXACTLY 1,014,000 (constant BossLife, set again in OnSpawn after the game's difficulty scaling; the owner tests on Journey), defense 100, contact damage 200, knockback-immune, flies through terrain. Sprite: the owner's design, 8 frames of 420x332 (tools/make_boss_sheet.py: WIDTH 240, UPSCALE 2), hitbox 130x210 (her body, not the wings). Music: vanilla Boss2 stands in, priority BossMedium. Standard boss bar works. Loot: placeholder 20-30 Lunar Bars only (no bag, trophy, relic yet).
+- **Spawn:** the Basket sequence spawns her 250 px above the Basket. While the sequence runs and while she lives, knights and dragons are removed and do not spawn (Common/HeavensEnemyCleaner.cs). The Basket empties on her death, or when the player dies; leaving the Heavens mid-fight keeps the crystals (my default, owner has not objected).
+- **Movement:** five stations around the player (straight above, high left, high right, above-left, above-right). She moves to the next station only every 3rd attack; one move in three is a fast dash (24 px/tick) with a golden after-image trail, the others a slow drift (7). She stays put when within 60 px of her station.
+- **The attack loop (fixed order, then repeats):**
+  1. Spear fan: 3 Celestial Spears (the owner's spear art), slightly homing, aimed at the player; tell 30 ticks, ends at 55; damage 150; speed 9.
+  2. Spear burst: two rings of 18 Celestial Spears in all directions (second ring offset by half a gap), speed 7; tell 45; ends at 100.
+  3. Death beam: a thin line follows the player for 75 ticks and freezes for the last 12, then a thin golden beam (28 px hit width, 56 drawn) fires for 150 ticks and sweeps slowly (about 14 deg/s); damage 350 and Hellfire 6 s. Comes out of her chest.
+  4. Falling stars: one row of 7 Gold Crystal Stars (the owner's art) hang 520 px above the player, each with a thick golden line and a ground glow marking where it lands, then drop one after another in a sweep, plus one star that follows the player and locks 25 ticks before its drop. Star damage 320; each landing leaves a Starfire patch (104x44, 5 s, 40% damage). Constant StarRows = 1 (2 is the doubled version the owner found too hard).
+  5. Feather storm: wings beat fast (tell 40), then 3 spiral arms of the owner's feather projectile that turn one way and back; one throw every 4 ticks for 70 throws; damage 180; feathers speed up from 5 to 11.
+  6. Wing beams: she spreads her wings; a beam fires out of each wing tip, each aimed to one side of the player (gap between them), both sweep the same way; damage 280. (Replaced the first "Wing Wall" idea: the owner's rule is that beams only come out of her.)
+  7. Halo rings: her halo flares (tell 42), then 4 slow rings (6 px/tick) spread out one every 42 ticks, each with one 45-degree gap marked by bright bars; the gap sits 30-90 degrees from where the player is, alternating sides; damage 280.
+- **Owner's rules for her:** make her harder with NEW attacks and a second stage, never by speeding things up (the speed-up was rolled back, "just hard and annoying"); every attack needs a clear tell; beams only come out of her (the star guide lines are the one exception, the owner likes them); size is fine as it is; she must not stay still but also not move too much.
+- **Stage 2:** NOT built. Owner decision: it begins at 60% health. Open questions for the owner: (1) the transition (invulnerable with 3 breakable crystals, or a simple pause), (2) a stage 2 look (a second sprite from the owner, or a tinted placeholder), (3) which new attacks (Star Constellation, Judgment Mark, Healing Orbs, Guardians; I suggested starting with Judgment Mark and Star Constellation), (4) whether the old attacks stay the same or get extra layers (6 rings, a fourth feather arm), (5) a fixed or random order.
+- **Debug items for testing:** Debug Starter Kit (Sigil, shortsword, Teleporter, 30 crystals), Debug Boss Summoner (craft from 1 Dirt + 1 Stone; summons her at once inside the Heavens). Both to be removed before release.
 
 ## What we did on 2026-10-12
 
@@ -257,36 +276,16 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - The bar showed about half of the code's number (the game scales boss health by difficulty, and on Journey by the enemy-difficulty slider). Now MotherOfTerrariaBoss.OnSpawn sets lifeMax and life to the constant BossLife (1,014,000) after the scaling, so the bar shows exactly that, whatever the difficulty or the slider. CHANGE BossLife to change her health. Side effect: the Journey slider no longer changes her health. For multiplayer later (Phase 8), scaling by player count may be wanted back (ApplyDifficultyAndPlayerScaling).
 - NOTE: this DOUBLES what the owner saw (about 507k -> 1,014,000). The owner asked for the real number, but if the fight now feels too long, change BossLife (for example 507000 keeps what the owner had been testing against).
 
-## Not yet tested in-game
-0ac. The bar shows 1,014,000.
-0ab. Boss bar shows (with her icon); Halo Rings readable and fair.
-0aa. The fight is back to the pre-speed-up pace.
-0z. Stars start on the screen.
-0y. The beams are dodgeable again.
-0x. Star fall speed fair?
-0w. Single-row Falling Stars: back to a fair difficulty?
-0v. The faster cycle: still readable? still beatable?
-0u. The star marks are clearly visible, from the top of the screen to the landing spot.
-0t. Doubled falling stars: fair? is the burning floor too much?
-0s. The boss health bar appears (with her face) when she spawns.
-0r. Falling Stars from the top: still fair? readable lines?
-0q. The feather art in the storm.
-0p. Feather look; Wing Beams (gap readable, follow it fair); star landing glow.
-0o. The new star art; the shorter rests (does it feel fast but fair?).
-0n. Wing Wall: readable gaps, enough time to change height, fair damage.
-0m. The smaller boss; the island above the Basket is gone (try both a NEW world and the already-saved one); Feather Storm: readable tell, fair gaps, spiral turns back.
-0l. Blocks placed in the Heavens survive leaving and returning.
-0k. Her size after the second shrink.
-0j. She moves much less.
-0i. Her size on the screen and the spawn above the Basket.
-0h. The new size and hitbox, whether she fits the screen, and the calmer movement with occasional dashes.
-0g. Falling Stars: readable tell, fair gaps between the patches, star art, the tracking star.
-0f. The beam is thin and straight now.
-0e. The retuned beam (thin, slow, 350 damage).
-0d. Celestial Spear look and hit line, enemies vanishing at the start of the summon, the dashes (speed, readability, after-images).
-0c. The boss's real sprite and its animation, and whether the hitbox (110x170) feels right against her size.
-0b. The boss's first-stage attacks and the doubled health (the section above).
-0a. PHASE 5 (2026-10-24): see the section above. Test steps are in the message that closed that session.
+## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
+The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
+STILL TO CHECK IN-GAME:
+- Her health: the bar must now show exactly 1,014,000 (it showed about half before the OnSpawn fix). If the fight is too long, change BossLife.
+- Halo Rings: readable, fair at 6 px/tick with a 45-degree gap and 280 damage.
+- Wing Beams (the gap between the two beams) and the beam aim freeze (12 ticks).
+- Falling Stars as they are now (stars 520 px above, single row, original speed, thick marks).
+- The pace after the roll-back of the speed-up (spears 9, burst, feathers, movement every 3rd attack).
+- Her smaller size (frame 420x332) against the screen and her hitbox (130x210); the Heavens save (blocks stay after leaving; the Basket keeps its crystals); the one-time removal of the floater above the Basket in an already saved Heavens.
+- Anything else the owner mentioned in passing; ask at the start of the next session.
 
 ## Old test list (all confirmed by the owner on 2026-10-24)
 Compiles, but the owner has not explicitly confirmed (test these first next session):
@@ -297,7 +296,11 @@ Compiles, but the owner has not explicitly confirmed (test these first next sess
 Confirmed by the owner this session: enemy tuning, knockback, spear homing, fall death, the atmosphere and island details, the music.
 Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
 
-## Next: test Phase 5, then Phase 6 (boss design doc and attacks; Opus recommended for the design doc). The list below is the leftover 2C wish list, optional and can be picked up any time
+## Next
+1. Stage 2 of the boss (starts at 60% health): get the owner's answers to the five questions in "Current state of the boss", write the design into ROADMAP.md Phase 6 (and BOSS_DESIGN.md if the owner wants one; Opus is recommended for the design doc), then build the transition, the new attacks and the stage 2 look.
+2. Boss extras that need art or design: treasure bag, trophy, relic, real drops, her own music, a stage 2 sprite, a hand-made head icon. The owner's sheet has a Trophy and Treasure Bag design (DesignRefs/boss_trophy.png, boss_bag.png).
+3. Later: balance pass for the whole fight (Phase 6), real art swaps (Phase 7), the multiplayer upgrade, the performance check (her sheet is large) and removal of the debug items (Phase 8).
+The list below is the leftover 2C wish list, optional and can be picked up any time:
 1. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
 2. Ambient sounds (wind, chimes): needs sounds from the owner, or a pick from vanilla ones.
 3. Floating canopy puffs and leafy branches (DesignRefs: tree_puff.png, tree_branch.png) as extra floating decorations, if wanted.
@@ -313,6 +316,7 @@ Real art still wanted whenever the owner has it (generated placeholders): turf t
 - Phases: 2C complete, 3 complete, 4 built and awaiting a test. The owner chose to move on from 2C before the deferred items.
 - Enemy design decisions: knight is a ground enemy with a slow spear; dragon is a flying wyvern with swoops, not a dash; dragons are rarer and stronger than knights.
 - Heavens look decisions: golden luminous turf; owner's heavenly trees as REAL tile trees; no ruins; no waterfalls; no shimmer; trees stand still.
+- Boss decisions (owner, 2026-10-24): her health is exactly what the code says (BossLife; Journey scaling is overridden); stage 2 starts at 60% health; make her harder only with new attacks and a stage, not with speed; beams come only out of her (the star guide lines stay); the Celestial Spear replaces the spear art; size 420x332 frames; she moves only every 3rd attack; the Heavens is saved with the world; the floater above the Basket is gone.
 - The ROADMAP.md file is git-ignored (kept local only), so it is not backed up on GitHub.
 
 - Process note: ROADMAP.md holds the plan, rules and decisions (kept up to date as we go); PROGRESS.md holds what was done, what is untested, and the next steps; ASSETS.md holds every placeholder.
@@ -336,7 +340,10 @@ Real art still wanted whenever the owner has it (generated placeholders): turf t
 - Generated placeholder art: turf, stone, bark, bridge posts, flowers, vines (see ASSETS.md). The crystal and the Basket use the owner's designs.
 - Everything about the Basket and the summon is SINGLEPLAYER-ONLY (fill and sequence run on the local client).
 - Unverified: the glow and orb position over the Basket's bowl were set by eye.
+- Boss: music is vanilla Boss2 (placeholder); loot is placeholder Lunar Bars; her damage and health numbers are placeholders for Phase 6; the boss spawn, the Basket hook-up, the clean-up system and the star/ring timers are SINGLEPLAYER-ONLY (see `SINGLEPLAYER-ONLY` comments).
+- Boss: the Heavens is saved now, so a world that already has a saved Heavens does not pick up later terrain-code changes (use a new world or delete the saved Heavens file).
+- Boss: the sprite is one picture warped into 8 frames (not hand-drawn); the head icon, feather, star, spear are the owner's designs processed by scripts in tools/; the beams, rings, patches and sparks are drawn in code.
 
 ## Repo and GitHub
-- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Pushed again on 2026-10-14 at the owner's request (main up to baef8fc: Phases 2C, 3 and 4 work). Never push without the owner saying so.
+- GitHub repo (public): https://github.com/Unix-H/mother-of-terraria-mod (main + tags phase-0, phase-1, pushed 2026-10-11). Remote uses SSH (key ~/.ssh/id_ed25519_github). Pushed again on 2026-10-14 at the owner's request (main up to baef8fc: Phases 2C, 3 and 4 work). Pushed again on 2026-10-24 at the owner's request (everything up to the end of session 3: the boss and its first stage). Never push without the owner saying so.
 - Open decision for the owner: scrub ROADMAP.md from the GitHub history, or make the repo private (the repo is public and an early commit contained ROADMAP.md before it was git-ignored).
