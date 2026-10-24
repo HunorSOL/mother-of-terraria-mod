@@ -22,8 +22,8 @@ import numpy as np
 SRC = "DesignRefs/boss_design.jpg"
 OUT = "NPCs/Bosses/MotherOfTerrariaBoss.png"
 FRAMES = 8
-WIDTH = 320          # width of the picture before enlarging (one "art pixel" is 1 pixel at this size)
-UPSCALE = 2          # every art pixel is then made 2x2 real pixels (crisp, no blur): the in-game frame is picture width * 2 (about 560 px)
+WIDTH = 240          # width of the picture before enlarging (one "art pixel" is 1 pixel at this size)
+UPSCALE = 2          # every art pixel is then made 2x2 real pixels (crisp, no blur): the in-game frame is picture width * 2 (about 420 px)
 PAD = 18             # empty rows above and below so flapping wings are never cut off
 COLOURS = 56         # palette size
 BG_MAX = 58          # a pixel whose brightest channel is below this is "background" (if it touches the edge)

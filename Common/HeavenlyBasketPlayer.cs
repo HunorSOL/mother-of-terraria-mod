@@ -158,7 +158,7 @@ namespace MotherOfTerraria.Common
 		private void SpawnBoss()
 		{
 			summoning = false;
-			Vector2 spawn = FindBasketTop() - new Vector2(0f, 330f);
+			Vector2 spawn = FindBasketTop() - new Vector2(0f, 250f);
 			NPC.NewNPC(Player.GetSource_Misc("MotherOfTerraria:Basket"), (int)spawn.X, (int)spawn.Y, ModContent.NPCType<MotherOfTerrariaBoss>());
 			SoundEngine.PlaySound(SoundID.Roar, Player.Center);
 		}

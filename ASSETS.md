@@ -39,10 +39,11 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Vanilla loading screen text | Subworlds/HeavensTerrainPass.cs | Optional custom loading screen, Phase 2C. |
 | Gold dust when hitting the statue | Tiles/GoldenStatue.cs | Custom dust, optional. |
 
-| Mother of Terraria sprite | NPCs/Bosses/MotherOfTerrariaBoss.png | OWNER'S DESIGN (2026-10-24), made game-ready by tools/make_boss_sheet.py: 8 frames of 560x420 (enlarged 2x with crisp pixels) stacked vertically, a small palette, animated by warping the one picture (wings flap, hair and robe sway). Not hand-drawn frames: the owner may send real ones (same size, 8 frames, or update the constants in MotherOfTerrariaBoss.cs). Hitbox is her body, 175x280, centred on the picture. |
+| Mother of Terraria sprite | NPCs/Bosses/MotherOfTerrariaBoss.png | OWNER'S DESIGN (2026-10-24), made game-ready by tools/make_boss_sheet.py: 8 frames of 420x332 (enlarged 2x with crisp pixels) stacked vertically, a small palette, animated by warping the one picture (wings flap, hair and robe sway). Not hand-drawn frames: the owner may send real ones (same size, 8 frames, or update the constants in MotherOfTerrariaBoss.cs). Hitbox is her body, 130x210, centred on the picture. |
 | Celestial Spear (boss projectile) | Projectiles/CelestialSpear.png | OWNER'S DESIGN (2026-10-24), 42x104, pointing up, made by tools/make_celestial_spear.py from DesignRefs/boss_spear.png. |
 | Gold Crystal Star (falling star projectile) | Projectiles/GoldCrystalStar.png | OWNER'S DESIGN (2026-10-24), 51x72, comet trail streams up, made by tools/make_gold_star.py from DesignRefs/boss_star.png. |
 | Starfire patch (burning ground left by a star) | Projectiles/StarfirePatch.cs | Drawn entirely in code, no file. Real art or a flame sprite could replace it in Phase 7. |
+| Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | PLACEHOLDER (2026-10-24): 16x44, pointing up, a gold quill with a blue tip, made by tools/make_feather.py. The owner's design sheet has no feather: needs the owner's art. |
 | Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 

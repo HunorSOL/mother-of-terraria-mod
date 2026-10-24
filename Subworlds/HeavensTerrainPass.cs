@@ -59,7 +59,7 @@ namespace MotherOfTerraria.Subworlds
 		{
 			new(60, 165, 26, 10, 2),
 			new(610, 145, 32, 12, 2),
-			new(330, 150, 22, 8, 2),
+			// (the floater at x 330 above the Basket was REMOVED at the owner's request, 2026-10-24)
 			new(425, 178, 16, 7, 1),
 		};
 

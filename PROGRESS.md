@@ -160,7 +160,15 @@ Owner picked it from the idea list (next: Feather Storm, Halo Rings, then stage 
 - Not done on purpose: saving mid-fight (the boss and the Basket's fight state are not saved), and no reset button for the Heavens. Ask the owner if one is wanted.
 - Things to confirm: build in the Heavens, leave, return: it is still there; the Basket still holds its crystals; the enemies still spawn as normal.
 
+### 2026-10-24 (later): smaller boss, land removed, Feather Storm (BUILT, NOT YET TESTED)
+Owner: saving the Heavens works ("good job"); make the boss smaller; continue with attacks; remove the piece of land above the Basket.
+- Smaller boss: WIDTH 320 -> 240 in tools/make_boss_sheet.py (UPSCALE still 2): frames 420x332 (about 26 x 21 tiles), hitbox 130x210, stations pulled in to 75% (straight above -235, high left/right +-280,-175, above-left/right +-150,-250), dead zone 60 px, spawn 250 px above the Basket.
+- Land above the Basket: I took it to be the small floating island at x 330, y 150 (the "Floaters" entry new(330,150,22,8,2)); removed from HeavensTerrainPass (a comment marks the spot). If the owner meant a different piece (the floating rock at x 375, y 190, or the one at x 300, y 88), say so. Because the Heavens is saved now, an already-saved Heavens would keep the island, so Systems/HeavensLegacyCleanup.cs clears its rectangle (tiles x 300-360, y 105-175) ONCE per saved Heavens (a flag saved with it); new Heavens worlds never have it.
+- NEW ATTACK 5: FEATHER STORM (boss class: FeatherDamage 180, FeatherTell 40, FeatherEmits 70, FeatherEvery 4, FeatherArms 3, FeatherTurn 0.04). The wings beat twice as fast for the tell, with gold dust at the wing tips; then every 4 ticks she throws one feather per arm (3 arms, 120 degrees apart) and the whole spiral turns slowly one way for the first half and back the other way for the second half. Feathers (Projectiles/GoldenFeather.cs, placeholder art Projectiles/GoldenFeather.png made by tools/make_feather.py) start slow (5) and speed up to 11, pass through walls, last 7 s. The cycle is now fan, burst, beam, stars, feathers.
+- Next planned (owner liked them): Halo Rings, then stage 2 (Star Constellation, Judgment Mark, Protective Barrier; Healing Orbs and Guardians optional). The stage 2 trigger (suggested: 50% health) still needs the owner's OK.
+
 ## Not yet tested in-game
+0m. The smaller boss; the island above the Basket is gone (try both a NEW world and the already-saved one); Feather Storm: readable tell, fair gaps, spiral turns back.
 0l. Blocks placed in the Heavens survive leaving and returning.
 0k. Her size after the second shrink.
 0j. She moves much less.

@@ -20,9 +20,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//   3. DEATH BEAM:  a thin line follows the player (the tell), then locks and a huge golden beam sweeps across.
 	//   4. FALLING STARS: seven gold stars hang high above, then drop one by one in a sweep; each leaves a burning patch
 	//                  of light on the ground, and one last star follows you.
+	//   5. FEATHER STORM: she beats her wings hard (the tell), then three spiral arms of golden feathers turn slowly one way
+	//                  and then the other.
 	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
-	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 560x420 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
+	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 420x332 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS; the real balance is Phase 6.
 	// SINGLEPLAYER-ONLY: OnKill talks to the local player's Basket (see HeavenlyBasketPlayer); multiplayer needs the server to do that.
 	public class MotherOfTerrariaBoss : ModNPC
@@ -36,14 +38,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// a slow drift, but one move in three (StationIndex divisible by 3) a fast dash with a golden after-image trail.
 		private static readonly Vector2[] Stations =
 		{
-			new Vector2(0f, -310f),      // straight above (a DASH goes here first)
-			new Vector2(-375f, -235f),   // high left
-			new Vector2(375f, -235f),    // high right
-			new Vector2(-200f, -335f),   // above, a little left
-			new Vector2(200f, -335f),    // above, a little right
+			new Vector2(0f, -235f),      // straight above (a DASH goes here first)
+			new Vector2(-280f, -175f),   // high left
+			new Vector2(280f, -175f),    // high right
+			new Vector2(-150f, -250f),   // above, a little left
+			new Vector2(150f, -250f),    // above, a little right
 		};
 		private const int StationEvery = 3;        // she moves to a new station only every this many attacks (owner: she moved too much)
-		private const float StayWithin = 80f;      // while she is this close to her station she stays put, even if the player shifts a little
+		private const float StayWithin = 60f;      // while she is this close to her station she stays put, even if the player shifts a little
 		private const float DriftSpeed = 7f;        // normal speed between attacks (pixels per tick)
 		private const float DashSpeed = 24f;        // speed of the occasional dash
 		private const float DashEase = 0.12f;       // slows her down as she arrives (bigger = later braking)
@@ -73,9 +75,19 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int StarGap = 12;             // ticks between one star's drop and the next
 		private const int StarTrackerExtra = 40;    // the following star drops this long after the last row star
 		private const int StarsEnd = StarSpawnAt + StarHoverTicks + StarColumns * StarGap + StarTrackerExtra + 50 + 70; // + fall time + a rest
+		// FEATHER STORM: she beats her wings hard (the flap speeds up: the tell), then throws three spiral arms of golden
+		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
+		private const int FeatherDamage = 180;
+		private const int FeatherTell = 40;
+		private const int FeatherEmits = 70;        // how many times she throws (one feather per arm each time)
+		private const int FeatherEvery = 4;         // ticks between throws
+		private const int FeatherArms = 3;
+		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
+		private const float FeatherStartSpeed = 5f;
+		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 110;  // + time for the last feathers to clear and a rest
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 50;
 
-		private const int AttackCount = 4;
+		private const int AttackCount = 5;
 
 		private enum Attack
 		{
@@ -83,6 +95,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			SpearBurst = 1,
 			DeathBeam = 2,
 			FallingStars = 3,
+			FeatherStorm = 4,
 		}
 
 		private Attack CurrentAttack
@@ -108,8 +121,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		public override void SetDefaults()
 		{
-			NPC.width = 175;         // her body (the wings are scenery, not a hitbox); the 560x420 picture is centred on it
-			NPC.height = 280;
+			NPC.width = 130;         // her body (the wings are scenery, not a hitbox); the 420x332 picture is centred on it
+			NPC.height = 210;
 			NPC.damage = 200;        // contact damage (placeholder)
 			NPC.defense = 100;       // placeholder
 			NPC.lifeMax = 600000;    // placeholder, doubled by the owner on 2026-10-24 (Phase 6 balances it)
@@ -157,7 +170,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// Plays the wing-beat animation on a loop.
 		public override void FindFrame(int frameHeight)
 		{
-			NPC.frameCounter++;
+			bool beatingHard = CurrentAttack == Attack.FeatherStorm && Timer < FeatherTell + 30; // the wings beat twice as fast before the storm
+			NPC.frameCounter += beatingHard ? 2 : 1;
 			NPC.frame.Y = (int)(NPC.frameCounter / TicksPerFrame % FrameCount) * frameHeight;
 		}
 
@@ -206,6 +220,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.FallingStars:
 					DoFallingStars(target);
+					break;
+				case Attack.FeatherStorm:
+					DoFeatherStorm();
 					break;
 			}
 		}
@@ -337,6 +354,50 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= StarsEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// The spiral: every FeatherEvery ticks one feather per arm leaves her, and the whole pattern turns by FeatherTurn.
+		// It turns one way for the first half and the other way for the second half.
+		private void DoFeatherStorm()
+		{
+			if (Timer > 0 && Timer < FeatherTell)
+			{
+				GatherLight(1.2f);
+				// Dust bursts off the wing tips: the wings are beating hard.
+				for (int side = -1; side <= 1; side += 2)
+				{
+					Dust dust = Dust.NewDustPerfect(NPC.Center + new Vector2(side * Main.rand.NextFloat(120f, 200f), Main.rand.NextFloat(-90f, 40f)),
+						DustID.GoldCoin, new Vector2(side * 2f, 1f), 0, default, 1.3f);
+					dust.noGravity = true;
+				}
+			}
+
+			int throwIndex = ((int)Timer - FeatherTell) / FeatherEvery;
+			if (Timer >= FeatherTell && (Timer - FeatherTell) % FeatherEvery == 0 && throwIndex < FeatherEmits)
+			{
+				if (throwIndex == 0)
+				{
+					SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
+				}
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					// Where the pattern points now: the sum of all turns so far (forward in the first half, then back).
+					int half = FeatherEmits / 2;
+					float angle = throwIndex < half ? throwIndex * FeatherTurn : (half - (throwIndex - half)) * FeatherTurn;
+					angle += MathHelper.PiOver2 * 0.5f; // the first throw does not start at a round angle
+					int damage = NPC.GetAttackDamage_ForProjectiles(FeatherDamage, FeatherDamage * 0.8f);
+					for (int arm = 0; arm < FeatherArms; arm++)
+					{
+						float a = angle + arm * MathHelper.TwoPi / FeatherArms;
+						Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, a.ToRotationVector2() * FeatherStartSpeed,
+							ModContent.ProjectileType<GoldenFeather>(), damage, 0f, Main.myPlayer);
+					}
+				}
+			}
+			if (Timer >= FeatherEnd)
 			{
 				NextAttack();
 			}
