@@ -8,7 +8,7 @@ namespace MotherOfTerraria.Projectiles
 	// A feather from the Mother of Terraria's FEATHER STORM. It flies straight, starting slowly and speeding up a little,
 	// passes through walls and islands (it is a bullet pattern, not a physical object), and fades after a few seconds.
 	// The storm is made of many of them thrown from a turning spiral, so the pattern is what you dodge.
-	// Texture: Projectiles/GoldenFeather.png (PLACEHOLDER, 22x70, pointing UP, in the colours of the owner's wings; made by tools/make_feather.py).
+	// Texture: Projectiles/GoldenFeather.png (the owner's design, 25x80, pointing UP; made by tools/make_feather.py).
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them).
 	public class GoldenFeather : ModProjectile
 	{
@@ -50,7 +50,7 @@ namespace MotherOfTerraria.Projectiles
 			Vector2 direction = Projectile.velocity.SafeNormalize(Vector2.UnitY);
 			float unused = 0f;
 			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(),
-				Projectile.Center - direction * 22f, Projectile.Center + direction * 22f, 10f, ref unused);
+				Projectile.Center - direction * 30f, Projectile.Center + direction * 30f, 10f, ref unused);
 		}
 
 		public override Color? GetAlpha(Color lightColor) => Color.White; // glows: ignores the room's darkness

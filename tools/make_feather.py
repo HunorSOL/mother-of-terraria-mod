@@ -1,61 +1,94 @@
 #!/usr/bin/env python3
-"""Makes the PLACEHOLDER feather sprite for the Mother of Terraria's Feather Storm (Projectiles/GoldenFeather.png, 22x70).
-A long pointed feather in the colours of the owner's wings: gold at the base fading to blue at the tip, a dark indigo
-outline, a pale quill down the middle and a little sparkle. It points UP (the projectile code turns it to face its travel).
-Not from the owner's design (the design sheet has no loose feather): replace with real art later, same size or update
-GoldenFeather.cs. (The first version, a flat gold leaf, was called ugly by the owner on 2026-10-24.)
-Needs ImageMagick and numpy. Run from the project folder: python3 tools/make_feather.py"""
+"""Makes the feather sprite for the Mother of Terraria's Feather Storm (Projectiles/GoldenFeather.png) from the owner's design.
+
+Input : DesignRefs/feather_design.jpg  (2752x1536 mockup, 2026-10-24: the big "2D main projectile" feather on the left,
+                                        an individual feather with a trail, a three-feather spread shot and an impact burst)
+Output: Projectiles/GoldenFeather.png  (the main feather alone, no glow, turned to point straight UP, which is how the projectile
+        code expects it; shrunk with a box filter to HEIGHT px and a small palette for the Terraria look)
+How the feather is found: the glow around it is pale cyan and the background a dark grid, so it is picked out by colour
+(gold, blue, the white quill, the dark navy outline right next to those). The soft glow and the sparkles are left out; the game
+adds sparks while the feather flies.
+Run from the project folder:  python3 tools/make_feather.py      (needs ImageMagick and numpy)
+"""
 import subprocess
 
 import numpy as np
 
-W, H = 22, 70
-OUTLINE = np.array([38, 22, 110])
-GOLD = np.array([255, 205, 60])
-GOLD_LIGHT = np.array([255, 240, 150])
-BLUE = np.array([70, 140, 255])
-BLUE_LIGHT = np.array([140, 205, 255])
-QUILL = np.array([255, 250, 215])
+SRC = "DesignRefs/feather_design.jpg"
+OUT = "Projectiles/GoldenFeather.png"
+HEIGHT = 80          # final height in pixels (the feather is about 1/3 as wide)
+COLOURS = 40
+CROP = "1100x1250+300+120"      # the big feather's area in the original picture
+WORK_W, WORK_H = 344, 390       # the cut-out is found at this reduced size (fast), 1100x1250 / 3.2
+TURN = -42.4                    # degrees: the feather points to the upper right; this makes it point up
 
-img = np.zeros((H, W, 4), dtype=np.uint8)
-cx = (W - 1) / 2.0
-for y in range(H):
-    t = y / (H - 1.0)                       # 0 at the tip (top), 1 at the base
-    # Half-width: a pointed leaf, widest about 60% of the way down, then narrowing to the quill.
-    half = 9.5 * np.sin(np.pi * min(1.0, t * 1.25)) ** 0.8 if t < 0.8 else 9.5 * np.sin(np.pi * 1.0 * 0.8 * 1.25) ** 0.8 * (1 - (t - 0.8) / 0.2) + 0.6
-    half = max(half, 0.6)
-    for x in range(W):
-        d = abs(x - cx)
-        if d <= half:
-            edge = half - d
-            # Like the wings: bands of blue at the tip, then gold (no muddy grey in between).
-            if t < 0.22:
-                body, light = BLUE, BLUE_LIGHT
-            elif t < 0.5:
-                body, light = np.array([95, 165, 255]), np.array([170, 220, 255])
-            else:
-                body, light = GOLD, GOLD_LIGHT
-            colour = light if (x < cx and edge > 1.2) else body    # a lit left half
-            if d < 0.8:
-                colour = QUILL                                      # the quill
-            if edge < 1.0 and half > 1.5:
-                colour = OUTLINE                                    # the outline
-            elif half <= 1.5:
-                colour = np.array([224, 160, 32])                   # the bare quill at the base
-            img[y, x, :3] = colour
-            img[y, x, 3] = 255
-# a few pale barbs cut diagonally across the vane
-for y in range(14, 58, 5):
-    for x in range(W):
-        d = abs(x - cx)
-        if 1.2 < d < 7 and img[y, x, 3] and tuple(img[y, x, :3]) != tuple(OUTLINE):
-            yy = y + int((d) * 0.6)
-            if yy < H and img[yy, x, 3] and tuple(img[yy, x, :3]) != tuple(OUTLINE):
-                img[yy, x, :3] = (img[yy, x, :3] * 0.86).astype(np.uint8)
-# a sparkle near the tip
-img[16, int(cx) + 3, :] = (255, 255, 255, 255)
-img[15, int(cx) + 3, :] = (255, 255, 255, 255)
 
-p = subprocess.Popen(["magick", "-size", f"{W}x{H}", "-depth", "8", "rgba:-", "Projectiles/GoldenFeather.png"], stdin=subprocess.PIPE)
-p.communicate(img.tobytes())
-print("wrote Projectiles/GoldenFeather.png")
+def components(mask):
+    h, w = mask.shape
+    labels = np.zeros((h, w), dtype=np.int32)
+    n = 0
+    for y in range(h):
+        for x in range(w):
+            if mask[y, x] and labels[y, x] == 0:
+                n += 1
+                stack = [(y, x)]
+                labels[y, x] = n
+                while stack:
+                    cy, cx = stack.pop()
+                    for dy in (-1, 0, 1):
+                        for dx in (-1, 0, 1):
+                            ny, nx = cy + dy, cx + dx
+                            if 0 <= ny < h and 0 <= nx < w and mask[ny, nx] and labels[ny, nx] == 0:
+                                labels[ny, nx] = n
+                                stack.append((ny, nx))
+    return labels, n
+
+
+def dilate(mask, r):
+    out = mask.copy()
+    for dy in range(-r, r + 1):
+        for dx in range(-r, r + 1):
+            if dx * dx + dy * dy <= r * r:
+                out |= np.roll(np.roll(mask, dy, axis=0), dx, axis=1)
+    return out
+
+
+raw = subprocess.check_output(["magick", SRC, "-crop", CROP, "+repage", "-filter", "Box", "-resize", f"{WORK_W}x{WORK_H}!", "-depth", "8", "rgb:-"])
+a = np.frombuffer(raw, dtype=np.uint8).reshape(WORK_H, WORK_W, 3).astype(int)
+r, g, b = a[..., 0], a[..., 1], a[..., 2]
+
+gold = (r > 150) & (r - b > 60)
+blue = (b - g > 40) & (b > 90) & (b - r > 40)
+white = (r > 215) & (g > 215) & (b > 190) & (b < 250)
+navy = (b > 50) & (r < 45) & (g < 70) & (b - g > 20)
+
+# The feather itself = the biggest connected piece of gold/blue/white (the sparkles are separate small pieces).
+labels, n = components(gold | blue | white)
+sizes = np.bincount(labels.ravel(), minlength=n + 1)
+sizes[0] = 0
+core = labels == sizes.argmax()
+core = dilate(core, 2)                       # close the tiny gaps inside the quill and between the colour bands
+# Fill holes: anything not reachable from the picture's border without crossing the core is inside the feather.
+outside = np.zeros_like(core)
+stack = [(y, x) for y in range(WORK_H) for x in (0, WORK_W - 1)] + [(y, x) for x in range(WORK_W) for y in (0, WORK_H - 1)]
+while stack:
+    y, x = stack.pop()
+    if 0 <= y < WORK_H and 0 <= x < WORK_W and not core[y, x] and not outside[y, x]:
+        outside[y, x] = True
+        stack += [(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)]
+body = ~outside
+# The dark navy outline lies just outside the coloured part: take navy pixels within 3 px of the body.
+outline = navy & dilate(body, 3)
+mask = body | outline
+
+rgba = np.zeros((WORK_H, WORK_W, 4), dtype=np.uint8)
+rgba[..., :3] = a.astype(np.uint8)
+rgba[..., 3] = np.where(mask, 255, 0)
+p = subprocess.Popen(["magick", "-size", f"{WORK_W}x{WORK_H}", "-depth", "8", "rgba:-", "/tmp/feather_cut.png"], stdin=subprocess.PIPE)
+p.communicate(rgba.tobytes())
+
+subprocess.check_call([
+    "magick", "/tmp/feather_cut.png", "-background", "none", "-rotate", str(TURN), "-trim", "+repage",
+    "-filter", "Box", "-resize", f"x{HEIGHT}", "-channel", "A", "-threshold", "50%", "+channel",
+    "-colors", str(COLOURS), "+dither", "-trim", "+repage", OUT])
+print(subprocess.check_output(["magick", "identify", OUT]).decode())

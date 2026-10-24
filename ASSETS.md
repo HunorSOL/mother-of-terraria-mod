@@ -43,7 +43,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Celestial Spear (boss projectile) | Projectiles/CelestialSpear.png | OWNER'S DESIGN (2026-10-24), 42x104, pointing up, made by tools/make_celestial_spear.py from DesignRefs/boss_spear.png. |
 | Gold Crystal Star (falling star projectile) | Projectiles/GoldCrystalStar.png | OWNER'S DESIGN (2026-10-24), 51x72, comet trail streams up, made by tools/make_gold_star.py from DesignRefs/boss_star.png. |
 | Starfire patch (burning ground left by a star) | Projectiles/StarfirePatch.cs | Drawn entirely in code, no file. Real art or a flame sprite could replace it in Phase 7. |
-| Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | PLACEHOLDER (2026-10-24, redrawn): 22x70, pointing up, in the colours of the owner's wings, made by tools/make_feather.py. The owner's design sheet has no loose feather: needs the owner's art. |
+| Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | OWNER'S DESIGN (2026-10-24), 25x80, pointing up, made by tools/make_feather.py from DesignRefs/feather_design.jpg (the big feather only; no glow). |
 | Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 
@@ -59,6 +59,10 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Mother of Terraria boss: REAL sprite and animation, her own attack projectiles, boss bar icon, treasure bag, trophy, relic, real drops, boss music (vanilla Boss2 stands in) | 6, 7 |
 
 ## Design references (not used by the game directly)
+
+| Reference | File | Notes |
+|---|---|---|
+| Feather design sheet | DesignRefs/feather_design.jpg | 2752x1536: main feather (USED), individual feather with a trail, three-feather spread shot, impact effect. The last two are not used yet. |
 
 | Reference | File | Notes |
 |---|---|---|

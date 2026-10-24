@@ -187,7 +187,12 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
   - Falling Stars: the thin golden line from each star down to the ground is REMOVED; the landing spot is now marked by a soft golden glow on the ground (brightening as the drop nears). The Starfire patches (flames on the ground) are unchanged: they are fire, not beams. Say so if those should go too.
 - Wing Wall constants and code are gone from the boss class. Keep in mind: all the owner-approved effects are listed above in this file.
 
+### Feather: the owner's design (2026-10-24; BUILT, NOT YET TESTED)
+- The owner sent a feather sheet (DesignRefs/feather_design.jpg: a big "2D main projectile" feather, an individual feather with a trail, a three-feather "spread shot / barrage", and an "impact effect"). The main feather is now the Feather Storm projectile: tools/make_feather.py cuts it out by colour (no glow, no sparkles), turns it to point up, shrinks it to 25x80 with 40 colours (Terraria look). The earlier placeholder is gone. Hit line lengthened to match (+-30 px).
+- NOT used yet: the spread-shot picture and the impact burst (a possible hit effect when a feather ends; for now it just fades). Ask the owner if they want them.
+
 ## Not yet tested in-game
+0q. The feather art in the storm.
 0p. Feather look; Wing Beams (gap readable, follow it fair); star landing glow.
 0o. The new star art; the shorter rests (does it feel fast but fair?).
 0n. Wing Wall: readable gaps, enough time to change height, fair damage.
