@@ -209,7 +209,18 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
 - BUG FOUND: the line scan looked only 70 tiles down from the star, but the stars now hang at the top of the map and the islands are 200+ tiles lower, so the line ended far above the screen. It now scans to the bottom of the world (every 6 ticks), and only the part on the screen is drawn.
 - More visible: drawn with ordinary blending (the bright Heavens sky hid the old additive glow) as a dark indigo edge (12 px), a gold body (8 px) and a white core (3 px), pulsing and brightening as the drop nears; plus a big glowing gold mark on the ground at the landing spot (it was removed earlier, now back as an addition, the owner liked "the marks"). Everything is in GoldCrystalStar.PreDraw. If it is too much or still too faint, change the widths and alphas there.
 
+### Faster cycle (2026-10-24, owner: she is too easy, make her faster, her attacks should cycle faster; NOT YET TESTED)
+Every attack is shorter and the rests are almost gone (tell = the visible warning, kept readable but quicker):
+- Spear fan: tell 30 -> 20, ends 55 -> 38. Burst: tell 45 -> 32, second ring 80 -> 56, ends 100 -> 70. Spears 9 -> 11 px/tick, ring spears 7 -> 8.5.
+- Beam (and the Wing Beams): tell 75 -> 55 ticks, firing 150 -> 105, starts after 12 ticks, ends 6 after; the tell line follows faster (0.045), the sweep is a little faster (about 19 deg/s) so the angle covered stays similar.
+- Falling Stars: gathers 30 -> 20, first star hangs 45 -> 36 ticks, 12 -> 9 ticks between drops, 25 -> 15 between rows, tracker 40 -> 30 after the rows.
+- Feather Storm: tell 40 -> 25, one throw every 3 ticks (was 4), the spiral still turns at the same speed, feathers start at 6.5 and top out at 13 (was 5 and 11); ends 12 after the last throw.
+- Wing Beams: spreads 45 -> 32 ticks before firing.
+- Movement: she changes station every 2nd attack (was 3), drifts at 9 (was 7), dashes at 28 (was 24).
+- Overall, a full cycle of the six attacks went from about 90 s to about 55 s. If it is still too easy, the next levers are damage, more simultaneous attacks (two at once), a random attack order, or the second stage.
+
 ## Not yet tested in-game
+0v. The faster cycle: still readable? still beatable?
 0u. The star marks are clearly visible, from the top of the screen to the landing spot.
 0t. Doubled falling stars: fair? is the burning floor too much?
 0s. The boss health bar appears (with her face) when she spawns.

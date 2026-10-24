@@ -47,55 +47,55 @@ namespace MotherOfTerraria.NPCs.Bosses
 			new Vector2(-150f, -250f),   // above, a little left
 			new Vector2(150f, -250f),    // above, a little right
 		};
-		private const int StationEvery = 3;        // she moves to a new station only every this many attacks (owner: she moved too much)
+		private const int StationEvery = 2;        // she moves to a new station only every this many attacks (3 on 2026-10-24 when she moved too much; 2 when she was too easy)
 		private const float StayWithin = 60f;      // while she is this close to her station she stays put, even if the player shifts a little
-		private const float DriftSpeed = 7f;        // normal speed between attacks (pixels per tick)
-		private const float DashSpeed = 24f;        // speed of the occasional dash
+		private const float DriftSpeed = 9f;        // normal speed between attacks (pixels per tick)
+		private const float DashSpeed = 28f;        // speed of the occasional dash
 		private const float DashEase = 0.12f;       // slows her down as she arrives (bigger = later braking)
 		private const float DashTrailSpeed = 14f;   // above this speed she leaves a golden after-image trail
 
-		private const float SpearSpeed = 9f;
+		private const float SpearSpeed = 11f;
 		private const int SpearDamage = 150;
 		private const int SpearsInFan = 3;
 		private const float FanSpread = 0.28f;      // radians between neighbouring spears
 		private const int RingSpears = 18;          // spears per ring in the burst
-		private const float RingSpearSpeed = 7f;
+		private const float RingSpearSpeed = 8.5f;
 
-		private const int BeamStart = 20;           // the beam attack waits this long first so she can reach her station
+		private const int BeamStart = 12;           // the beam attack waits this long first so she can reach her station
 		private const int LaserDamage = 350;        // punishing but NOT a one-hit kill (was 700): it hurts hard, burns (Hellfire), and a beam you stay in hits again and again
 
 		// Times in ticks (60 per second), counted from the start of each attack.
-		private const int FanTell = 30, FanEnd = 55;
-		private const int BurstTell = 45, BurstSecondWave = 80, BurstEnd = 100;
+		private const int FanTell = 20, FanEnd = 38;
+		private const int BurstTell = 32, BurstSecondWave = 56, BurstEnd = 70;
 		// FALLING STARS: a row of stars hangs high above the arena (each with a line down to where it will land), then they
 		// fall one after another in a sweep, and each leaves a burning patch of light on the ground. One extra star follows you.
 		private const int StarDamage = 320;
 		private const int StarColumns = 7;
 		private const float StarSpacing = 190f;     // sideways gap between neighbouring stars
 		private const float StarTopY = 100f;        // the stars hang at the very top of the map (world pixels), so flying above them does not help
-		private const int StarSpawnAt = 30;         // she gathers light first
-		private const int StarHoverTicks = 45;      // how long the first star hangs before it drops (time to read the pattern)
-		private const int StarGap = 12;             // ticks between one star's drop and the next
-		private const int StarRowPause = 25;       // pause between the first row of stars and the second
-		private const int StarTrackerExtra = 40;    // the following star drops this long after the last row star
-		private const int StarsEnd = StarSpawnAt + StarHoverTicks + 2 * (StarColumns * StarGap + StarRowPause) + StarTrackerExtra + 25; // the last star has just dropped; she does not wait for it to land
+		private const int StarSpawnAt = 20;         // she gathers light first
+		private const int StarHoverTicks = 36;      // how long the first star hangs before it drops (time to read the pattern)
+		private const int StarGap = 9;             // ticks between one star's drop and the next
+		private const int StarRowPause = 15;       // pause between the first row of stars and the second
+		private const int StarTrackerExtra = 30;    // the following star drops this long after the last row star
+		private const int StarsEnd = StarSpawnAt + StarHoverTicks + 2 * (StarColumns * StarGap + StarRowPause) + StarTrackerExtra + 15; // the last star has just dropped; she does not wait for it to land
 		// FEATHER STORM: she beats her wings hard (the flap speeds up: the tell), then throws three spiral arms of golden
 		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
 		private const int FeatherDamage = 180;
-		private const int FeatherTell = 40;
+		private const int FeatherTell = 25;
 		private const int FeatherEmits = 70;        // how many times she throws (one feather per arm each time)
-		private const int FeatherEvery = 4;         // ticks between throws
+		private const int FeatherEvery = 3;         // ticks between throws
 		private const int FeatherArms = 3;
-		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
-		private const float FeatherStartSpeed = 5f;
-		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 25;  // she moves on while the last feathers are still flying
+		private const float FeatherTurn = 0.03f;    // radians the spiral turns per throw (about 0.6 radians a second)
+		private const float FeatherStartSpeed = 6.5f;
+		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 12;  // she moves on while the last feathers are still flying
 		// WING BEAMS: she spreads her wings wide and holds them there (the tell: thin lines from both wing tips follow you),
 		// then a golden beam fires OUT OF EACH WING TIP. They are aimed to either side of you (you stand in the gap between
 		// them) and sweep the same way, so the gap slides sideways and you have to move with it. Nothing but her own beams.
 		private const int WingBeamDamage = 280;
-		private const int WingBeamsStart = 45;      // she spreads her wings first; the beams' own tell (thin lines) runs after that
-		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
-		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
+		private const int WingBeamsStart = 32;      // she spreads her wings first; the beams' own tell (thin lines) runs after that
+		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 6;
+		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 6;
 
 		private const int AttackCount = 6;
 

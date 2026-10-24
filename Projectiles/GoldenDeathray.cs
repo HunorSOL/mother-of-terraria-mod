@@ -19,10 +19,10 @@ namespace MotherOfTerraria.Projectiles
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them).
 	public class GoldenDeathray : ModProjectile
 	{
-		public const int TellTicks = 75;
-		public const int BeamTicks = 150;
-		private const float TrackTurnPerTick = 0.035f;  // how fast the tell line follows the player (radians per tick)
-		private const float SweepPerTick = 0.004f;      // how fast the locked beam sweeps (about 14 degrees a second; was 29)
+		public const int TellTicks = 55;
+		public const int BeamTicks = 105;
+		private const float TrackTurnPerTick = 0.045f;  // how fast the tell line follows the player (radians per tick)
+		private const float SweepPerTick = 0.0055f;     // how fast the locked beam sweeps (about 19 degrees a second; was 29 at first, then 14)
 		private const float BeamLength = 2600f;         // long enough to cross the screen
 		private const float BeamHitWidth = 28f;         // the damaging thickness (pixels; was 70)
 		private const float BeamDrawWidth = 56f;        // the glowing outer thickness (was 130)
