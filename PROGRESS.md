@@ -236,7 +236,13 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - ROLLED BACK: the stars hang 520 px above the player again (StarHeight in the boss class, never above row 200 px), so they are on the screen when they start to fall, and the fall speed is the original (acceleration 0.9, top speed 22). This undoes the "from the top of the map" change; flying above the stars dodges them again (the owner's decision). Kept: single row, the thick visible marks (the line scan to the bottom of the world is harmless).
 - If flying above them has to be stopped again later, an option that keeps them on screen: make the star keep falling from its hover point but ALSO have it hit anything it crosses on the way (it already does), or make a second set come from below. Ask before building.
 
+### Rolled back the "too easy" speed-up (2026-10-24, owner: everything became much faster, the spears are impossible, it is just hard and annoying; the owner will make her harder with NEW attacks instead; NOT YET TESTED)
+- Every number from the "Faster cycle" change is back to what it was before it: spear fan tell 30 / ends 55, spears 9 px/tick, burst tell 45 / second ring 80 / ends 100, ring spears 7, feather storm tell 40 / one throw every 4 ticks / turn 0.04 / start speed 5 / max 11 / ends 25 after, movement every 3rd attack at 7 (dash 24). The beam timings and the star timings had already been put back (see the entries above). The earlier rest cuts from the "she is vulnerable after her attacks" request (the shorter rests that the owner asked for first) STAY, since the owner asked for those and not the later speed-up.
+- The tell line freeze (12 ticks) on the beams stays; the stars still start on the screen, single row.
+- DIFFICULTY PLAN (owner): do not make her harder by speeding things up. New attacks and a second stage next. Keep this in mind: more speed made the attacks unreadable, not harder in a good way.
+
 ## Not yet tested in-game
+0aa. The fight is back to the pre-speed-up pace.
 0z. Stars start on the screen.
 0y. The beams are dodgeable again.
 0x. Star fall speed fair?

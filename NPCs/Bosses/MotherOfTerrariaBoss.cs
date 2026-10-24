@@ -47,26 +47,26 @@ namespace MotherOfTerraria.NPCs.Bosses
 			new Vector2(-150f, -250f),   // above, a little left
 			new Vector2(150f, -250f),    // above, a little right
 		};
-		private const int StationEvery = 2;        // she moves to a new station only every this many attacks (3 on 2026-10-24 when she moved too much; 2 when she was too easy)
+		private const int StationEvery = 3;        // she moves to a new station only every this many attacks (owner: she moved too much)
 		private const float StayWithin = 60f;      // while she is this close to her station she stays put, even if the player shifts a little
-		private const float DriftSpeed = 9f;        // normal speed between attacks (pixels per tick)
-		private const float DashSpeed = 28f;        // speed of the occasional dash
+		private const float DriftSpeed = 7f;        // normal speed between attacks (pixels per tick)
+		private const float DashSpeed = 24f;        // speed of the occasional dash
 		private const float DashEase = 0.12f;       // slows her down as she arrives (bigger = later braking)
 		private const float DashTrailSpeed = 14f;   // above this speed she leaves a golden after-image trail
 
-		private const float SpearSpeed = 11f;
+		private const float SpearSpeed = 9f;
 		private const int SpearDamage = 150;
 		private const int SpearsInFan = 3;
 		private const float FanSpread = 0.28f;      // radians between neighbouring spears
 		private const int RingSpears = 18;          // spears per ring in the burst
-		private const float RingSpearSpeed = 8.5f;
+		private const float RingSpearSpeed = 7f;
 
 		private const int BeamStart = 20;           // the beam attack waits this long first so she can reach her station
 		private const int LaserDamage = 350;        // punishing but NOT a one-hit kill (was 700): it hurts hard, burns (Hellfire), and a beam you stay in hits again and again
 
 		// Times in ticks (60 per second), counted from the start of each attack.
-		private const int FanTell = 20, FanEnd = 38;
-		private const int BurstTell = 32, BurstSecondWave = 56, BurstEnd = 70;
+		private const int FanTell = 30, FanEnd = 55;
+		private const int BurstTell = 45, BurstSecondWave = 80, BurstEnd = 100;
 		// FALLING STARS: a row of stars hangs high above the arena (each with a line down to where it will land), then they
 		// fall one after another in a sweep, and each leaves a burning patch of light on the ground. One extra star follows you.
 		private const int StarDamage = 320;
@@ -83,13 +83,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// FEATHER STORM: she beats her wings hard (the flap speeds up: the tell), then throws three spiral arms of golden
 		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
 		private const int FeatherDamage = 180;
-		private const int FeatherTell = 25;
+		private const int FeatherTell = 40;
 		private const int FeatherEmits = 70;        // how many times she throws (one feather per arm each time)
-		private const int FeatherEvery = 3;         // ticks between throws
+		private const int FeatherEvery = 4;         // ticks between throws
 		private const int FeatherArms = 3;
-		private const float FeatherTurn = 0.03f;    // radians the spiral turns per throw (about 0.6 radians a second)
-		private const float FeatherStartSpeed = 6.5f;
-		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 12;  // she moves on while the last feathers are still flying
+		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
+		private const float FeatherStartSpeed = 5f;
+		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 25;  // she moves on while the last feathers are still flying
 		// WING BEAMS: she spreads her wings wide and holds them there (the tell: thin lines from both wing tips follow you),
 		// then a golden beam fires OUT OF EACH WING TIP. They are aimed to either side of you (you stand in the gap between
 		// them) and sweep the same way, so the gap slides sideways and you have to move with it. Nothing but her own beams.

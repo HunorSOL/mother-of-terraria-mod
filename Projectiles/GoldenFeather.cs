@@ -13,7 +13,7 @@ namespace MotherOfTerraria.Projectiles
 	public class GoldenFeather : ModProjectile
 	{
 		private const float Acceleration = 1.012f;  // speed multiplier per tick, until MaxSpeed
-		private const float MaxSpeed = 13f;
+		private const float MaxSpeed = 11f;
 
 		public override void SetDefaults()
 		{
