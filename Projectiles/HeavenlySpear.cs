@@ -18,6 +18,13 @@ namespace MotherOfTerraria.Projectiles
 		private const int HomingTicks = 90;
 		private const float StopHomingDistance = 140f;
 
+		// The Mother of Terraria's spears (she passes ai[0] = 1 when she throws them): a little more homing, and for longer,
+		// and they live longer so a ring of them has time to curve in. Tune here.
+		private const float BossTurnPerTick = MathHelper.Pi / 130f;
+		private const int BossHomingTicks = 150;
+		private const int BossLifeTicks = 330;
+		private bool FromBoss => Projectile.ai[0] == 1f;
+
 		public override void SetDefaults()
 		{
 			Projectile.width = 16;
@@ -34,6 +41,12 @@ namespace MotherOfTerraria.Projectiles
 		{
 			// Point the (upward-drawn) sprite along the direction of travel.
 			Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+
+			if (Projectile.localAI[0] == 0f && FromBoss)
+			{
+				Projectile.timeLeft = BossLifeTicks;
+			}
+			Projectile.localAI[0]++; // ticks since it was thrown (each machine counts its own)
 
 			Lighting.AddLight(Projectile.Center, 0.3f, 0.6f, 0.9f);
 
@@ -52,7 +65,7 @@ namespace MotherOfTerraria.Projectiles
 		// (the server, or singleplayer); the new direction is sent to other clients every few ticks.
 		private void Home()
 		{
-			if (Projectile.owner != Main.myPlayer || Projectile.timeLeft < 240 - HomingTicks)
+			if (Projectile.owner != Main.myPlayer || Projectile.localAI[0] > (FromBoss ? BossHomingTicks : HomingTicks))
 			{
 				return;
 			}
@@ -79,7 +92,7 @@ namespace MotherOfTerraria.Projectiles
 			float speed = Projectile.velocity.Length();
 			float current = Projectile.velocity.ToRotation();
 			float wanted = (target.Center - Projectile.Center).ToRotation();
-			float turn = MathHelper.Clamp(MathHelper.WrapAngle(wanted - current), -TurnPerTick, TurnPerTick);
+			float turn = MathHelper.Clamp(MathHelper.WrapAngle(wanted - current), -(FromBoss ? BossTurnPerTick : TurnPerTick), FromBoss ? BossTurnPerTick : TurnPerTick);
 			Projectile.velocity = (current + turn).ToRotationVector2() * speed;
 
 			if (Projectile.timeLeft % 5 == 0)

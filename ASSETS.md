@@ -40,6 +40,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Gold dust when hitting the statue | Tiles/GoldenStatue.cs | Custom dust, optional. |
 
 | Mother of Terraria sprite | NPCs/Bosses/MotherOfTerrariaBoss.png | PLACEHOLDER (2026-10-24): 160x160 single frame, golden robed figure with blue wings, made by tools/make_boss_placeholder.py. Needs the owner's design, with animation frames. Hitbox is 90x130 (NPC.width/height); adjust when the real art arrives. |
+| Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 
 ## Not built yet (will need owner designs)

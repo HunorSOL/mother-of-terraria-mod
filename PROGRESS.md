@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-10-24 (Phase 5 skeleton built).
+Last updated: 2026-10-24 (Phase 5 skeleton plus first-stage attack cycle).
 Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
 ## Where we are
@@ -98,7 +98,18 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - Compiles (the command-line build only stops at the packaging error TML003 because tModLoader is open). Needs the in-game Build + Reload.
 - SINGLEPLAYER-ONLY: the spawn and OnKill hook use the local player; multiplayer needs the server to do them (Phase 8).
 
+### Boss first stage: attacks and health (2026-10-24, later the same day; BUILT, NOT YET TESTED)
+Owner feedback: "good start", but the boss is far from final. Asked for: double health, no other enemies while she lives, spears slightly homing and fired in all directions, a big golden Moon-Lord-style laser, all in a cycle; new attacks and a second stage come later.
+- Health doubled: 300000 -> 600000 (placeholder; Phase 6 balances).
+- Cycle (NPC.ai[0] = attack, ai[1] = timer): SPEAR FAN (3 aimed spears) -> SPEAR BURST (two rings of 18 spears in all directions at 0.75 s and 1.3 s, the second ring offset by half a gap; the gold glow is the tell) -> DEATH BEAM -> repeat. Constants at the top of Boss class.
+- Spears: the boss throws them with ai[0] = 1, which gives them stronger homing than the knight's (pi/130 rad = 1.4 deg per tick for 2.5 s, versus 1.8 deg per tick for 1.5 s; constants BossTurnPerTick and BossHomingTicks in HeavenlySpear.cs) and a longer life (5.5 s). The knight's spears behave exactly as before.
+- Death beam: Projectiles/GoldenDeathray.cs, drawn in code (no art file): 1.25 s thin line that follows the player (no damage), then locks and a huge gold beam (130 px wide glow, 70 px hit width, white-hot core) sweeps 2.5 s at about 29 deg/s in a random direction. Damage 700 base (about 3 hits kill an unbuffed player) plus Hellfire for 6 s. She holds still while it fires. Constants at the top of the file.
+- No other enemies: the spawner already paused while she lives; now she also removes any knight or dragon that is still around (they vanish without drops).
+- SINGLEPLAYER-ONLY note unchanged: the beam angle is synced every tick by the owner machine, which should work in multiplayer, but that is untested.
+- To tune: beam sweep speed and length, beam damage, ring size, homing, cycle order and rests.
+
 ## Not yet tested in-game
+0b. The boss's first-stage attacks and the doubled health (the section above).
 0a. PHASE 5 (2026-10-24): see the section above. Test steps are in the message that closed that session.
 
 ## Old test list (all confirmed by the owner on 2026-10-24)
