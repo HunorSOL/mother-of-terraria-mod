@@ -217,7 +217,7 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - Feather Storm: tell 40 -> 25, one throw every 3 ticks (was 4), the spiral still turns at the same speed, feathers start at 6.5 and top out at 13 (was 5 and 11); ends 12 after the last throw.
 - Wing Beams: spreads 45 -> 32 ticks before firing.
 - Movement: she changes station every 2nd attack (was 3), drifts at 9 (was 7), dashes at 28 (was 24).
-- Overall, a full cycle of the six attacks went from about 90 s to about 55 s. If it is still too easy, the next levers are damage, more simultaneous attacks (two at once), a random attack order, or the second stage.
+- Overall (attack durations added up, not counting her moving between stations), a full cycle of the six attacks went from about 23 s to about 16 s (29% shorter). If it is still too easy, the next levers are damage, more simultaneous attacks (two at once), a random attack order, or the second stage.
 
 ## Not yet tested in-game
 0v. The faster cycle: still readable? still beatable?
