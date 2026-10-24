@@ -32,8 +32,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		// MOVEMENT (like the big, calm final bosses of Calamity: she is huge, drifts slowly above the player, and only
 		// now and then makes a fast dash). She works through a fixed list of "stations" around the player (offsets in
-		// pixels from the player: x to the right, y down). Each new attack she moves to the next station: most of the time
-		// a slow drift, but every third attack (StationIndex divisible by 3) a fast dash with a golden after-image trail.
+		// pixels from the player: x to the right, y down). Every third attack (StationEvery) she moves to the next station: most of the time
+		// a slow drift, but one move in three (StationIndex divisible by 3) a fast dash with a golden after-image trail.
 		private static readonly Vector2[] Stations =
 		{
 			new Vector2(0f, -460f),      // straight above (a DASH goes here first)
@@ -42,7 +42,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 			new Vector2(-300f, -500f),   // above, a little left
 			new Vector2(300f, -500f),    // above, a little right
 		};
-		private const float DriftSpeed = 8f;        // normal speed between attacks (pixels per tick)
+		private const int StationEvery = 3;        // she moves to a new station only every this many attacks (owner: she moved too much)
+		private const float StayWithin = 110f;      // while she is this close to her station she stays put, even if the player shifts a little
+		private const float DriftSpeed = 7f;        // normal speed between attacks (pixels per tick)
 		private const float DashSpeed = 24f;        // speed of the occasional dash
 		private const float DashEase = 0.12f;       // slows her down as she arrives (bigger = later braking)
 		private const float DashTrailSpeed = 14f;   // above this speed she leaves a golden after-image trail
@@ -91,6 +93,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		private ref float Timer => ref NPC.ai[1];
 		private ref float StationIndex => ref NPC.ai[2];
+		private ref float AttacksSinceMove => ref NPC.ai[3];
 
 		public override void SetStaticDefaults()
 		{
@@ -182,10 +185,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
 			bool holding = CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5;
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
-			Vector2 goal = target.Center + station + new Vector2(0f, 14f * (float)System.Math.Sin(Main.GameUpdateCount / 30f)); // a slow, heavy bob
+			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
 			float topSpeed = (int)StationIndex % 3 == 0 ? DashSpeed : DriftSpeed;
-			float speed = holding ? 0f : System.Math.Min(topSpeed, toGoal.Length() * DashEase);
+			float speed = holding ? 0f : System.Math.Min(topSpeed, System.Math.Max(0f, toGoal.Length() - StayWithin) * DashEase);
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.15f : 0.25f);
 			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
 
@@ -212,7 +215,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 		{
 			Timer = 0;
 			CurrentAttack = (Attack)(((int)CurrentAttack + 1) % AttackCount);
-			StationIndex = (StationIndex + 1) % Stations.Length; // dash to the next station
+			// She only changes position every StationEvery attacks; the rest of the time she hangs in place.
+			AttacksSinceMove++;
+			if (AttacksSinceMove >= StationEvery)
+			{
+				AttacksSinceMove = 0;
+				StationIndex = (StationIndex + 1) % Stations.Length;
+			}
 			NPC.netUpdate = true;
 		}
 

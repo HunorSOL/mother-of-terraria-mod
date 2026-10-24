@@ -148,7 +148,11 @@ Owner picked it from the idea list (next: Feather Storm, Halo Rings, then stage 
 - Owner: 4x was too big, did not fit the screen. Now UPSCALE 3: frames 840x630 (about 52 x 39 tiles), sheet 840x5040; hitbox 260x420; stations pulled in about 20% (straight above -460, high left/right +-560,-350, above-left/right +-300,-500). Tuning: UPSCALE in tools/make_boss_sheet.py, hitbox in SetDefaults, Stations.
 - She now spawns 450 px above the Heavenly Basket (found by scanning the tiles around the player: HeavenlyBasketPlayer.FindBasketTop; falls back to the player) and flies to her stations from there.
 
+### Less movement (2026-10-24, owner: size is fine, she moves too much; NOT YET TESTED)
+- She now changes station only every 3rd attack (StationEvery), so she hangs in place for a whole fan-burst-beam run; one station change in three is the fast dash, the others a drift (7 px/tick). While she is within 110 px of her station she stays still even if the player moves a little (StayWithin), and the bob is smaller and slower. If it is still too much, raise StationEvery or StayWithin; if too still, lower them.
+
 ## Not yet tested in-game
+0j. She moves much less.
 0i. Her size on the screen and the spawn above the Basket.
 0h. The new size and hitbox, whether she fits the screen, and the calmer movement with occasional dashes.
 0g. Falling Stars: readable tell, fair gaps between the patches, star art, the tracking star.
