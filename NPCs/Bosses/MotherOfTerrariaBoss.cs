@@ -73,12 +73,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int StarColumns = 7;
 		private const float StarSpacing = 190f;     // sideways gap between neighbouring stars
 		private const float StarTopY = 100f;        // the stars hang at the very top of the map (world pixels), so flying above them does not help
-		private const int StarSpawnAt = 20;         // she gathers light first
-		private const int StarHoverTicks = 36;      // how long the first star hangs before it drops (time to read the pattern)
-		private const int StarGap = 9;             // ticks between one star's drop and the next
-		private const int StarRowPause = 15;       // pause between the first row of stars and the second
-		private const int StarTrackerExtra = 30;    // the following star drops this long after the last row star
-		private const int StarsEnd = StarSpawnAt + StarHoverTicks + 2 * (StarColumns * StarGap + StarRowPause) + StarTrackerExtra + 15; // the last star has just dropped; she does not wait for it to land
+		private const int StarSpawnAt = 30;         // she gathers light first
+		private const int StarHoverTicks = 45;      // how long the first star hangs before it drops (time to read the pattern)
+		private const int StarGap = 12;             // ticks between one star's drop and the next
+		private const int StarRows = 1;            // 1 = a single row of stars (the original). 2 = a second row in the gaps (tried 2026-10-24, owner said too hard)
+		private const int StarRowPause = 25;       // pause between the first row of stars and the second
+		private const int StarTrackerExtra = 40;    // the following star drops this long after the last row star
+		private const int StarsEnd = StarSpawnAt + StarHoverTicks + (StarRows - 1) * (StarColumns * StarGap + StarRowPause) + StarColumns * StarGap + StarTrackerExtra + 25; // the last star has just dropped; she does not wait for it to land
 		// FEATHER STORM: she beats her wings hard (the flap speeds up: the tell), then throws three spiral arms of golden
 		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
 		private const int FeatherDamage = 180;
@@ -364,7 +365,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 					bool leftToRight = Main.rand.NextBool();
 					float secondRowShift = StarSpacing / 2f * (Main.rand.NextBool() ? 1f : -1f);
 					int secondRowDelay = StarColumns * StarGap + StarRowPause;
-					for (int row = 0; row < 2; row++)
+					for (int row = 0; row < StarRows; row++)
 					{
 						for (int i = 0; i < StarColumns; i++)
 						{
@@ -376,7 +377,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 						}
 					}
 					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(target.Center.X, y), Vector2.Zero, ModContent.ProjectileType<GoldCrystalStar>(),
-						damage, 0f, Main.myPlayer, StarHoverTicks + 2 * secondRowDelay + StarTrackerExtra, 1f);
+						damage, 0f, Main.myPlayer, StarHoverTicks + (StarRows - 1) * secondRowDelay + StarColumns * StarGap + StarTrackerExtra, 1f);
 				}
 			}
 			if (Timer >= StarsEnd)

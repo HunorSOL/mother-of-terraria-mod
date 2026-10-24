@@ -219,7 +219,13 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - Movement: she changes station every 2nd attack (was 3), drifts at 9 (was 7), dashes at 28 (was 24).
 - Overall (attack durations added up, not counting her moving between stations), a full cycle of the six attacks went from about 23 s to about 16 s (29% shorter). If it is still too easy, the next levers are damage, more simultaneous attacks (two at once), a random attack order, or the second stage.
 
+### Falling Stars back to the old version (2026-10-24, owner: "go back to the old falling star thing, this is too hard"; NOT YET TESTED)
+- Back to ONE row of 7 stars plus the tracking star (the boss class constant StarRows = 1; set it to 2 to get the doubled version again, the code for it is still there). The star timings are back to the original (gather 30, hang 45, 12 ticks between drops, tracker 40 after the row, ends 25 after) and the burning patches are back to 104 px wide and 5 s.
+- KEPT because the owner asked for them after the original: the stars fall from the very top of the map, and the line and ground marks are the thick visible ones. The faster fall speed also stays (it is needed for the long fall).
+- I read "the old falling star thing" as the single row. If the owner meant going back further (stars 520 px above the player, the thin faint marks, the slow fall), say so.
+
 ## Not yet tested in-game
+0w. Single-row Falling Stars: back to a fair difficulty?
 0v. The faster cycle: still readable? still beatable?
 0u. The star marks are clearly visible, from the top of the screen to the landing spot.
 0t. Doubled falling stars: fair? is the burning floor too much?
