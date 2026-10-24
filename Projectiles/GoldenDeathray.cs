@@ -31,6 +31,10 @@ namespace MotherOfTerraria.Projectiles
 		// A beam is only an effect, so it needs no picture of its own: borrow a vanilla projectile texture (never drawn).
 		public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.DeathLaser;
 
+		// A beam always comes OUT OF the boss. The wing beams (below) start from her wing tips and aim a little to one side.
+		protected virtual Vector2 OriginOffset => Vector2.Zero;
+		protected virtual float AimOffset => 0f;
+
 		private NPC Owner => Main.npc[(int)Projectile.ai[0]];
 		private bool Firing => Projectile.localAI[0] >= TellTicks;
 		private float Strength // 0 -> 1 as the beam swells in, 1 -> 0 as it fades out
@@ -67,7 +71,7 @@ namespace MotherOfTerraria.Projectiles
 				return;
 			}
 
-			Projectile.Center = owner.Center;
+			Projectile.Center = owner.Center + OriginOffset;
 			Projectile.velocity = Vector2.Zero;
 			Projectile.localAI[0]++;
 
@@ -79,7 +83,7 @@ namespace MotherOfTerraria.Projectiles
 					Player target = Main.player[owner.target];
 					if (target.active && !target.dead)
 					{
-						float wanted = (target.Center - Projectile.Center).ToRotation();
+						float wanted = (target.Center - Projectile.Center).ToRotation() + AimOffset;
 						float turn = MathHelper.Clamp(MathHelper.WrapAngle(wanted - Projectile.ai[1]), -TrackTurnPerTick, TrackTurnPerTick);
 						Projectile.ai[1] += turn;
 					}
@@ -168,5 +172,20 @@ namespace MotherOfTerraria.Projectiles
 		}
 
 		public override bool ShouldUpdatePosition() => false;
+	}
+
+	// The two beams of the Wing Beams attack: one out of each wing tip, both aimed a little to the side of the player so
+	// the player stands in the gap between them. They sweep the same way, so the gap slides sideways and the player follows it.
+	// (Same beam as the Golden Deathray: only the starting point and the aim differ.)
+	public class WingBeamLeft : GoldenDeathray
+	{
+		protected override Vector2 OriginOffset => new Vector2(-170f, -70f);
+		protected override float AimOffset => 0.4f;
+	}
+
+	public class WingBeamRight : GoldenDeathray
+	{
+		protected override Vector2 OriginOffset => new Vector2(170f, -70f);
+		protected override float AimOffset => -0.4f;
 	}
 }

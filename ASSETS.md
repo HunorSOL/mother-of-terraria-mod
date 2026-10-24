@@ -43,8 +43,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Celestial Spear (boss projectile) | Projectiles/CelestialSpear.png | OWNER'S DESIGN (2026-10-24), 42x104, pointing up, made by tools/make_celestial_spear.py from DesignRefs/boss_spear.png. |
 | Gold Crystal Star (falling star projectile) | Projectiles/GoldCrystalStar.png | OWNER'S DESIGN (2026-10-24), 51x72, comet trail streams up, made by tools/make_gold_star.py from DesignRefs/boss_star.png. |
 | Starfire patch (burning ground left by a star) | Projectiles/StarfirePatch.cs | Drawn entirely in code, no file. Real art or a flame sprite could replace it in Phase 7. |
-| Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | PLACEHOLDER (2026-10-24): 16x44, pointing up, a gold quill with a blue tip, made by tools/make_feather.py. The owner's design sheet has no feather: needs the owner's art. |
-| Wall of Light (Wing Wall projectile) | Projectiles/LightWall.cs | Drawn entirely in code, no file. Real art could replace it in Phase 7. |
+| Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | PLACEHOLDER (2026-10-24, redrawn): 22x70, pointing up, in the colours of the owner's wings, made by tools/make_feather.py. The owner's design sheet has no loose feather: needs the owner's art. |
 | Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 

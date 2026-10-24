@@ -22,8 +22,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//                  of light on the ground, and one last star follows you.
 	//   5. FEATHER STORM: she beats her wings hard (the tell), then three spiral arms of golden feathers turn slowly one way
 	//                  and then the other.
-	//   6. WING WALL:   she spreads her wings wide (the tell), then two walls of golden light sweep across the arena, each with one gap
-	//                  at a different height.
+	//   6. WING BEAMS:  she spreads her wings wide (the tell), then a golden beam fires out of each wing tip, aimed to either side of you;
+	//                  they sweep together and you follow the gap between them.
 	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
 	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 420x332 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
@@ -88,16 +88,12 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
 		private const float FeatherStartSpeed = 5f;
 		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 25;  // she moves on while the last feathers are still flying
-		// WING WALL: she spreads her wings wide and holds them there (the tell), then two walls of golden light sweep across
-		// the arena one after the other, from the same side, each with a single gap at a different height.
-		private const int WallDamage = 260;
-		private const int WallTell = 45;
-		private const int WallFirstDelay = 50;      // how long the first wall waits at the screen edge (faint, with its gap marked)
-		private const int WallSecondDelay = 150;    // the second wall waits longer, so the two come 100 ticks apart
-		private const float WallStartDistance = 1000f; // how far to the side of the player the walls wait
-		private const float WallGapRange = 250f;    // how far above or below the player's height the first gap may be
-		private const float WallGapShift = 240f;    // the second gap is at least this far from the first
-		private const int WallEnd = WallTell + WallSecondDelay + 30; // she moves on as the second wall starts to cross
+		// WING BEAMS: she spreads her wings wide and holds them there (the tell: thin lines from both wing tips follow you),
+		// then a golden beam fires OUT OF EACH WING TIP. They are aimed to either side of you (you stand in the gap between
+		// them) and sweep the same way, so the gap slides sideways and you have to move with it. Nothing but her own beams.
+		private const int WingBeamDamage = 280;
+		private const int WingBeamsStart = 45;      // she spreads her wings first; the beams' own tell (thin lines) runs after that
+		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
 		private const int AttackCount = 6;
@@ -109,7 +105,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			DeathBeam = 2,
 			FallingStars = 3,
 			FeatherStorm = 4,
-			WingWall = 5,
+			WingBeams = 5,
 		}
 
 		private Attack CurrentAttack
@@ -187,7 +183,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			bool beatingHard = CurrentAttack == Attack.FeatherStorm && Timer < FeatherTell + 30; // the wings beat twice as fast before the storm
 			NPC.frameCounter += beatingHard ? 2 : 1;
 			NPC.frame.Y = (int)(NPC.frameCounter / TicksPerFrame % FrameCount) * frameHeight;
-			if (CurrentAttack == Attack.WingWall && Timer > 8 && Timer < WallTell + 90)
+			if (CurrentAttack == Attack.WingBeams && Timer > 8 && Timer < WingBeamsEnd - 15)
 			{
 				NPC.frame.Y = WingsSpreadFrame * frameHeight; // wings held wide for the Wing Wall
 			}
@@ -215,7 +211,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5;
+			bool holding = (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -242,8 +238,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 				case Attack.FeatherStorm:
 					DoFeatherStorm();
 					break;
-				case Attack.WingWall:
-					DoWingWall(target);
+				case Attack.WingBeams:
+					DoWingBeams(target);
 					break;
 			}
 		}
@@ -424,38 +420,35 @@ namespace MotherOfTerraria.NPCs.Bosses
 			}
 		}
 
-		// She holds her wings spread (see FindFrame), then two walls of light cross the arena. Each has one gap: the first is
-		// near the player's height (a short move), the second is clearly higher or lower, so you must change height between them.
-		private void DoWingWall(Player target)
+		// She holds her wings spread (see FindFrame), gold dust streams off the wing tips, then a beam fires out of each wing tip.
+		private void DoWingBeams(Player target)
 		{
-			if (Timer > 0 && Timer < WallTell)
+			if (Timer > 0 && Timer < WingBeamsStart)
 			{
 				GatherLight(1.2f);
 				for (int side = -1; side <= 1; side += 2)
 				{
-					Dust dust = Dust.NewDustPerfect(NPC.Center + new Vector2(side * Main.rand.NextFloat(120f, 210f), Main.rand.NextFloat(-110f, 20f)),
+					Dust dust = Dust.NewDustPerfect(NPC.Center + new Vector2(side * 170f, -70f) + Main.rand.NextVector2Circular(30f, 30f),
 						DustID.GoldCoin, new Vector2(side * 1.5f, -1f), 0, default, 1.4f);
 					dust.noGravity = true;
 				}
 			}
-			if (Timer == WallTell)
+			if (Timer == WingBeamsStart)
 			{
 				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
 				if (Main.netMode != NetmodeID.MultiplayerClient)
 				{
-					int damage = NPC.GetAttackDamage_ForProjectiles(WallDamage, WallDamage * 0.8f);
-					float direction = Main.rand.NextBool() ? 1f : -1f;
-					float startX = target.Center.X - direction * WallStartDistance;
-					float gap1 = target.Center.Y + Main.rand.NextFloat(-WallGapRange, WallGapRange);
-					float shift = Main.rand.NextFloat(WallGapShift, WallGapShift + 90f) * (Main.rand.NextBool() ? 1f : -1f);
-					float gap2 = gap1 + shift;
-					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(startX, gap1), Vector2.Zero, ModContent.ProjectileType<LightWall>(),
-						damage, 0f, Main.myPlayer, direction, gap1, WallFirstDelay);
-					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(startX, gap2), Vector2.Zero, ModContent.ProjectileType<LightWall>(),
-						damage, 0f, Main.myPlayer, direction, gap2, WallSecondDelay);
+					int damage = NPC.GetAttackDamage_ForProjectiles(WingBeamDamage, WingBeamDamage * 0.8f);
+					float sweepDirection = Main.rand.NextBool() ? 1f : -1f; // both beams sweep the same way
+					Vector2 left = NPC.Center + new Vector2(-170f, -70f);
+					Vector2 right = NPC.Center + new Vector2(170f, -70f);
+					Projectile.NewProjectile(NPC.GetSource_FromAI(), left, Vector2.Zero, ModContent.ProjectileType<WingBeamLeft>(), damage, 0f, Main.myPlayer,
+						NPC.whoAmI, (target.Center - left).ToRotation() + 0.4f, sweepDirection);
+					Projectile.NewProjectile(NPC.GetSource_FromAI(), right, Vector2.Zero, ModContent.ProjectileType<WingBeamRight>(), damage, 0f, Main.myPlayer,
+						NPC.whoAmI, (target.Center - right).ToRotation() - 0.4f, sweepDirection);
 				}
 			}
-			if (Timer >= WallEnd)
+			if (Timer >= WingBeamsEnd)
 			{
 				NextAttack();
 			}

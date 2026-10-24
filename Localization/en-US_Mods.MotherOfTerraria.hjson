@@ -65,4 +65,5 @@ Projectiles: {
 	GoldCrystalStar.DisplayName: Gold Crystal Star
 	StarfirePatch.DisplayName: Starfire Patch
 	GoldenFeather.DisplayName: Golden Feather
+	LightWall.DisplayName: Light Wall
 }
