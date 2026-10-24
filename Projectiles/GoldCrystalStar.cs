@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
+using MotherOfTerraria.Systems;
 using Terraria.ModLoader;
 
 namespace MotherOfTerraria.Projectiles
@@ -55,7 +56,10 @@ namespace MotherOfTerraria.Projectiles
 					Projectile.position.X += dx;
 					Projectile.netUpdate = true;
 				}
-				groundY = FindGroundY();
+				if (Projectile.localAI[0] % 6 == 1)
+				{
+					groundY = FindGroundY();
+				}
 				return;
 			}
 
@@ -81,12 +85,12 @@ namespace MotherOfTerraria.Projectiles
 			}
 		}
 
-		// Scans down from the star for the first solid tile (or platform), for the warning line. Capped at about 70 tiles.
+		// Scans down from the star for the first solid tile (or platform), for the warning line. Scans all the way to the bottom of the world (the stars hang at the top of the map, so the islands are 200+ tiles below).
 		private float FindGroundY()
 		{
 			int x = (int)(Projectile.Center.X / 16f);
 			int startY = (int)(Projectile.Center.Y / 16f);
-			for (int y = startY; y < startY + 70 && y < Main.maxTilesY - 2; y++)
+			for (int y = startY; y < Main.maxTilesY - 2; y++)
 			{
 				if (!WorldGen.InWorld(x, y, 2))
 				{
@@ -98,7 +102,7 @@ namespace MotherOfTerraria.Projectiles
 					return y * 16f;
 				}
 			}
-			return Projectile.Center.Y + 70 * 16f;
+			return (Main.maxTilesY - 2) * 16f; // nothing to land on: the line runs to the bottom of the world
 		}
 
 		// Landing: a burst of light and a burning patch on the ground (made by the owner machine only).
@@ -135,18 +139,38 @@ namespace MotherOfTerraria.Projectiles
 				// The tell: a thin line to where it will land (it brightens as the drop gets near) and a pulsing star.
 				float ramp = Projectile.ai[0] <= 0f ? 1f : MathHelper.Clamp(Projectile.localAI[0] / Projectile.ai[0], 0f, 1f);
 				scale = 1f + 0.12f * (float)System.Math.Sin(Projectile.localAI[0] * 0.35f);
-				float length = groundY - Projectile.Center.Y;
-				if (length > 0f)
+				float top = System.Math.Max(Projectile.Center.Y, Main.screenPosition.Y - 40f);
+				float bottom = System.Math.Min(groundY, Main.screenPosition.Y + Main.screenHeight + 40f);
+				if (groundY > Projectile.Center.Y && bottom > top)
 				{
-					Main.spriteBatch.End();
-					Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None,
-						RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-					// Only the 1x1 corner of the magic pixel is used (the texture is bigger).
-					Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, position, new Rectangle(0, 0, 1, 1), new Color(255, 225, 120) * (0.15f + 0.45f * ramp),
-						MathHelper.PiOver2, new Vector2(0f, 0.5f), new Vector2(length, 2f + 3f * ramp), SpriteEffects.None, 0f);
-					Main.spriteBatch.End();
-					Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None,
-						RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+					// The line is drawn with ordinary blending (a dark edge, a gold body, a white core), because a glow added on top
+					// of the bright Heavens sky is nearly invisible. Only the part on the screen is drawn.
+					Texture2D pixel = TextureAssets.MagicPixel.Value;
+					Rectangle one = new Rectangle(0, 0, 1, 1);
+					float x = Projectile.Center.X - Main.screenPosition.X;
+					float y = top - Main.screenPosition.Y;
+					float length = bottom - top;
+					float pulse = 0.85f + 0.15f * (float)System.Math.Sin(Projectile.localAI[0] * 0.4f);
+					float fade = 0.55f + 0.45f * ramp;
+					Main.spriteBatch.Draw(pixel, new Vector2(x - 6f, y), one, new Color(40, 25, 110) * (0.55f * fade), 0f, Vector2.Zero, new Vector2(12f, length), SpriteEffects.None, 0f);
+					Main.spriteBatch.Draw(pixel, new Vector2(x - 4f, y), one, new Color(255, 205, 60) * (0.85f * fade * pulse), 0f, Vector2.Zero, new Vector2(8f, length), SpriteEffects.None, 0f);
+					Main.spriteBatch.Draw(pixel, new Vector2(x - 1.5f, y), one, new Color(255, 250, 215) * fade, 0f, Vector2.Zero, new Vector2(3f, length), SpriteEffects.None, 0f);
+
+					// The landing spot: a glowing gold mark on the ground, growing and pulsing as the drop gets near.
+					if (groundY < Main.screenPosition.Y + Main.screenHeight + 200f && HeavensSkyTextures.Ready)
+					{
+						Texture2D glow = HeavensSkyTextures.Soft;
+						Vector2 spot = new Vector2(x, groundY - Main.screenPosition.Y);
+						float size = (170f + 110f * ramp) * pulse;
+						Main.spriteBatch.End();
+						Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None,
+							RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+						Main.spriteBatch.Draw(glow, spot, null, new Color(255, 200, 70, 0) * (0.5f + 0.5f * ramp), 0f, glow.Size() / 2f,
+							new Vector2(size, size * 0.35f) / glow.Width, SpriteEffects.None, 0f);
+						Main.spriteBatch.End();
+						Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None,
+							RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+					}
 				}
 			}
 

@@ -205,7 +205,12 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
 - Now TWO rows of 7 stars (14, plus the tracking star): the first row as before, then after a 25 tick pause a second row shifted half a gap (95 px, to a random side) so it lands in the spaces, sweeping the OPPOSITE way. Constants: StarRowPause 25 in the boss class (StarColumns 7, StarSpacing 190, StarGap 12 unchanged). The tracking star drops last. The attack lasts about 2 s longer.
 - To keep the ground from burning all attack, the patches are a little narrower (104 -> 96 px) and burn 4 s instead of 5 (StarfirePatch.cs). With two rows the second row's patches land between the first row's, so the whole floor is on fire for a moment: players can fly above the flames (the stars still come from the top of the map). If it is too much, raise StarSpacing, drop the second row to fewer stars, or shorten the patch life further.
 
+### Star marks made visible (2026-10-24, owner: "i dont see them make them more visible"; NOT YET TESTED)
+- BUG FOUND: the line scan looked only 70 tiles down from the star, but the stars now hang at the top of the map and the islands are 200+ tiles lower, so the line ended far above the screen. It now scans to the bottom of the world (every 6 ticks), and only the part on the screen is drawn.
+- More visible: drawn with ordinary blending (the bright Heavens sky hid the old additive glow) as a dark indigo edge (12 px), a gold body (8 px) and a white core (3 px), pulsing and brightening as the drop nears; plus a big glowing gold mark on the ground at the landing spot (it was removed earlier, now back as an addition, the owner liked "the marks"). Everything is in GoldCrystalStar.PreDraw. If it is too much or still too faint, change the widths and alphas there.
+
 ## Not yet tested in-game
+0u. The star marks are clearly visible, from the top of the screen to the landing spot.
 0t. Doubled falling stars: fair? is the burning floor too much?
 0s. The boss health bar appears (with her face) when she spawns.
 0r. Falling Stars from the top: still fair? readable lines?
