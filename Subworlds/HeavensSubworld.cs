@@ -18,8 +18,11 @@ namespace MotherOfTerraria.Subworlds
 		public override int Width => 700;
 		public override int Height => 400;
 
-		// Regenerate it fresh on every visit, so it always looks the same and can't be griefed permanently.
-		public override bool ShouldSave => false;
+		// The Heavens is SAVED with the player's world (owner request, 2026-10-24: what you build there must still be there
+		// when you come back). It is generated once, on the first visit, and then loaded from its own file.
+		// NOTE: because of that, a change to the terrain code (HeavensTerrainPass) does NOT show in a world that has
+		// already visited the Heavens; to see it, test in a new world or delete that world's saved Heavens file.
+		public override bool ShouldSave => true;
 
 		// Keep the player's inventory/progress changes made inside (e.g. loot picked up there).
 		public override bool NoPlayerSaving => false;
