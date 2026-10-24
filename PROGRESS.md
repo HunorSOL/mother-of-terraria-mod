@@ -122,7 +122,11 @@ Owner: the Celestial Spear replaces the boss's spear art; the Heavens enemies mu
 - Movement (NPCs/Bosses/MotherOfTerrariaBoss.cs, Stations, MaxSpeed, DashEase): the old slow sway is gone. She keeps a list of five stations around the player (high left, high right, far above, low right, low left; offsets from the player, so she follows him) and dashes to the next one at the start of every attack (top speed 26 px/tick, eases in), with a gentle bob and a fading golden after-image trail while dashing. During the burst she also flips to the mirror-image side between the two rings. The beam waits 0.5 s (BeamStart) so she is in place, and she holds still while it fires. Five stations versus three attacks means every attack is thrown from every station over time.
 - To tune: station offsets, MaxSpeed, DashEase, trail strength, the BeamStart wait.
 
+### Beam retune (2026-10-24, owner: thinner, slower, not one hit but punishing; NOT YET TESTED)
+- Hit width 70 -> 28 px, drawn glow 130 -> 56 px, sweep 29 -> 14 degrees a second, damage 700 -> 350 base (no longer a near one-hit). It still burns (Hellfire 6 s) and a beam you stay in keeps hitting, so it stays punishing. Constants: GoldenDeathray.cs (SweepPerTick, BeamHitWidth, BeamDrawWidth) and LaserDamage in the boss class.
+
 ## Not yet tested in-game
+0e. The retuned beam (thin, slow, 350 damage).
 0d. Celestial Spear look and hit line, enemies vanishing at the start of the summon, the dashes (speed, readability, after-images).
 0c. The boss's real sprite and its animation, and whether the hitbox (110x170) feels right against her size.
 0b. The boss's first-stage attacks and the doubled health (the section above).

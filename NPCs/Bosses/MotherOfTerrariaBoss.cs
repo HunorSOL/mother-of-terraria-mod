@@ -52,7 +52,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float RingSpearSpeed = 7f;
 
 		private const int BeamStart = 30;           // the beam attack waits this long first so she can reach her station
-		private const int LaserDamage = 700;        // "super punishing": about three beam hits kill an unbuffed player
+		private const int LaserDamage = 350;        // punishing but NOT a one-hit kill (was 700): it hurts hard, burns (Hellfire), and a beam you stay in hits again and again
 
 		// Times in ticks (60 per second), counted from the start of each attack.
 		private const int FanTell = 30, FanEnd = 90;

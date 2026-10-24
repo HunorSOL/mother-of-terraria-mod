@@ -22,10 +22,10 @@ namespace MotherOfTerraria.Projectiles
 		public const int TellTicks = 75;
 		public const int BeamTicks = 150;
 		private const float TrackTurnPerTick = 0.035f;  // how fast the tell line follows the player (radians per tick)
-		private const float SweepPerTick = 0.0085f;     // how fast the locked beam sweeps (about 29 degrees a second)
+		private const float SweepPerTick = 0.004f;      // how fast the locked beam sweeps (about 14 degrees a second; was 29)
 		private const float BeamLength = 2600f;         // long enough to cross the screen
-		private const float BeamHitWidth = 70f;         // the damaging thickness (pixels)
-		private const float BeamDrawWidth = 130f;       // the glowing outer thickness
+		private const float BeamHitWidth = 28f;         // the damaging thickness (pixels; was 70)
+		private const float BeamDrawWidth = 56f;        // the glowing outer thickness (was 130)
 		private const int HellfireTicks = 60 * 6;
 
 		// A beam is only an effect, so it needs no picture of its own: borrow a vanilla projectile texture (never drawn).
