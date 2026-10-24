@@ -18,6 +18,15 @@ Items: {
 		Tooltip: A crystal brimming with heavenly power.
 	}
 
+	DebugBossSummoner: {
+		DisplayName: Debug Boss Summoner
+		Tooltip:
+			'''
+			TESTING ONLY. Remove before release.
+			Summons the Mother of Terraria right away (in the Heavens only).
+			'''
+	}
+
 	DebugStarterKit: {
 		DisplayName: Debug Starter Kit
 		Tooltip:
@@ -46,6 +55,7 @@ Tiles: {
 NPCs: {
 	HeavenlyKnight.DisplayName: Heavenly Knight
 	HeavensDragon.DisplayName: Heavens Dragon
+	MotherOfTerrariaBoss.DisplayName: Mother of Terraria
 }
 
 Projectiles.HeavenlySpear.DisplayName: Heavenly Spear

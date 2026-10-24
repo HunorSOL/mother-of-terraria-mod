@@ -1,13 +1,13 @@
 # Progress
 
-Last updated: end of day 2026-10-14 (session 2).
+Last updated: 2026-10-24 (Phase 5 skeleton built).
 Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
 ## Where we are
 - Phase 0 COMPLETE (2026-10-11). Phase 1 COMPLETE (2026-10-11).
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
 - Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Built and seen in-game: enemies (tuned), island look, atmosphere, island details, theme music. Skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up).
-- Phase 3 (the Heavenly Basket) COMPLETE (owner, 2026-10-14). Phase 4 (summon sequence) BUILT 2026-10-14, awaiting the owner's test. Phase 5 onward (boss) not started. The Basket-emptying rule is a to-do for Phase 5 (see ROADMAP).
+- Phase 3 (the Heavenly Basket) COMPLETE (owner, 2026-10-14). Phase 4 (summon sequence) CONFIRMED working by the owner (2026-10-24, along with everything else on the test list). Phase 5 (boss skeleton) BUILT 2026-10-24, awaiting the owner's test; the Basket-emptying rule is hooked up. Phase 6 onward not started.
 
 ## What we did on 2026-10-12
 
@@ -85,7 +85,23 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 ### Process
 - Everything above is committed locally (nothing pushed). ROADMAP.md status block updated.
 
+## What we did on 2026-10-24: Phase 5, the boss skeleton (BUILT, NOT YET TESTED IN-GAME)
+- Owner confirmed that everything on the previous "not yet tested" list works (Phase 4 sequence, trees, dragon, crystal icon, drop rate).
+- New: NPCs/Bosses/MotherOfTerrariaBoss.cs (the class is not called MotherOfTerraria because that clashes with the mod's own name). PLACEHOLDER numbers: 300000 health, defense 100, contact 200, knockback-immune, lava-immune, flies through terrain, boss health bar, boss music (vanilla Boss2 stands in) at priority BossMedium so it beats the Heavens theme. AI: floats 260 px above the player swinging side to side; every 2.5 s gathers gold light for 0.5 s (the tell), then throws a fan of 3 Heavenly Spears (damage 150). If the player dies or leaves she flees and despawns. No bestiary entry yet.
+- Spawn: HeavenlyBasketPlayer.SpawnBoss now really spawns her 300 px above the player at the end of the 30 s sequence. FightActive stays true while she lives.
+- Basket rule hooked up: her OnKill calls EndFight(true); if the player dies while she lives, HeavenlyBasketPlayer.PostUpdate removes her and calls EndFight(false). Nothing else empties the Basket.
+- DEFAULT I CHOSE (owner to confirm): leaving the Heavens (or quitting) mid-fight just ends the fight, she is gone with the subworld, and the crystals STAY (the owner's rule empties the Basket only on a kill or a player death). Right-click the full Basket to summon her again.
+- The Heavens spawner pauses while she is alive (no knights or dragons during the boss fight).
+- Loot: PLACEHOLDER 20-30 Lunar Bars. No treasure bag, trophy, relic or Expert-only drops yet (they need art and design: Phases 6 and 7).
+- Debug: Items/Debug/DebugBossSummoner (craft from 1 Dirt + 1 Stone) summons her instantly inside the Heavens. Killing a boss summoned this way does not touch the Basket.
+- Art: placeholder sprite made by tools/make_boss_placeholder.py (listed in ASSETS.md).
+- Compiles (the command-line build only stops at the packaging error TML003 because tModLoader is open). Needs the in-game Build + Reload.
+- SINGLEPLAYER-ONLY: the spawn and OnKill hook use the local player; multiplayer needs the server to do them (Phase 8).
+
 ## Not yet tested in-game
+0a. PHASE 5 (2026-10-24): see the section above. Test steps are in the message that closed that session.
+
+## Old test list (all confirmed by the owner on 2026-10-24)
 Compiles, but the owner has not explicitly confirmed (test these first next session):
 0. PHASE 4: the whole 30 s summon sequence (chat lines at 10/20/25 s, shakes at 15/22/28 s, the placeholder boss message at 30 s, restart by right-clicking the full Basket, cancel by leaving or dying) and the 30-crystal Basket with its growing glow. Also the Basket's size and glow position.
 1. Trees standing still in the Heavens, and swaying again in the normal world after leaving (Systems/HeavensWindSystem.cs).
@@ -94,7 +110,7 @@ Compiles, but the owner has not explicitly confirmed (test these first next sess
 Confirmed by the owner this session: enemy tuning, knockback, spear homing, fall death, the atmosphere and island details, the music.
 Remember: tModLoader must be closed for command-line builds; the in-game Build + Reload is the normal path.
 
-## Next: test Phase 4, then Phase 5 (the boss skeleton: needs the boss design and any sprite from the owner; placeholder art is fine). Hook up the Basket-emptying rule in Phase 5. The list below is the leftover 2C wish list, optional and can be picked up any time
+## Next: test Phase 5, then Phase 6 (boss design doc and attacks; Opus recommended for the design doc). The list below is the leftover 2C wish list, optional and can be picked up any time
 1. Ambient creatures (glowing butterflies or birds), non-hostile; and a grand arrival gateway where the player lands.
 2. Ambient sounds (wind, chimes): needs sounds from the owner, or a pick from vanilla ones.
 3. Floating canopy puffs and leafy branches (DesignRefs: tree_puff.png, tree_branch.png) as extra floating decorations, if wanted.

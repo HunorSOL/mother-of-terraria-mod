@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using MotherOfTerraria.Items;
+using MotherOfTerraria.NPCs.Bosses;
 using MotherOfTerraria.Subworlds;
 using SubworldLibrary;
 using Terraria;
@@ -28,7 +29,8 @@ namespace MotherOfTerraria.Common
 		public const int CrystalsNeeded = 30; // owner: was 50, changed to 30 on 2026-10-14
 
 		public int Crystals;
-		public bool FightActive; // not saved: it only lasts while the fight is running in this session
+		public bool FightActive; // not saved: it only lasts while the sequence or the boss fight is running in this session
+		private bool summoning;  // true during the 30 s sequence, false once the boss exists
 
 		public override void SaveData(TagCompound tag)
 		{
@@ -111,6 +113,7 @@ namespace MotherOfTerraria.Common
 		private void StartSummon()
 		{
 			FightActive = true;
+			summoning = true;
 			summonTimer = 0;
 			SoundEngine.PlaySound(SoundID.Item119, Player.Center);
 		}
@@ -143,18 +146,18 @@ namespace MotherOfTerraria.Common
 			}
 		}
 
-		// PLACEHOLDER: the boss does not exist yet. Phase 5 spawns the Mother of Terraria here (on the server, when
-		// multiplayer arrives) and keeps FightActive true until she is killed or vanishes because the player died
-		// (then EndFight below empties the Basket). For now the sequence just ends and the crystals STAY in the Basket,
-		// so it can be run again by right-clicking the full Basket.
+		// Spawns the Mother of Terraria above the player and hands over to the fight: FightActive stays true until
+		// she is killed (EndFight(true) from her OnKill) or the player dies (EndFight(false) from PostUpdate).
+		// SINGLEPLAYER-ONLY: spawned from the local client; in multiplayer the server must do this.
 		private void SpawnBoss()
 		{
-			Main.NewText("(Placeholder: the Mother of Terraria spawns here. The boss is built in Phase 5.)", Gold);
+			summoning = false;
+			NPC.NewNPC(Player.GetSource_Misc("MotherOfTerraria:Basket"), (int)Player.Center.X, (int)Player.Center.Y - 300,
+				ModContent.NPCType<MotherOfTerrariaBoss>());
 			SoundEngine.PlaySound(SoundID.Roar, Player.Center);
-			FightActive = false;
 		}
 
-		// The boss code will call this when the real fight ends (see the TODO at the top of this class).
+		// Ends the fight and empties the Basket: the boss calls it when killed (true); PostUpdate calls it when the player dies (false).
 		public void EndFight(bool won)
 		{
 			if (!FightActive)
@@ -166,8 +169,12 @@ namespace MotherOfTerraria.Common
 			Main.NewText(won ? "The fight is won. The Basket is empty again." : "The fight is lost. The crystals are gone; the Basket is empty.", 255, 215, 0);
 		}
 
-		// Drives the sequence. Leaving the Heavens or dying cancels a sequence that is still counting down;
-		// the crystals stay in the Basket (it only empties when the boss is killed or vanishes because the player died).
+		// Drives the sequence and watches the fight.
+		//  - During the 30 s sequence, leaving the Heavens or dying cancels it; the crystals stay.
+		//  - Once the boss exists: the player dying makes her vanish and EMPTIES the Basket (owner rule).
+		//    Leaving the Heavens (or quitting) just ends the fight with the crystals kept: she is gone with the
+		//    subworld and the owner's rule empties the Basket only on a kill or a death. (Default chosen 2026-10-24;
+		//    the owner was asked to confirm.) If she disappears any other way the fight ends and the crystals stay.
 		public override void PostUpdate()
 		{
 			if (!FightActive || Player.whoAmI != Main.myPlayer)
@@ -175,13 +182,39 @@ namespace MotherOfTerraria.Common
 				return;
 			}
 
-			if (Player.dead || !SubworldSystem.IsActive<HeavensSubworld>())
+			if (summoning)
 			{
-				FightActive = false;
+				if (Player.dead || !SubworldSystem.IsActive<HeavensSubworld>())
+				{
+					FightActive = false;
+					summoning = false;
+					return;
+				}
+				RunSummon();
 				return;
 			}
 
-			RunSummon();
+			int bossType = ModContent.NPCType<MotherOfTerrariaBoss>();
+			if (Player.dead)
+			{
+				RemoveBoss(bossType);
+				EndFight(false);
+			}
+			else if (!SubworldSystem.IsActive<HeavensSubworld>() || !NPC.AnyNPCs(bossType))
+			{
+				FightActive = false;
+			}
+		}
+
+		private static void RemoveBoss(int bossType)
+		{
+			foreach (NPC npc in Main.npc)
+			{
+				if (npc.active && npc.type == bossType)
+				{
+					npc.active = false; // vanishes without dying, so no loot and no kill credit
+				}
+			}
 		}
 	}
 }

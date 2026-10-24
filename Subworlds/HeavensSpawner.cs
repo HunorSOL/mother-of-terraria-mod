@@ -26,6 +26,12 @@ namespace MotherOfTerraria.Subworlds
 				return;
 			}
 
+			// No new Heavens enemies while the Mother of Terraria is alive: the fight is the boss alone.
+			if (NPC.AnyNPCs(ModContent.NPCType<NPCs.Bosses.MotherOfTerrariaBoss>()))
+			{
+				return;
+			}
+
 			int knightType = ModContent.NPCType<HeavenlyKnight>();
 			int dragonType = ModContent.NPCType<HeavensDragon>();
 			int knights = 0, dragons = 0;

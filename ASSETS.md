@@ -39,6 +39,9 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Vanilla loading screen text | Subworlds/HeavensTerrainPass.cs | Optional custom loading screen, Phase 2C. |
 | Gold dust when hitting the statue | Tiles/GoldenStatue.cs | Custom dust, optional. |
 
+| Mother of Terraria sprite | NPCs/Bosses/MotherOfTerrariaBoss.png | PLACEHOLDER (2026-10-24): 160x160 single frame, golden robed figure with blue wings, made by tools/make_boss_placeholder.py. Needs the owner's design, with animation frames. Hitbox is 90x130 (NPC.width/height); adjust when the real art arrives. |
+| Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
+
 ## Not built yet (will need owner designs)
 
 | Asset | Phase |
@@ -48,7 +51,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Harmless ambient creatures (butterflies, birds) | 2C |
 | Heavenly Basket (tile that takes the crystals and summons the boss) | 3 (built, placeholder art) |
 | Pylon-like structure (tile) | 3 |
-| Mother of Terraria boss (sprite, animation, projectiles), boss bar icon, trophy, relic, drops, music | 5, 6, 7 |
+| Mother of Terraria boss: REAL sprite and animation, her own attack projectiles, boss bar icon, treasure bag, trophy, relic, real drops, boss music (vanilla Boss2 stands in) | 6, 7 |
 
 ## Design references (not used by the game directly)
 
