@@ -241,7 +241,14 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - The tell line freeze (12 ticks) on the beams stays; the stars still start on the screen, single row.
 - DIFFICULTY PLAN (owner): do not make her harder by speeding things up. New attacks and a second stage next. Keep this in mind: more speed made the attacks unreadable, not harder in a good way.
 
+### Health +30%, boss bar fix, Halo Rings (2026-10-24; BUILT, NOT YET TESTED)
+- Health: 600000 -> 780000 (+30%, owner request; placeholder, Phase 6 balances).
+- BOSS BAR (the head icon alone did not work): tModLoader only loads a boss head icon for a class marked [AutoloadBossHead]; I had not put the marker on the class. Added it to MotherOfTerrariaBoss (it loads NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png). tModLoader's own notes say any NPC with a boss head icon shows the standard boss bar automatically. If the bar is STILL missing after this, the next step is a custom ModBossBar class.
+- NEW ATTACK 7: HALO RINGS (owner approved the design, gap 45 and damage 280, 2026-10-24): her halo flares gold for 0.7 s (a glow above her head), then 4 rings spread out from her, one every 0.7 s, at 6 px/tick (slow). Each ring is thin (28 px band) and has one 45-degree gap whose edges are marked by brighter bars; the gap is turned 30-90 degrees away from the direction of the player, alternating sides, so the player has to move along the ring. A player half in the gap is not hit. Damage 280. Code: Projectiles/HaloRing.cs (drawn in code, no art file), DoHaloRings in the boss class (HaloDamage, HaloTell, HaloRingsCount 4, HaloEvery 42). It ends 60 ticks after the last ring. The cycle is now: fan, burst, beam, stars, feathers, wing beams, halo rings.
+- To tune: ring speed and thickness (HaloRing.cs), gap width (GapWidth), count and spacing (boss class).
+
 ## Not yet tested in-game
+0ab. Boss bar shows (with her icon); Halo Rings readable and fair.
 0aa. The fight is back to the pre-speed-up pace.
 0z. Stars start on the screen.
 0y. The beams are dodgeable again.
