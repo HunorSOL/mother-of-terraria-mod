@@ -151,6 +151,20 @@ def cut_items():
             "-draw", "color 2,2 floodfill", f"DesignRefs/{name}.png"])
 
 
+sheet_frame_height = 0
+frame_width = 0
+
+
+def make_head_icon():
+    # The boss head icon: the picture on the boss health bar and on the map. tModLoader loads
+    # NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png automatically (a boss bar needs one). It is cut from the first frame
+    # (the head, crown, halo and shoulders) and shrunk to 48x48.
+    subprocess.check_call([
+        "magick", OUT, "-crop", f"{frame_width}x{sheet_frame_height}+0+0", "+repage",
+        "-crop", "140x140+140+28", "+repage", "-filter", "Box", "-resize", "48x48!",
+        "-colors", "40", "+dither", "NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png"])
+
+
 def main():
     base = cut_boss()
     frames = [make_frame(base, f) for f in range(FRAMES)]
@@ -159,7 +173,13 @@ def main():
     write_rgba(sheet, OUT)
     fh, fw = frames[0].shape[:2]
     print(f"wrote {OUT}: frame {fw}x{fh}, {FRAMES} frames, picture {base.shape[1]}x{base.shape[0]}")
+    global sheet_frame_height
+    sheet_frame_height = fh
+    global frame_width
+    frame_width = fw
+    make_head_icon()
     cut_items()
+    print("wrote NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png (boss bar icon)")
     print("wrote DesignRefs/boss_trophy.png, boss_bag.png, boss_spear.png, boss_star.png")
 
 

@@ -197,7 +197,12 @@ Owner: "the stars werent the problem, those shards she shoots out were" (the FEA
 ### Falling Stars from the top of the map (2026-10-24, owner: so they cannot be dodged by going above them; NOT YET TESTED)
 - The stars now spawn at the very top of the map (y = 100 px, StarTopY in the boss class) instead of 520 px above the player, so a player who flies high is still in their path. The thin tell lines now run from the top of the screen down to the landing spot. Fall acceleration 0.9 -> 1.5 and top speed 22 -> 34 (GoldCrystalStar.cs) so a fall of about 3700 px takes about 2 s instead of dragging on. Things to watch: stars hover offscreen so only the lines are visible; an island above a player still shelters them (a star lands on the first solid thing, as before); the tracking star now has a long fall, so the player can still step aside after it locks (lock is 25 ticks before the drop; shorten the fall or raise LockBeforeFall if it feels too easy).
 
+### Boss health bar (2026-10-24, owner: there is no boss health bar like the other bosses; NOT YET TESTED)
+- Likely cause: tModLoader's standard boss bar needs the boss to have a boss head icon, and she had none (NPC.boss = true alone is not enough). Added NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png (48x48, her face, crown and halo, cut from the first sprite frame by tools/make_boss_sheet.py; tModLoader loads files named <NPC>_Head_Boss.png on its own). That gives her the standard bar with her icon, and also shows her icon on the map. If the bar is STILL missing in-game, the next step is a custom ModBossBar class; check the client.log for errors.
+- The icon is a placeholder crop; the owner may want a hand-made icon.
+
 ## Not yet tested in-game
+0s. The boss health bar appears (with her face) when she spawns.
 0r. Falling Stars from the top: still fair? readable lines?
 0q. The feather art in the storm.
 0p. Feather look; Wing Beams (gap readable, follow it fair); star landing glow.
