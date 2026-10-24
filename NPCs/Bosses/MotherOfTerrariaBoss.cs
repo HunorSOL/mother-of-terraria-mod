@@ -5,6 +5,7 @@ using MotherOfTerraria.Systems;
 using MotherOfTerraria.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
@@ -34,6 +35,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 	[AutoloadBossHead] // loads NPCs/Bosses/MotherOfTerrariaBoss_Head_Boss.png; without this the standard boss health bar never appears
 	public class MotherOfTerrariaBoss : ModNPC
 	{
+		// HER HEALTH, exactly (placeholder; Phase 6 balances it): doubled to 600000, +30% to 780000, +30% again to 1014000 by the owner on
+		// 2026-10-24. The game scales a boss's health by difficulty and (on Journey) by the enemy-difficulty slider, so the number on the
+		// bar was about half of this; OnSpawn below sets it again after the scaling so the bar shows exactly this number (owner request).
+		private const int BossLife = 1014000;
+
 		private const int FrameCount = 8;
 		private const int WingsSpreadFrame = 2;   // the animation frame where the wings are raised highest
 		private const int TicksPerFrame = 6;        // wing-beat speed: one full flap takes 8 x 6 = 48 ticks
@@ -149,7 +155,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.height = 210;
 			NPC.damage = 200;        // contact damage (placeholder)
 			NPC.defense = 100;       // placeholder
-			NPC.lifeMax = 1014000;   // placeholder: doubled to 600000, +30% to 780000, +30% again to 1014000 by the owner on 2026-10-24 (Phase 6 balances it)
+			NPC.lifeMax = BossLife;
 			NPC.HitSound = SoundID.NPCHit5;
 			NPC.DeathSound = SoundID.NPCDeath6;
 			NPC.knockBackResist = 0f; // immune to knockback
@@ -201,6 +207,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			return true;
+		}
+
+		// Runs once when she appears, after the game has scaled her health for the difficulty: put it back to exactly BossLife.
+		public override void OnSpawn(IEntitySource source)
+		{
+			NPC.lifeMax = BossLife;
+			NPC.life = BossLife;
 		}
 
 		// Plays the wing-beat animation on a loop.

@@ -253,7 +253,12 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 ### Health +30% again (2026-10-24, owner; the boss bar now shows, confirmed by the owner)
 - 780000 -> 1014000 (placeholder). The boss health bar works (the [AutoloadBossHead] fix). Stage 2 at 60% health is now at about 608400 health lost, i.e. when 405600 remain.
 
+### Her health is exactly what the code says (2026-10-24, owner: Journey mode while testing, "just have her actually health"; NOT YET TESTED)
+- The bar showed about half of the code's number (the game scales boss health by difficulty, and on Journey by the enemy-difficulty slider). Now MotherOfTerrariaBoss.OnSpawn sets lifeMax and life to the constant BossLife (1,014,000) after the scaling, so the bar shows exactly that, whatever the difficulty or the slider. CHANGE BossLife to change her health. Side effect: the Journey slider no longer changes her health. For multiplayer later (Phase 8), scaling by player count may be wanted back (ApplyDifficultyAndPlayerScaling).
+- NOTE: this DOUBLES what the owner saw (about 507k -> 1,014,000). The owner asked for the real number, but if the fight now feels too long, change BossLife (for example 507000 keeps what the owner had been testing against).
+
 ## Not yet tested in-game
+0ac. The bar shows 1,014,000.
 0ab. Boss bar shows (with her icon); Halo Rings readable and fair.
 0aa. The fight is back to the pre-speed-up pace.
 0z. Stars start on the screen.
