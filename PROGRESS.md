@@ -138,7 +138,14 @@ Owner picked it from the idea list (next: Feather Storm, Halo Rings, then stage 
 - SINGLEPLAYER-ONLY: the patch is spawned by the owner machine; the tracking star's movement and the timers use local counters.
 - To tune: counts, spacing, hover and gap timing, fall speed (GoldCrystalStar.cs), patch size, life and damage (StarfirePatch.cs).
 
+### Moon-Lord size and calm movement (2026-10-24, owner: as big as Moon Lord, not so much movement, like Calamity's final boss, occasional dashes; BUILT, NOT YET TESTED)
+- Size: the sheet is now enlarged 4x with crisp pixels (tools/make_boss_sheet.py: WIDTH 320, UPSCALE 4): frames are 1120x840 (about 70 x 52 tiles), the sheet 1120x6720. Hitbox 340x560 (her body; the wings are scenery). If it is not big enough or too big, change UPSCALE and the hitbox in SetDefaults.
+- Movement: she is now a heavy hovering presence. Five stations, farther out (straight above at -560, high left/right at +-700,-430, above-left/right at +-380,-600). Between attacks she DRIFTS at 8 px/tick, and only every third attack (StationIndex divisible by 3) makes a fast DASH (24 px/tick) with the golden after-image trail. The slow bob is bigger. Removed the burst's mid-attack mirror dash. Constants: Stations, DriftSpeed, DashSpeed, DashEase, DashTrailSpeed.
+- Not changed: the attacks themselves. The stars still hang 520 px above the player so they stay on screen; the beam and spears still start at her centre.
+- Texture note: the sheet is large (about 30 MB in memory); fine on a normal PC, but remember it for the performance check.
+
 ## Not yet tested in-game
+0h. The new size and hitbox, whether she fits the screen, and the calmer movement with occasional dashes.
 0g. Falling Stars: readable tell, fair gaps between the patches, star art, the tracking star.
 0f. The beam is thin and straight now.
 0e. The retuned beam (thin, slow, 350 damage).

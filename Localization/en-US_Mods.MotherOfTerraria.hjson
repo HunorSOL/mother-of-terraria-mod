@@ -62,4 +62,6 @@ Projectiles: {
 	HeavenlySpear.DisplayName: Heavenly Spear
 	GoldenDeathray.DisplayName: Golden Deathray
 	CelestialSpear.DisplayName: Celestial Spear
+	GoldCrystalStar.DisplayName: Gold Crystal Star
+	StarfirePatch.DisplayName: Starfire Patch
 }

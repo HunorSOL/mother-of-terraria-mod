@@ -22,7 +22,8 @@ import numpy as np
 SRC = "DesignRefs/boss_design.jpg"
 OUT = "NPCs/Bosses/MotherOfTerrariaBoss.png"
 FRAMES = 8
-WIDTH = 340          # final width of one frame's picture, pixels
+WIDTH = 320          # width of the picture before enlarging (one "art pixel" is 1 pixel at this size)
+UPSCALE = 4          # every art pixel is then made 4x4 real pixels (crisp, no blur): the in-game frame is picture width * 4 (about 1120 px)
 PAD = 18             # empty rows above and below so flapping wings are never cut off
 COLOURS = 56         # palette size
 BG_MAX = 58          # a pixel whose brightest channel is below this is "background" (if it touches the edge)
@@ -153,6 +154,7 @@ def cut_items():
 def main():
     base = cut_boss()
     frames = [make_frame(base, f) for f in range(FRAMES)]
+    frames = [np.repeat(np.repeat(fr, UPSCALE, axis=0), UPSCALE, axis=1) for fr in frames]  # crisp enlargement
     sheet = np.concatenate(frames, axis=0)
     write_rgba(sheet, OUT)
     fh, fw = frames[0].shape[:2]

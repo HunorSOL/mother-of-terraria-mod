@@ -20,9 +20,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//   3. DEATH BEAM:  a thin line follows the player (the tell), then locks and a huge golden beam sweeps across.
 	//   4. FALLING STARS: seven gold stars hang high above, then drop one by one in a sweep; each leaves a burning patch
 	//                  of light on the ground, and one last star follows you.
-	//   ...then back to 1. Before each attack she dashes to the next of five fixed spots around the player (see Stations).
+	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
-	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 296x220 made by tools/make_boss_sheet.py: wings flap, hair and robe sway).
+	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 1120x840 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS; the real balance is Phase 6.
 	// SINGLEPLAYER-ONLY: OnKill talks to the local player's Basket (see HeavenlyBasketPlayer); multiplayer needs the server to do that.
 	public class MotherOfTerrariaBoss : ModNPC
@@ -30,21 +30,22 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int FrameCount = 8;
 		private const int TicksPerFrame = 6;        // wing-beat speed: one full flap takes 8 x 6 = 48 ticks
 
-		// MOVEMENT (like the Empress of Light: fast, but always to a planned spot). She works through a fixed list of
-		// "stations" around the player (offsets in pixels from the player: x to the right, y down). Each new attack she
-		// dashes to the next station; the burst also flips her to the mirror-image side between its two rings.
-		// Five stations and three attacks means every attack is eventually thrown from every station.
+		// MOVEMENT (like the big, calm final bosses of Calamity: she is huge, drifts slowly above the player, and only
+		// now and then makes a fast dash). She works through a fixed list of "stations" around the player (offsets in
+		// pixels from the player: x to the right, y down). Each new attack she moves to the next station: most of the time
+		// a slow drift, but every third attack (StationIndex divisible by 3) a fast dash with a golden after-image trail.
 		private static readonly Vector2[] Stations =
 		{
-			new Vector2(-480f, -290f),  // high left
-			new Vector2(480f, -290f),   // high right
-			new Vector2(0f, -400f),     // straight above, far
-			new Vector2(540f, -110f),   // low right
-			new Vector2(-540f, -110f),  // low left
+			new Vector2(0f, -560f),      // straight above (a DASH goes here first)
+			new Vector2(-700f, -430f),   // high left
+			new Vector2(700f, -430f),    // high right
+			new Vector2(-380f, -600f),   // above, a little left
+			new Vector2(380f, -600f),    // above, a little right
 		};
-		private const float MaxSpeed = 26f;         // top dash speed (pixels per tick)
-		private const float DashEase = 0.16f;       // slows her down as she arrives (bigger = later braking)
-		private const float DashTrailSpeed = 11f;   // above this speed she leaves a golden after-image trail
+		private const float DriftSpeed = 8f;        // normal speed between attacks (pixels per tick)
+		private const float DashSpeed = 24f;        // speed of the occasional dash
+		private const float DashEase = 0.12f;       // slows her down as she arrives (bigger = later braking)
+		private const float DashTrailSpeed = 14f;   // above this speed she leaves a golden after-image trail
 
 		private const float SpearSpeed = 9f;
 		private const int SpearDamage = 150;
@@ -90,7 +91,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		private ref float Timer => ref NPC.ai[1];
 		private ref float StationIndex => ref NPC.ai[2];
-		private ref float Mirrored => ref NPC.ai[3]; // 1 = the station is flipped left-to-right
 
 		public override void SetStaticDefaults()
 		{
@@ -105,8 +105,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		public override void SetDefaults()
 		{
-			NPC.width = 110;         // her body (the wings are scenery, not a hitbox); the 296x220 picture is centred on it
-			NPC.height = 170;
+			NPC.width = 340;         // her body (the wings are scenery, not a hitbox); the 1120x840 picture is centred on it
+			NPC.height = 560;
 			NPC.damage = 200;        // contact damage (placeholder)
 			NPC.defense = 100;       // placeholder
 			NPC.lifeMax = 600000;    // placeholder, doubled by the owner on 2026-10-24 (Phase 6 balances it)
@@ -182,13 +182,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
 			bool holding = CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5;
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
-			if (Mirrored == 1f)
-			{
-				station.X = -station.X;
-			}
-			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 20f)); // a gentle bob
+			Vector2 goal = target.Center + station + new Vector2(0f, 14f * (float)System.Math.Sin(Main.GameUpdateCount / 30f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
-			float speed = holding ? 0f : System.Math.Min(MaxSpeed, toGoal.Length() * DashEase);
+			float topSpeed = (int)StationIndex % 3 == 0 ? DashSpeed : DriftSpeed;
+			float speed = holding ? 0f : System.Math.Min(topSpeed, toGoal.Length() * DashEase);
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.15f : 0.25f);
 			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
 
@@ -258,11 +255,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 			if (Timer > 0 && Timer < BurstTell)
 			{
 				GatherLight(1.5f + Timer / BurstTell);
-			}
-			if (Timer == BurstTell + 8)
-			{
-				Mirrored = 1f - Mirrored; // dash across to the mirror-image side before the second ring
-				NPC.netUpdate = true;
 			}
 			if (Timer == BurstTell || Timer == BurstSecondWave)
 			{
