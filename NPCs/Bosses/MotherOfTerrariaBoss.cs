@@ -18,6 +18,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//   2. SPEAR BURST: she gathers light, then throws rings of slightly homing spears in ALL directions (two waves,
 	//                   the second ring offset so it fills the gaps of the first).
 	//   3. DEATH BEAM:  a thin line follows the player (the tell), then locks and a huge golden beam sweeps across.
+	//   4. FALLING STARS: seven gold stars hang high above, then drop one by one in a sweep; each leaves a burning patch
+	//                  of light on the ground, and one last star follows you.
 	//   ...then back to 1. Before each attack she dashes to the next of five fixed spots around the player (see Stations).
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
 	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 296x220 made by tools/make_boss_sheet.py: wings flap, hair and robe sway).
@@ -57,13 +59,27 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// Times in ticks (60 per second), counted from the start of each attack.
 		private const int FanTell = 30, FanEnd = 90;
 		private const int BurstTell = 45, BurstSecondWave = 80, BurstEnd = 130;
+		// FALLING STARS: a row of stars hangs high above the arena (each with a line down to where it will land), then they
+		// fall one after another in a sweep, and each leaves a burning patch of light on the ground. One extra star follows you.
+		private const int StarDamage = 320;
+		private const int StarColumns = 7;
+		private const float StarSpacing = 190f;     // sideways gap between neighbouring stars
+		private const float StarHeight = 520f;      // how far above the player the stars hang
+		private const int StarSpawnAt = 30;         // she gathers light first
+		private const int StarHoverTicks = 45;      // how long the first star hangs before it drops (time to read the pattern)
+		private const int StarGap = 12;             // ticks between one star's drop and the next
+		private const int StarTrackerExtra = 40;    // the following star drops this long after the last row star
+		private const int StarsEnd = StarSpawnAt + StarHoverTicks + StarColumns * StarGap + StarTrackerExtra + 50 + 70; // + fall time + a rest
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 50;
+
+		private const int AttackCount = 4;
 
 		private enum Attack
 		{
 			SpearFan = 0,
 			SpearBurst = 1,
 			DeathBeam = 2,
+			FallingStars = 3,
 		}
 
 		private Attack CurrentAttack
@@ -188,6 +204,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 				case Attack.DeathBeam:
 					DoDeathBeam(target);
 					break;
+				case Attack.FallingStars:
+					DoFallingStars(target);
+					break;
 			}
 		}
 
@@ -195,7 +214,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private void NextAttack()
 		{
 			Timer = 0;
-			CurrentAttack = (Attack)(((int)CurrentAttack + 1) % 3);
+			CurrentAttack = (Attack)(((int)CurrentAttack + 1) % AttackCount);
 			StationIndex = (StationIndex + 1) % Stations.Length; // dash to the next station
 			NPC.netUpdate = true;
 		}
@@ -284,6 +303,39 @@ namespace MotherOfTerraria.NPCs.Bosses
 				GatherLight(0.8f);
 			}
 			if (Timer >= LaserEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// Gold stars appear in a row high above the player, then drop one by one, sweeping left to right or right to left.
+		// The last star follows the player's sideways position and locks just before it drops.
+		private void DoFallingStars(Player target)
+		{
+			if (Timer > 0 && Timer < StarSpawnAt)
+			{
+				GatherLight(1.4f);
+			}
+			if (Timer == StarSpawnAt)
+			{
+				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					int damage = NPC.GetAttackDamage_ForProjectiles(StarDamage, StarDamage * 0.8f);
+					float y = System.Math.Max(target.Center.Y - StarHeight, 200f);
+					bool leftToRight = Main.rand.NextBool();
+					for (int i = 0; i < StarColumns; i++)
+					{
+						int order = leftToRight ? i : StarColumns - 1 - i; // which star drops first
+						float x = target.Center.X + (i - (StarColumns - 1) / 2f) * StarSpacing;
+						Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(x, y), Vector2.Zero, ModContent.ProjectileType<GoldCrystalStar>(),
+							damage, 0f, Main.myPlayer, StarHoverTicks + order * StarGap, 0f);
+					}
+					Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(target.Center.X, y), Vector2.Zero, ModContent.ProjectileType<GoldCrystalStar>(),
+						damage, 0f, Main.myPlayer, StarHoverTicks + StarColumns * StarGap + StarTrackerExtra, 1f);
+				}
+			}
+			if (Timer >= StarsEnd)
 			{
 				NextAttack();
 			}

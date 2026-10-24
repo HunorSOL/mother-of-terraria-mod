@@ -128,7 +128,18 @@ Owner: the Celestial Spear replaces the boss's spear art; the Heavens enemies mu
 ### Beam fix (2026-10-24, owner: dashes good; beam too wide and not straight; NOT YET TESTED)
 - Cause: the beam was drawn by stretching the game's "magic pixel" texture as if it were 1x1, but that texture is bigger, so the beam was far wider than its numbers and its rotation origin was off (crooked). Now only the 1x1 corner is drawn (GoldenDeathray.Draw), so the drawn width is real (56 px glow, 16 px core) and it is a straight line from her centre. Sparks stay on the line. The hit width (28 px) was already a straight line.
 
+### New attack: Falling Stars (2026-10-24; BUILT, NOT YET TESTED)
+Owner picked it from the idea list (next: Feather Storm, Halo Rings, then stage 2 ideas: Star Constellation, Judgment Mark, Protective Barrier; the owner said "i like those"). The Empress comparison: the owner wants attacks that do not feel like the Empress of Light's.
+- Fourth attack in the cycle (fan, burst, beam, STARS, repeat; five stations vs four attacks still never lock an attack to one station). In the boss class: StarDamage 320, StarColumns 7, StarSpacing 190, StarHeight 520, StarHoverTicks 45, StarGap 12.
+- She gathers light for 0.5 s, then seven Gold Crystal Stars appear in a row 520 px above the player, spaced 190 px apart. Each pulses and shows a thin golden line down to where it will land (the tell). After 0.75 s they fall one after another, 0.2 s apart, in a sweep (randomly left to right or right to left); then an eighth star that FOLLOWED the player sideways locks 25 ticks before it drops.
+- A landing star explodes and leaves a Starfire patch (104x44 px, drawn in code, burns 5 s, hurts 40% of the star's damage, keeps hitting). The patches shrink the safe ground over the attack. A star that hits the player does not leave a patch.
+- Code: Projectiles/GoldCrystalStar.cs (art Projectiles/GoldCrystalStar.png, owner's design, made by tools/make_gold_star.py), Projectiles/StarfirePatch.cs (no art file).
+- A star spawned inside an island falls through it and only starts colliding in the open. The warning line stops at the first solid tile or platform it finds (about 70 tiles max).
+- SINGLEPLAYER-ONLY: the patch is spawned by the owner machine; the tracking star's movement and the timers use local counters.
+- To tune: counts, spacing, hover and gap timing, fall speed (GoldCrystalStar.cs), patch size, life and damage (StarfirePatch.cs).
+
 ## Not yet tested in-game
+0g. Falling Stars: readable tell, fair gaps between the patches, star art, the tracking star.
 0f. The beam is thin and straight now.
 0e. The retuned beam (thin, slow, 350 damage).
 0d. Celestial Spear look and hit line, enemies vanishing at the start of the summon, the dashes (speed, readability, after-images).
