@@ -21,7 +21,7 @@ namespace MotherOfTerraria.Projectiles
 		private const int BeamTicks = 24;
 		private const int AimFreezeTicks = 15;
 		private const float TrackTurnPerTick = 0.03f;
-		private const float BeamLength = 1400f;         // the owner asked for them longer twice (2026-10-25; 480, then 900, now 1400)
+		private const float BeamLength = 900f;          // the owner liked the beams and asked for them longer (2026-10-25; was 480); 900 is final, "perfect"
 		private const float BeamHitWidth = 22f;
 		private const float BeamDrawWidth = 44f;
 
@@ -32,7 +32,7 @@ namespace MotherOfTerraria.Projectiles
 		// Same fix as the boss's beam: draw it even when the crystal itself is off the screen (see GoldenDeathray).
 		public override void SetStaticDefaults()
 		{
-			ProjectileID.Sets.DrawScreenCheckFluff[Type] = 2000;
+			ProjectileID.Sets.DrawScreenCheckFluff[Type] = 1500;
 		}
 
 		public override void SetDefaults()

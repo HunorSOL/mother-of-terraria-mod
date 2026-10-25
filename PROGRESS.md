@@ -324,6 +324,10 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 - Dashing stars faster: they circle 1.5x faster than the beam stars (DasherMove; the beam stars are untouched), and the dash is a little faster, 14 -> 17 px/tick for 44 ticks (about 750 px). Timing between dashes unchanged.
 - Falling Stars (GoldCrystalStar): hitbox 52 -> 43 px (about 17% smaller, the owner asked for 15-20%). The picture is unchanged, so the star looks the same but is more forgiving. The burning Starfire patches were NOT changed (the owner said "the falling star hitboxes"); say so if those should shrink too.
 
+### Crystal beams back to 900, the BOSS's beams made much longer (2026-10-25, owner: a misunderstanding; BUILT, NOT YET TESTED)
+- The crystal beams are back to 900 px (the owner called them perfect; the 1400 change was a mistake from reading "the beam" as theirs). Draw limit back to 1500.
+- What the owner meant: the BOSS's beams (the Death Beam and the Wing Beams): "you could still run them out and not see them", i.e. the beam has an end that can be reached on screen. BeamLength 2600 -> 6000 px (GoldenDeathray; hit and drawn length), draw limit 6000. The "disappearing beams" fix from the entry above (DrawScreenCheckFluff) stays; that may have been a different bug, or the same one. The beam's spark effects still only reach 1400 px along it (cosmetic).
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

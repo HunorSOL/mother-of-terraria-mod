@@ -24,7 +24,7 @@ namespace MotherOfTerraria.Projectiles
 		private const int AimFreezeTicks = 12;         // the tell line stops following this long before the beam fires, so it can be dodged
 		private const float TrackTurnPerTick = 0.035f;  // how fast the tell line follows the player (radians per tick)
 		private const float SweepPerTick = 0.004f;      // how fast the locked beam sweeps (about 14 degrees a second)
-		private const float BeamLength = 2600f;         // long enough to cross the screen
+		private const float BeamLength = 6000f;         // long enough that it cannot be outrun to its end (was 2600; owner, 2026-10-25: the beam seemed to end on screen)
 		private const float BeamHitWidth = 28f;         // the damaging thickness (pixels; was 70)
 		private const float BeamDrawWidth = 56f;        // the glowing outer thickness (was 130)
 		private const int HellfireTicks = 60 * 6;
@@ -54,7 +54,7 @@ namespace MotherOfTerraria.Projectiles
 		// still hurt. The limit is raised so the whole beam is always drawn. (Applies to the wing beams too.)
 		public override void SetStaticDefaults()
 		{
-			ProjectileID.Sets.DrawScreenCheckFluff[Type] = 3000;
+			ProjectileID.Sets.DrawScreenCheckFluff[Type] = 6000;
 		}
 
 		public override void SetDefaults()
