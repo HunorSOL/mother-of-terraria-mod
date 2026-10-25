@@ -114,10 +114,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
 		// CROSS BEAMS (stage 2, owner's design 2026-10-25): she stops where she is and cannot be hurt. For 2 seconds she charges (gold light
-		// streams into her, a glow grows; after 0.75 s four thin lines show where the beams will go), then four beams leave her straight up,
-		// right, down and left, a plus, and sweep slowly together. Double the damage of the stage 1 death beam. When they end she is
+		// streams into her, a glow grows; after 0.75 s eight thin lines show where the beams will go), then EIGHT beams leave her in a star (up, down, left, right and
+		// the four diagonals; first built as a plus of four, which was too easy) and sweep slowly together. Double the damage of the stage 1 death beam. When they end she is
 		// vulnerable again and moves on to the next attack.
 		private const int CrossDamage = LaserDamage * 2;   // 700 base (the stage 1 death beam is 350)
+		private const int CrossArms = 8;                   // owner, 2026-10-25: the plus (4) was too easy to dodge, so a star of 8 beams (the diagonals added)
 		private const int CrossCharge = 120;               // 2 seconds from the start to the moment the beams fire
 		private const int CrossSpawnAt = CrossCharge - GoldenDeathray.TellTicks;   // the beams (and their tell lines) appear this far in, so they fire at CrossCharge
 		private const int CrossEnd = CrossCharge + GoldenDeathray.BeamTicks + 15;
@@ -612,10 +613,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 				if (Main.netMode != NetmodeID.MultiplayerClient)
 				{
 					int damage = NPC.GetAttackDamage_ForProjectiles(CrossDamage, CrossDamage * 0.8f);
-					float sweepDirection = Main.rand.NextBool() ? 1f : -1f; // all four sweep the same way, so the plus keeps its shape
-					for (int arm = 0; arm < 4; arm++)
+					float sweepDirection = Main.rand.NextBool() ? 1f : -1f; // all of them sweep the same way, so the star keeps its shape
+					for (int arm = 0; arm < CrossArms; arm++)
 					{
-						float angle = -MathHelper.PiOver2 + arm * MathHelper.PiOver2; // up, right, down, left
+						float angle = -MathHelper.PiOver2 + arm * MathHelper.TwoPi / CrossArms; // up first, then every 45 degrees round: an eight-pointed star
 						Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<CrossBeam>(),
 							damage, 0f, Main.myPlayer, NPC.whoAmI, angle, sweepDirection);
 					}
