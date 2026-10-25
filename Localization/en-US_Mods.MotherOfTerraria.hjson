@@ -79,4 +79,5 @@ Projectiles: {
 	WingBeamLeft.DisplayName: Wing Beam Left
 	WingBeamRight.DisplayName: Wing Beam Right
 	CrystalBeam.DisplayName: Crystal Beam
+	StarlightLance.DisplayName: Starlight Lance
 }

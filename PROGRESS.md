@@ -345,6 +345,11 @@ Owner sent the stage 2 design (DesignRefs/boss_stage2_design.jpg: the "enraged" 
 ### Starlight Lance damage 300 -> 200 (2026-10-25, owner: "300 is extreme")
 - StarlightDamage is now 200 base (the stage 1 spears are 150, so a third more). The entry above that says 300 and "twice as hard" is history.
 
+### Stage 2 sprite fixed (blurry, black spots) and the spear swarm uses the lance (2026-10-25, owner; BUILT, NOT YET TESTED)
+- BLURRY: the first stage 2 sheet was shrunk twice (original -> 400 px -> final), which blurred it. Now the picture is shrunk ONCE, straight from the original to the final size with a box filter (tools/make_boss_stage2_sheet.py), then reduced to a 64-colour palette with a hard edge, like stage 1.
+- BLACK SPOTS in the gaps between feathers, flames, halo and hair: the old cut only removed background connected to the picture's edge, so enclosed pockets stayed (plain dark pockets, and a darker navy haze behind the halo and hair). Now the mask removes (1) dark areas touching the border, (2) every enclosed dark pocket of real size (POCKET_MIN 30), (3) dark navy haze that forms a thick blob, found by shaving 3 pixels off the dark areas so thin outlines vanish and thick blobs stay (HAZE_MAX 100, HAZE_SHAVE 3, HAZE_MIN 25), and (4) a thin dark fringe next to the background (FRINGE_MAX 85). Checked on a light backdrop: the gaps are clear. A few stray dark pixels remain in the hair; if they bother the owner, the haze numbers are the ones to tune.
+- SPEAR SWARM: the Spear Burst (the two rings of spears) still threw the old Celestial Spear in stage 2. Now in stage 2 it throws Starlight Lances too, at the SAME damage as before (150), so only the look changed. The fan stays at 200.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

@@ -399,7 +399,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 					float start = Timer == BurstTell ? (target.Center - NPC.Center).ToRotation() : (target.Center - NPC.Center).ToRotation() + step / 2f;
 					for (int i = 0; i < RingSpears; i++)
 					{
-						ThrowSpear((start + i * step).ToRotationVector2() * RingSpearSpeed);
+						if (Stage == 2)
+						{
+							ThrowSpear((start + i * step).ToRotationVector2() * RingSpearSpeed, ModContent.ProjectileType<StarlightLance>()); // stage 2: the swarm uses the lance look (same damage as before)
+						}
+						else
+						{
+							ThrowSpear((start + i * step).ToRotationVector2() * RingSpearSpeed);
+						}
 					}
 				}
 			}

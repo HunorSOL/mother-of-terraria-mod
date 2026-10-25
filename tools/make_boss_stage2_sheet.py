@@ -21,13 +21,20 @@ import make_boss_sheet as mb   # noqa: E402  (reuses the stage 1 helpers and the
 
 SRC = "DesignRefs/boss_stage2_design.jpg"
 OUT = "NPCs/Bosses/MotherOfTerrariaBoss_Stage2.png"
-WORK_W = 400                    # the cut is found at this width, then fitted into the stage 1 picture size
+WORK_W = 1000                   # the background is found at this width; the picture itself is shrunk once, straight from the original
+POCKET_MIN = 30                 # an enclosed dark area at least this big (working pixels) is background (a gap between feathers), not shadow
+FRINGE_MAX = 85                 # dark pixels touching the background and darker than this are the soft edge of the background
+HAZE_MAX = 100                  # fairly dark navy haze (not only the plain background) can be background if it forms a thick blob
+HAZE_SHAVE = 3                  # pixels shaved off all round to tell thick blobs from thin outlines
+HAZE_MIN = 25                   # a blob this big (working pixels) after shaving counts
+MIN_PIECE = 300                 # loose pieces smaller than this (sparkles, streaks) are dropped
 FIT_W, FIT_H = 210, 130         # the stage 1 picture size in art pixels (frame 420x332 = (210x(130+2*PAD)) x 2)
-COLOURS = 60
+COLOURS = 64
 LANCE_LENGTH = 104
 
 
 def cut_boss():
+    # 1. Find what is background at a medium size (fast), blanking out the side items first.
     scale = WORK_W / 2752.0
     H = int(round(1536 * scale))
     args = [SRC, "-fill", "#0b111f",
@@ -36,35 +43,80 @@ def cut_boss():
             "-draw", "rectangle 2300,600 2752,1536",     # lance and barrage (bottom right)
             "-filter", "Box", "-resize", f"{WORK_W}x{H}!"]
     rgb = mb.run_rgb(args, WORK_W, H)
-    dark = rgb.max(axis=2) < mb.BG_MAX
-    bg = np.zeros_like(dark)
-    stack = [(y, x) for y in range(H) for x in (0, WORK_W - 1)] + [(y, x) for x in range(WORK_W) for y in (0, H - 1)]
-    while stack:
-        y, x = stack.pop()
-        if 0 <= y < H and 0 <= x < WORK_W and dark[y, x] and not bg[y, x]:
-            bg[y, x] = True
-            stack += [(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)]
+    bright = rgb.max(axis=2)
+    dark = bright < mb.BG_MAX
+    # Background = dark areas touching the picture's border, AND the big enclosed dark pockets (the gaps between feathers and flames
+    # that the border fill cannot reach; they were the black spots). Small dark areas inside the boss (shadows, eyes) stay.
+    labels, n = mb.components(dark)
+    sizes = np.bincount(labels.ravel(), minlength=n + 1)
+    border = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
+    is_bg = np.zeros(n + 1, dtype=bool)
+    is_bg[border] = True
+    is_bg |= sizes >= POCKET_MIN
+    is_bg[0] = False
+    bg = is_bg[labels]
+    # a thin dark fringe left by the picture's soft edges: dark pixels right next to background are background too
+    near = np.zeros_like(bg)
+    near[1:] |= bg[:-1]
+    near[:-1] |= bg[1:]
+    near[:, 1:] |= bg[:, :-1]
+    near[:, :-1] |= bg[:, 1:]
+    bg |= near & (bright < FRINGE_MAX)
+    # Dark navy haze that is a little brighter than the plain background (behind the halo and hair) is background too, but the boss's own
+    # dark outlines are not: outlines are thin, the haze is a thick blob. So take the fairly dark pixels, shave off 3 pixels all round
+    # (thin outlines vanish, thick blobs survive), keep the blobs of real size, and grow them back to their old edge.
+    hazy = bright < HAZE_MAX
+    core = hazy.copy()
+    for _ in range(HAZE_SHAVE):
+        shaved = core.copy()
+        shaved[1:] &= core[:-1]
+        shaved[:-1] &= core[1:]
+        shaved[:, 1:] &= core[:, :-1]
+        shaved[:, :-1] &= core[:, 1:]
+        core = shaved
+    labels, n = mb.components(core)
+    sizes = np.bincount(labels.ravel(), minlength=n + 1)
+    big = np.zeros(n + 1, dtype=bool)
+    big[1:] = sizes[1:] >= HAZE_MIN
+    core = big[labels]
+    for _ in range(HAZE_SHAVE + 1):
+        grown = core.copy()
+        grown[1:] |= core[:-1]
+        grown[:-1] |= core[1:]
+        grown[:, 1:] |= core[:, :-1]
+        grown[:, :-1] |= core[:, 1:]
+        core = grown & hazy
+    bg |= core
     solid = ~bg
+    # drop loose sparkles and streaks, keep the boss
     labels, n = mb.components(solid)
     sizes = np.bincount(labels.ravel(), minlength=n + 1)
     keep = np.zeros(n + 1, dtype=bool)
-    keep[1:] = sizes[1:] >= 60       # drop sparkles and loose streaks, keep the boss
+    keep[1:] = sizes[1:] >= MIN_PIECE
     solid = keep[labels]
     ys, xs = np.nonzero(solid)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    print(f"cut found at {WORK_W}px wide: {x1 - x0}x{y1 - y0} (aspect {(x1 - x0) / (y1 - y0):.2f}; stage 1 is {FIT_W / FIT_H:.2f})")
-    rgba = np.zeros((y1 - y0, x1 - x0, 4), dtype=np.uint8)
-    rgba[..., :3] = rgb[y0:y1, x0:x1]
-    rgba[..., 3] = np.where(solid[y0:y1, x0:x1], 255, 0)
+    print(f"cut found: {x1 - x0}x{y1 - y0} at {WORK_W}px wide (aspect {(x1 - x0) / (y1 - y0):.2f}; stage 1 is {FIT_W / FIT_H:.2f})")
+
+    # 2. Use that mask on the ORIGINAL picture and shrink it ONCE (a single box filter, so the pixels stay sharp).
+    full = mb.run_rgb([SRC], 2752, 1536)
+    xi = np.minimum(np.arange(2752) * WORK_W // 2752, WORK_W - 1)
+    yi = np.minimum(np.arange(1536) * H // 1536, H - 1)
+    full_mask = solid[np.ix_(yi, xi)]
+    f = 2752.0 / WORK_W
+    cx0, cy0, cx1, cy1 = int(x0 * f), int(y0 * f), min(2752, int(x1 * f) + 1), min(1536, int(y1 * f) + 1)
+    rgba = np.zeros((cy1 - cy0, cx1 - cx0, 4), dtype=np.uint8)
+    rgba[..., :3] = full[cy0:cy1, cx0:cx1]
+    rgba[..., 3] = np.where(full_mask[cy0:cy1, cx0:cx1], 255, 0)
     mb.write_rgba(rgba, "/tmp/boss2_cut.png")
-    # fit into FIT_W x FIT_H (keeping the proportions, centred, feet on the bottom) with a box filter, then a small palette
     subprocess.check_call(["magick", "/tmp/boss2_cut.png", "-filter", "Box", "-resize", f"{FIT_W}x{FIT_H}",
                            "-background", "none", "-gravity", "south", "-extent", f"{FIT_W}x{FIT_H}", "/tmp/boss2_fit.png"])
     fit = mb.read_rgba("/tmp/boss2_fit.png")
     alpha = fit[..., 3].copy()
+    # 3. A small palette (Terraria look), no dithering; the edge is cut hard (opaque or clear).
     subprocess.check_call(["magick", "/tmp/boss2_fit.png", "-alpha", "off", "-colors", str(COLOURS), "+dither", "/tmp/boss2_q.png"])
     q = mb.read_rgba("/tmp/boss2_q.png")
-    q[..., 3] = np.where(alpha > 100, 255, 0)
+    q[..., 3] = np.where(alpha > 128, 255, 0)
     return q
 
 
