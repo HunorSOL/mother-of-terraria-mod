@@ -45,7 +45,6 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Gold Crystal Star (falling star projectile) | Projectiles/GoldCrystalStar.png | OWNER'S DESIGN (2026-10-24), 51x72, comet trail streams up, made by tools/make_gold_star.py from DesignRefs/boss_star.png. |
 | Starfire patch (burning ground left by a star) | Projectiles/StarfirePatch.cs | Drawn entirely in code, no file. Real art or a flame sprite could replace it in Phase 7. |
 | Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | OWNER'S DESIGN (2026-10-24), 25x80, pointing up, made by tools/make_feather.py from DesignRefs/feather_design.jpg (the big feather only; no glow). |
-| Halo Ring (Halo Rings projectile) | Projectiles/HaloRing.png (16x28 strip) | OWNER'S DESIGN (2026-10-25): the band of the "Expanding Ring" in DesignRefs/Gemini_Generated_Image_sm4f30sm4f30sm4f.jpg, cut as a repeating strip by tools/make_halo_ring.py (bottom edge = outer edge). The ring and its gap are assembled in code (HaloRing.cs). The design's spikes, glow, multi-ring and magic spark are not used yet. |
 | Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 

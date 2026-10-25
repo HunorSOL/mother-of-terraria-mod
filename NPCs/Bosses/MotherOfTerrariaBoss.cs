@@ -26,7 +26,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//                  and then the other.
 	//   6. WING BEAMS:  she spreads her wings wide (the tell), then a golden beam fires out of each wing tip, aimed to either side of you;
 	//                  they sweep together and you follow the gap between them.
-	//   7. HALO RINGS:  her halo flares (the tell), then four slow golden rings spread out from her, each with one 45-degree gap.
 	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
 	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 420x332 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
@@ -105,17 +104,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int WingBeamDamage = 280;
 		private const int WingBeamsStart = 45;      // she spreads her wings first; the beams' own tell (thin lines) runs after that
 		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
-		// HALO RINGS: her halo flares (the tell), then golden rings spread out from her like ripples, one after another. Each ring
-		// is thin and slow and has ONE GAP of 45 degrees, marked by bright caps. Stand where the gap passes. The gaps are in
-		// different places, alternating to either side of where you were, so you cannot stay put.
-		private const int HaloDamage = 280;
-		private const int HaloTell = 42;
-		private const int HaloRingsCount = 4;
-		private const int HaloEvery = 42;           // ticks between rings
-		private const int HaloEnd = HaloTell + (HaloRingsCount - 1) * HaloEvery + 60;
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
-		private const int AttackCount = 7;
+		private const int AttackCount = 6;
 
 		private enum Attack
 		{
@@ -125,7 +116,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 			FallingStars = 3,
 			FeatherStorm = 4,
 			WingBeams = 5,
-			HaloRings = 6,
 		}
 
 		private Attack CurrentAttack
@@ -179,18 +169,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// While dashing she leaves a fading golden after-image trail, then she is drawn normally.
 		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
 		{
-			// The Halo Rings tell: a gold glow flares around her halo.
-			if (CurrentAttack == Attack.HaloRings && Timer < HaloTell + 10 && HeavensSkyTextures.Ready)
-			{
-				float flare = MathHelper.Clamp(Timer / HaloTell, 0f, 1f) * MathHelper.Clamp((HaloTell + 10 - Timer) / 10f, 0f, 1f);
-				Texture2D glow = HeavensSkyTextures.Soft;
-				spriteBatch.End();
-				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-				spriteBatch.Draw(glow, NPC.Center + new Vector2(0f, -85f) - screenPos, null, new Color(255, 215, 100, 0) * (0.9f * flare), 0f, glow.Size() / 2f, 330f * (0.6f + 0.6f * flare) / glow.Width, SpriteEffects.None, 0f);
-				spriteBatch.End();
-				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-			}
-
 			if (NPC.velocity.Length() > DashTrailSpeed)
 			{
 				Texture2D texture = TextureAssets.Npc[Type].Value;
@@ -279,9 +257,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.WingBeams:
 					DoWingBeams(target);
-					break;
-				case Attack.HaloRings:
-					DoHaloRings(target);
 					break;
 			}
 		}
@@ -499,34 +474,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= WingBeamsEnd)
-			{
-				NextAttack();
-			}
-		}
-
-		// The halo flares gold above her head, then rings are thrown one after another. Each gap is turned 30-90 degrees away from
-		// the player's direction (alternating sides), so the player has to move along the ring to reach it.
-		private void DoHaloRings(Player target)
-		{
-			if (Timer > 0 && Timer < HaloTell)
-			{
-				GatherLight(1.3f);
-			}
-			int ringIndex = ((int)Timer - HaloTell) / HaloEvery;
-			if (Timer >= HaloTell && (Timer - HaloTell) % HaloEvery == 0 && ringIndex < HaloRingsCount)
-			{
-				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
-				if (Main.netMode != NetmodeID.MultiplayerClient)
-				{
-					float toPlayer = (target.Center - NPC.Center).ToRotation();
-					float side = ringIndex % 2 == 0 ? 1f : -1f;
-					float gap = toPlayer + side * MathHelper.ToRadians(Main.rand.NextFloat(30f, 90f));
-					int damage = NPC.GetAttackDamage_ForProjectiles(HaloDamage, HaloDamage * 0.8f);
-					Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<HaloRing>(),
-						damage, 0f, Main.myPlayer, gap);
-				}
-			}
-			if (Timer >= HaloEnd)
 			{
 				NextAttack();
 			}

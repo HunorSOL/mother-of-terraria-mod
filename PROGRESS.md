@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: end of day 2026-10-24 (session 3: Phase 5 boss built with a seven-attack first stage; pushed to GitHub at the owner's request).
+Last updated: end of day 2026-10-24 (session 3: Phase 5 boss built with a first stage of seven attacks, six after 2026-10-25; pushed to GitHub at the owner's request).
 Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) first. Work in the Documents folder, not the old Trash copy.
 
 ## Where we are
@@ -8,7 +8,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
 - Phase 2 (the Heavens subworld) COMPLETE for singleplayer: 2.1 to 2.5 confirmed in-game. 2.6 (multiplayer testing) is DEFERRED to Phase 8 by owner decision (see Decisions).
 - Phase 2C (Heavens details and polish) COMPLETE by owner decision (2026-10-14: "phase 2c works"). Built and seen in-game: enemies (tuned), island look, atmosphere, island details, theme music. Skipped or deferred, not built: ambient creatures, grand arrival gateway, ambient sounds, floating canopy decorations, the performance check (do it before release), and the open decisions (dragon debuff, third enemy, bark close-up).
 - Phase 3 (the Heavenly Basket) COMPLETE (owner, 2026-10-14). Phase 4 (summon sequence) CONFIRMED working (owner, 2026-10-24).
-- Phase 5 (boss skeleton) and the FIRST STAGE of Phase 6 are BUILT and being tested by the owner: the Mother of Terraria with seven attacks in a loop, her real sprite, a health bar, loot placeholder, and the Basket-emptying rule hooked up. The owner has tested most of it and tuned it (see "Current state of the boss" just below, then the dated sections further down for the history and the reasons). NEXT: stage 2 (starts at 60% health, owner decision); the design is waiting for the owner's answers to five questions (see "Next").
+- Phase 5 (boss skeleton) and the FIRST STAGE of Phase 6 are BUILT and being tested by the owner: the Mother of Terraria with six attacks in a loop, her real sprite, a health bar, loot placeholder, and the Basket-emptying rule hooked up. The owner has tested most of it and tuned it (see "Current state of the boss" just below, then the dated sections further down for the history and the reasons). NEXT: stage 2 (starts at 60% health, owner decision); the design is waiting for the owner's answers to five questions (see "Next").
 - The Heavens is now SAVED with the world (the owner can build there); the floater above the Basket was removed.
 
 ## Current state of the boss (end of 2026-10-24; the dated sections below explain each change and why)
@@ -23,7 +23,7 @@ Read ROADMAP.md (plan and rules), this file, and ASSETS.md (placeholder list) fi
   4. Falling stars: one row of 7 Gold Crystal Stars (the owner's art) hang 520 px above the player, each with a thick golden line and a ground glow marking where it lands, then drop one after another in a sweep, plus one star that follows the player and locks 25 ticks before its drop. Star damage 320; each landing leaves a Starfire patch (104x44, 5 s, 40% damage). Constant StarRows = 1 (2 is the doubled version the owner found too hard).
   5. Feather storm: wings beat fast (tell 40), then 3 spiral arms of the owner's feather projectile that turn one way and back; one throw every 4 ticks for 70 throws; damage 180; feathers speed up from 5 to 11.
   6. Wing beams: she spreads her wings; a beam fires out of each wing tip, each aimed to one side of the player (gap between them), both sweep the same way; damage 280. (Replaced the first "Wing Wall" idea: the owner's rule is that beams only come out of her.)
-  7. Halo rings: her halo flares (tell 42), then 4 slow rings (6 px/tick) spread out one every 42 ticks, each with one 45-degree gap marked by bright bars; the gap sits 30-90 degrees from where the player is, alternating sides; damage 280.
+  7. (Halo rings: REMOVED 2026-10-25, see the section below.)
 - **Owner's rules for her:** make her harder with NEW attacks and a second stage, never by speeding things up (the speed-up was rolled back, "just hard and annoying"); every attack needs a clear tell; beams only come out of her (the star guide lines are the one exception, the owner likes them); size is fine as it is; she must not stay still but also not move too much.
 - **Stage 2:** NOT built. Owner decision: it begins at 60% health. Open questions for the owner: (1) the transition (invulnerable with 3 breakable crystals, or a simple pause), (2) a stage 2 look (a second sprite from the owner, or a tinted placeholder), (3) which new attacks (Star Constellation, Judgment Mark, Healing Orbs, Guardians; I suggested starting with Judgment Mark and Star Constellation), (4) whether the old attacks stay the same or get extra layers (6 rings, a fourth feather arm), (5) a fixed or random order.
 - **Debug items for testing:** Debug Starter Kit (Sigil, shortsword, Teleporter, 30 crystals), Debug Boss Summoner (craft from 1 Dirt + 1 Stone; summons her at once inside the Heavens). Both to be removed before release.
@@ -282,11 +282,13 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - To tune: THICKNESS in tools/make_halo_ring.py (and HitHalfThickness in HaloRing.cs); cap look in HaloRing.PreDraw.
 - Also 2026-10-25: the owner confirmed the boss bar shows exactly 1,014,000.
 
+### Halo Rings REMOVED (2026-10-25, owner: "super buggy and tacky, I don't like them")
+- The attack, Projectiles/HaloRing.cs, its strip texture and tools/make_halo_ring.py are deleted (also the localization entry). The loop is now SIX attacks: fan, burst, beam, stars, feathers, wing beams (AttackCount 6). The owner's ring sheet stays in DesignRefs/ (it was not used elsewhere; the Multi-Ring and Magic Spark pictures are still free for another idea). A NEW attack to take its slot is to be discussed with the owner. The two entries just above about Halo Rings (first build 2026-10-24, owner's art 2026-10-25) are history only.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
 - Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.
-- Halo Rings: readable, fair at 6 px/tick with a 45-degree gap and 280 damage; and the new ring art (strip texture) looks right and the gap caps are visible.
 - Wing Beams (the gap between the two beams) and the beam aim freeze (12 ticks).
 - Falling Stars as they are now (stars 520 px above, single row, original speed, thick marks).
 - The pace after the roll-back of the speed-up (spears 9, burst, feathers, movement every 3rd attack).
