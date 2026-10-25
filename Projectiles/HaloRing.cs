@@ -11,7 +11,8 @@ namespace MotherOfTerraria.Projectiles
 	// It hurts anything touching the ring, EXCEPT inside its one GAP (an arc of 45 degrees). The gap is marked by bright caps
 	// on both edges, so a hit is the player's mistake.
 	// ai[0] = the direction of the middle of the gap (radians). The ring is centred where she was when it was thrown.
-	// It is drawn in code (a ring of short bars, no picture file).
+	// It is drawn as a ring of short pieces of the owner's ring band (Projectiles/HaloRing.png, made by tools/make_halo_ring.py from
+// the owner's "Expanding Ring" design); the bars next to the gap are drawn brighter on top.
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them).
 	public class HaloRing : ModProjectile
 	{
@@ -22,9 +23,6 @@ namespace MotherOfTerraria.Projectiles
 		private const float HitHalfThickness = 14f;         // how thick the damaging band is (each side of the middle)
 		private const float PlayerReach = 12f;              // roughly the player's half size
 		private const float SegmentLength = 12f;            // the ring is drawn as short bars this long
-
-		// A ring needs no picture file: borrow a vanilla projectile texture (never drawn).
-		public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.DeathLaser;
 
 		private float Radius => StartRadius + Speed * Projectile.localAI[0];
 		private float GapAngle => Projectile.ai[0];
@@ -66,6 +64,7 @@ namespace MotherOfTerraria.Projectiles
 		public override bool PreDraw(ref Color lightColor)
 		{
 			Texture2D pixel = TextureAssets.MagicPixel.Value;
+			Texture2D band = TextureAssets.Projectile[Type].Value;
 			Rectangle one = new Rectangle(0, 0, 1, 1);
 			float radius = Radius;
 			Vector2 centre = Projectile.Center - Main.screenPosition;
@@ -93,12 +92,13 @@ namespace MotherOfTerraria.Projectiles
 					continue;
 				}
 				bool cap = fromGap < GapWidth / 2f + 0.07f * (500f / System.Math.Max(radius, 200f)); // the bars next to the gap glow brighter
-				float rotation = angle + MathHelper.PiOver2; // the bar lies along the ring
-				float length = SegmentLength * 1.35f;
-				Vector2 origin = new Vector2(0.5f, 0.5f);
-				Main.spriteBatch.Draw(pixel, pos, one, new Color(40, 25, 110) * (0.6f * strength), rotation, origin, new Vector2(length, 17f), SpriteEffects.None, 0f);
-				Main.spriteBatch.Draw(pixel, pos, one, (cap ? new Color(255, 245, 170) : new Color(255, 205, 60)) * (0.9f * strength), rotation, origin, new Vector2(length, cap ? 14f : 10f), SpriteEffects.None, 0f);
-				Main.spriteBatch.Draw(pixel, pos, one, new Color(255, 252, 225) * strength, rotation, origin, new Vector2(length, cap ? 7f : 4f), SpriteEffects.None, 0f);
+				// the band picture has its outer edge at the bottom; turned so its length runs along the ring and its bottom faces outward
+				float rotation = angle - MathHelper.PiOver2;
+				Main.spriteBatch.Draw(band, pos, null, Color.White * strength, rotation, band.Size() / 2f, new Vector2(1f, cap ? 1.25f : 1f), SpriteEffects.None, 0f);
+				if (cap)
+				{
+					Main.spriteBatch.Draw(pixel, pos, one, new Color(255, 245, 170) * (0.55f * strength), angle + MathHelper.PiOver2, new Vector2(0.5f, 0.5f), new Vector2(SegmentLength * 1.35f, 12f), SpriteEffects.None, 0f);
+				}
 			}
 			return false;
 		}

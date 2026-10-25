@@ -276,11 +276,17 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 - The bar showed about half of the code's number (the game scales boss health by difficulty, and on Journey by the enemy-difficulty slider). Now MotherOfTerrariaBoss.OnSpawn sets lifeMax and life to the constant BossLife (1,014,000) after the scaling, so the bar shows exactly that, whatever the difficulty or the slider. CHANGE BossLife to change her health. Side effect: the Journey slider no longer changes her health. For multiplayer later (Phase 8), scaling by player count may be wanted back (ApplyDifficultyAndPlayerScaling).
 - NOTE: this DOUBLES what the owner saw (about 507k -> 1,014,000). The owner asked for the real number, but if the fight now feels too long, change BossLife (for example 507000 keeps what the owner had been testing against).
 
+### Halo Rings use the owner's ring design (2026-10-25; BUILT, NOT YET TESTED)
+- The owner sent the ring sheet (DesignRefs/Gemini_Generated_Image_sm4f30sm4f30sm4f.jpg: Expanding Ring projectile, Ring Burst / Multi-Ring, Magic Spark). The rings were drawn in code from the game's white pixel; now each ring is drawn as short pieces of the owner's ring BAND (dark outline, gold, blue, gold, outline), a 16x28 strip cut from the design by tools/make_halo_ring.py into Projectiles/HaloRing.png. A strip is used instead of one big picture because the ring grows to 1700 px and has a 45 degree gap. The bars next to the gap are drawn 25% thicker with a pale gold bar behind them as the cap marker. Hit width and gap are unchanged (the band is 28 px, the hit band 28 px).
+- NOT used from the sheet: the spiked outer ornaments and glow of the big ring, the multi-ring burst, the magic spark (a possible source for the tell glow or a stage 2 attack). Ask the owner.
+- To tune: THICKNESS in tools/make_halo_ring.py (and HitHalfThickness in HaloRing.cs); cap look in HaloRing.PreDraw.
+- Also 2026-10-25: the owner confirmed the boss bar shows exactly 1,014,000.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
 - Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.
-- Halo Rings: readable, fair at 6 px/tick with a 45-degree gap and 280 damage.
+- Halo Rings: readable, fair at 6 px/tick with a 45-degree gap and 280 damage; and the new ring art (strip texture) looks right and the gap caps are visible.
 - Wing Beams (the gap between the two beams) and the beam aim freeze (12 ticks).
 - Falling Stars as they are now (stars 520 px above, single row, original speed, thick marks).
 - The pace after the roll-back of the speed-up (spears 9, burst, feathers, movement every 3rd attack).
