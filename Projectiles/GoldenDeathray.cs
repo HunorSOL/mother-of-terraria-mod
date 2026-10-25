@@ -35,6 +35,7 @@ namespace MotherOfTerraria.Projectiles
 		// A beam always comes OUT OF the boss. The wing beams (below) start from her wing tips and aim a little to one side.
 		protected virtual Vector2 OriginOffset => Vector2.Zero;
 		protected virtual float AimOffset => 0f;
+		protected virtual bool TracksPlayer => true; // false: the tell line stays where it was aimed (the stage 2 cross beams)
 
 		private NPC Owner => Main.npc[(int)Projectile.ai[0]];
 		private bool Firing => Projectile.localAI[0] >= TellTicks;
@@ -90,7 +91,7 @@ namespace MotherOfTerraria.Projectiles
 				{
 					// The tell: swing the line toward the nearest player, until the last few ticks, when it holds still.
 					Player target = Main.player[owner.target];
-					if (target.active && !target.dead && Projectile.localAI[0] < TellTicks - AimFreezeTicks)
+					if (TracksPlayer && target.active && !target.dead && Projectile.localAI[0] < TellTicks - AimFreezeTicks)
 					{
 						float wanted = (target.Center - Projectile.Center).ToRotation() + AimOffset;
 						float turn = MathHelper.Clamp(MathHelper.WrapAngle(wanted - Projectile.ai[1]), -TrackTurnPerTick, TrackTurnPerTick);
@@ -196,5 +197,13 @@ namespace MotherOfTerraria.Projectiles
 	{
 		protected override Vector2 OriginOffset => new Vector2(170f, -70f);
 		protected override float AimOffset => -0.4f;
+	}
+
+	// One of the FOUR beams of the stage 2 CROSS BEAMS attack: they leave her centre straight up, right, down and left (a plus), do not
+	// follow the player (the tell line shows exactly where each one will go), and then sweep together slowly the same way, so the safe
+	// gaps between the arms slide round and the player has to move with them. Same beam as the Golden Deathray otherwise.
+	public class CrossBeam : GoldenDeathray
+	{
+		protected override bool TracksPlayer => false;
 	}
 }

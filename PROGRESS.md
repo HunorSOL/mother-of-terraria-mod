@@ -358,10 +358,19 @@ Owner sent the stage 2 design (DesignRefs/boss_stage2_design.jpg: the "enraged" 
 ### Stage 2: the painted angry face was SCRAPPED (2026-10-25, owner: "the eyes are super weird, they were better before")
 - I had painted a hand-made face (glowing eyes, angry brows, a frown) over the stage 2 sprite at sprite size; the owner did not like how the eyes looked. REMOVED: tools/make_boss_stage2_sheet.py is back to the plain version (the face is just the shrunk design, as before the change) and the sheet was regenerated. If the face is tried again, the lesson is that it is only about 8x7 art pixels, so any hand-painted version needs the owner's own pixel art for the face (a 16x16 or so face drawing from the owner would be ideal) instead of my guess.
 
+### New stage 2 attack: CROSS BEAMS (2026-10-25; BUILT, NOT YET TESTED)
+Owner's design: she stops in one place and is INVULNERABLE until the attack is over; she charges for 2 seconds; then she shoots beams, at DOUBLE the damage of the stage 1 beams, out in a plus shape (up, down, left, right), with signals (tell lines) like the regular beams; afterwards she is vulnerable again and goes on to her next attack.
+- Code: Attack.CrossBeams (boss class, DoCrossBeams) and Projectiles/GoldenDeathray.cs (new class CrossBeam, the same beam with a virtual TracksPlayer = false). Added to the stage 2 loop: Spear Fan -> Spear Burst -> Cross Beams -> repeat.
+- Timeline (ticks, 60 = 1 s): 0-120 charge: gold light streams in from all round, faster and denser as it builds, a low chime at the start, and the golden glow around her (the same glow as the crystal phase = she cannot be hurt). At tick 45 the four beams appear as THIN TELL LINES pointing up, right, down and left (they do NOT follow the player: the lines show exactly where each beam will go; each line brightens as it gets near, like the regular beams). At tick 120 all four fire for 150 ticks (2.5 s); she ends 15 ticks after (tick 285) and becomes vulnerable again. She holds still and keeps her wings spread the whole time.
+- DAMAGE: 700 base each (CrossDamage = LaserDamage * 2; the stage 1 death beam is 350). Burning (Hellfire 6 s) as for the other beams. The owner earlier thought 700 was too much for the huge old beam; these are thin (28 px), but if it is too punishing, lower CrossDamage.
+- MY ADDITION (not asked, say if unwanted): the plus SWEEPS slowly together (same slow turn as the other beams, about 14 degrees a second, a random direction), so the safe gaps between the arms slide round and you must move with them; a perfectly still plus would let the player stand in a diagonal gap. To make it a fixed plus, remove the sweep (the CrossBeam class could override it).
+- Beams are 6000 px long (nothing to outrun) and are drawn even when she is off the screen. The beams die with her (crystal phase cannot happen in stage 2).
+- To tune: CrossDamage, CrossCharge (the 2 s), the beam's tell/fire times and sweep are the shared constants in GoldenDeathray.cs.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
-- Stage 2: her new look (the swap and the size), the Starlight Lance fan at 200 damage.
+- Stage 2: the Cross Beams attack (the tell lines, her invulnerability glow, whether 700 damage is fair, the sweep), her new look (the swap and the size), the Starlight Lance fan at 200 damage.
 - The dashing stars (spikes, spin-up tell, dash, damage) and the longer crystal beams.
 - The stage change at 50% (use the Debug Stage Tester sword; circle tell, 4 crystals, her invulnerability, the crystal beams, the switch to stage 2) and the removal of the Halo Rings.
 - Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.

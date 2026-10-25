@@ -113,6 +113,15 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
+		// CROSS BEAMS (stage 2, owner's design 2026-10-25): she stops where she is and cannot be hurt. For 2 seconds she charges (gold light
+		// streams into her, a glow grows; after 0.75 s four thin lines show where the beams will go), then four beams leave her straight up,
+		// right, down and left, a plus, and sweep slowly together. Double the damage of the stage 1 death beam. When they end she is
+		// vulnerable again and moves on to the next attack.
+		private const int CrossDamage = LaserDamage * 2;   // 700 base (the stage 1 death beam is 350)
+		private const int CrossCharge = 120;               // 2 seconds from the start to the moment the beams fire
+		private const int CrossSpawnAt = CrossCharge - GoldenDeathray.TellTicks;   // the beams (and their tell lines) appear this far in, so they fire at CrossCharge
+		private const int CrossEnd = CrossCharge + GoldenDeathray.BeamTicks + 15;
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -123,7 +132,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams };
 
 		private enum Attack
 		{
@@ -134,6 +143,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			FeatherStorm = 4,
 			WingBeams = 5,
 			CrystalPhase = 6,                       // not in the loop: started by her health, ends in stage 2
+			CrossBeams = 7,                         // stage 2 only (see StageTwoLoop)
 		}
 
 		private Attack CurrentAttack
@@ -195,9 +205,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
 		{
 			// While she cannot be hurt (the crystal phase) a golden shield glows around her, growing as the circle forms.
-			if (CurrentAttack == Attack.CrystalPhase && HeavensSkyTextures.Ready)
+			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams) && HeavensSkyTextures.Ready)
 			{
-				float grow = MathHelper.Clamp(Timer / CrystalTell, 0.15f, 1f);
+				float grow = MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
 				float pulse = 0.85f + 0.15f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
 				Texture2D glow = HeavensSkyTextures.Soft;
 				spriteBatch.End();
@@ -257,7 +267,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			bool beatingHard = CurrentAttack == Attack.FeatherStorm && Timer < FeatherTell + 30; // the wings beat twice as fast before the storm
 			NPC.frameCounter += beatingHard ? 2 : 1;
 			NPC.frame.Y = (int)(NPC.frameCounter / TicksPerFrame % FrameCount) * frameHeight;
-			if (CurrentAttack == Attack.CrystalPhase)
+			if (CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams)
 			{
 				NPC.frame.Y = WingsSpreadFrame * frameHeight; // wings spread while she forms the circle and while the crystals live
 			}
@@ -289,7 +299,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -303,7 +313,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				StartCrystalPhase();
 			}
-			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase;
+			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams; // untouchable while the crystals live and during the cross beams
 
 			Timer++;
 			switch (CurrentAttack)
@@ -328,6 +338,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.CrystalPhase:
 					DoCrystalPhase();
+					break;
+				case Attack.CrossBeams:
+					DoCrossBeams();
 					break;
 			}
 		}
@@ -567,6 +580,48 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= WingBeamsEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// She stops, glowing gold (the glow around her means she cannot be hurt), light streams into her for 2 seconds, then four beams
+		// leave her in a plus shape. The beams' own thin tell lines are visible for the last 75 ticks of the charge.
+		private void DoCrossBeams()
+		{
+			if (Timer == 1)
+			{
+				SoundEngine.PlaySound(SoundID.Item29 with { Pitch = -0.4f }, NPC.Center); // a low chime as she starts to charge
+			}
+			if (Timer < CrossCharge)
+			{
+				float charge = Timer / (float)CrossCharge;
+				for (int i = 0; i < 3; i++)
+				{
+					// light streams in from all round and gets faster and denser as the charge builds
+					Vector2 direction = Main.rand.NextVector2Unit();
+					float distance = Main.rand.NextFloat(180f, 320f) * (1.1f - 0.4f * charge);
+					Dust dust = Dust.NewDustPerfect(NPC.Center + direction * distance, DustID.GoldCoin, -direction * (2f + 6f * charge), 0, default, 1.3f);
+					dust.noGravity = true;
+				}
+				GatherLight(1f + charge * 1.5f);
+			}
+			if (Timer == CrossSpawnAt)
+			{
+				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					int damage = NPC.GetAttackDamage_ForProjectiles(CrossDamage, CrossDamage * 0.8f);
+					float sweepDirection = Main.rand.NextBool() ? 1f : -1f; // all four sweep the same way, so the plus keeps its shape
+					for (int arm = 0; arm < 4; arm++)
+					{
+						float angle = -MathHelper.PiOver2 + arm * MathHelper.PiOver2; // up, right, down, left
+						Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<CrossBeam>(),
+							damage, 0f, Main.myPlayer, NPC.whoAmI, angle, sweepDirection);
+					}
+				}
+			}
+			if (Timer >= CrossEnd)
 			{
 				NextAttack();
 			}
