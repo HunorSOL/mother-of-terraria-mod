@@ -30,8 +30,8 @@ namespace MotherOfTerraria.Projectiles
 
 		public override void SetDefaults()
 		{
-			Projectile.width = 52;
-			Projectile.height = 52;
+			Projectile.width = 43;   // was 52: shrunk about 17% at the owner's request (2026-10-25); the picture is unchanged
+			Projectile.height = 43;
 			Projectile.hostile = true;
 			Projectile.friendly = false;
 			Projectile.penetrate = 1;

@@ -38,9 +38,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int DashEvery = 265;
 		private const int DashTell = 55;
 		private const int DashAimFreeze = 20;
-		private const int DashTicks = 50;
-		private const float DashSpeed = 14f;
+		private const int DashTicks = 44;
+		private const float DashSpeed = 17f;
 		private const int DashDamage = 220;
+		private const float DasherMove = 1.5f;   // how much faster than the beam stars the dashers circle
 		private const float MaxSpin = 0.55f;        // radians per tick at full spin
 
 		private bool IsDasher => (int)NPC.ai[2] % 2 == 1;
@@ -135,7 +136,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 			float angle = NPC.ai[2] * MathHelper.PiOver2 + NPC.ai[1] * OrbitSpin;
 			Vector2 goal = target.Center + angle.ToRotationVector2() * OrbitRadius;
 			Vector2 toGoal = goal - NPC.Center;
-			float topSpeed = toGoal.Length() > 150f ? Speed * 2f : Speed; // a dasher coming back from its dash hurries
+			float baseSpeed = IsDasher ? Speed * DasherMove : Speed; // the dashing stars circle faster than the beam stars (owner, 2026-10-25)
+			float topSpeed = toGoal.Length() > 150f ? baseSpeed * 2f : baseSpeed; // a dasher coming back from its dash hurries
 			float speed = System.Math.Min(topSpeed, toGoal.Length() * 0.15f);
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, 0.2f);
 

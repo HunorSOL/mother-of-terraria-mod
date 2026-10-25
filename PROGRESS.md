@@ -319,6 +319,11 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 - Crystal health back to 50,000 each. Between the two last settings: circling speed 4 -> 5, the circle turns 0.0075 rad/tick, dash speed 11 -> 14 px/tick for 50 ticks (about 700 px), a beam star fires every 230 ticks, a dasher dashes every 265 ticks.
 - BUG: the boss's beams (and the wing beams) sometimes vanished from the screen (but may still have hurt). LIKELY CAUSE (not seen directly, found by reasoning): Terraria only draws a projectile when its position is within about 360 px of the screen (ProjectileID.Sets.DrawScreenCheckFluff, default 360); a beam's position is at the boss or a wing tip, but the beam is 2600 px long, so whenever its start was off the screen the beam was not drawn. FIX: GoldenDeathray (and so WingBeamLeft/Right) sets DrawScreenCheckFluff to 3000, CrystalBeam to 1500. If beams still vanish, ask the owner WHEN (during the tell, while firing, after the boss dashes, at the screen edge, when she moves), then look at the beam's end rules (owner dead, Strength fade).
 
+### Longer crystal beams, faster dashers, smaller falling-star hitboxes (2026-10-25, owner; BUILT, NOT YET TESTED)
+- The beam stars are "good" as they are, except their beam is longer again: 900 -> 1400 px (draw limit 2000).
+- Dashing stars faster: they circle 1.5x faster than the beam stars (DasherMove; the beam stars are untouched), and the dash is a little faster, 14 -> 17 px/tick for 44 ticks (about 750 px). Timing between dashes unchanged.
+- Falling Stars (GoldCrystalStar): hitbox 52 -> 43 px (about 17% smaller, the owner asked for 15-20%). The picture is unchanged, so the star looks the same but is more forgiving. The burning Starfire patches were NOT changed (the owner said "the falling star hitboxes"); say so if those should shrink too.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
