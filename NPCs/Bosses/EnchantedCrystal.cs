@@ -17,7 +17,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 	// ai[3] = the dasher's state (0 circling, 1 spinning up = the tell, 2 dashing). localAI[0] = the dash angle, localAI[1] = its contact damage,
 	// localAI[2] = ticks in the current dash state, localAI[3] = how fast it spins.
 	// TWO KINDS (owner's layout, 2026-10-25): crystals 0 and 2 are BEAM STARS (they fire the short beam); crystals 1 and 3 are DASHING STARS:
-	// they have long sharp spikes at every point (golden, with blood-red tips), spin up as the tell, lock their aim, then dash through the
+	// they have long sharp spikes at every point (golden, with pale gold tips), spin up as the tell, lock their aim, then dash through the
 	// player and come back. Only the dash hurts (contact damage is zero while circling).
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them).
 	// SINGLEPLAYER-ONLY: none known; spawning and firing run on the server / single player, but this has not been tested in multiplayer.
@@ -25,8 +25,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 	{
 		public const int CrystalLife = 50000;      // owner, 2026-10-25
 		private const float OrbitRadius = 330f;     // how far from the player it hovers
-		private const float OrbitSpin = 0.012f;     // radians per tick the four crystals turn around the player
-		private const float Speed = 7f;
+		private const float OrbitSpin = 0.009f;     // radians per tick the four crystals turn around the player
+		private const float Speed = 5.5f;
 		private const int FirstShot = 90;           // ticks after appearing before the first beam
 		private const int ShotEvery = 200;          // ticks between one crystal's beams
 		private const int ShotOffset = 50;          // each crystal fires this much later than the one before, so they never all fire together
@@ -38,8 +38,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int DashEvery = 230;
 		private const int DashTell = 55;
 		private const int DashAimFreeze = 20;
-		private const int DashTicks = 34;
-		private const float DashSpeed = 25f;
+		private const int DashTicks = 46;
+		private const float DashSpeed = 16f;
 		private const int DashDamage = 220;
 		private const float MaxSpin = 0.55f;        // radians per tick at full spin
 
@@ -135,7 +135,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			float angle = NPC.ai[2] * MathHelper.PiOver2 + NPC.ai[1] * OrbitSpin;
 			Vector2 goal = target.Center + angle.ToRotationVector2() * OrbitRadius;
 			Vector2 toGoal = goal - NPC.Center;
-			float topSpeed = toGoal.Length() > 150f ? Speed * 2.3f : Speed; // a dasher coming back from its dash hurries
+			float topSpeed = toGoal.Length() > 150f ? Speed * 2f : Speed; // a dasher coming back from its dash hurries
 			float speed = System.Math.Min(topSpeed, toGoal.Length() * 0.15f);
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, 0.2f);
 
@@ -181,7 +181,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			}
 			if (inCycle % 8 == 0)
 			{
-				Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 0, default, 1.2f);
+				Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.GoldCoin, 0f, 0f, 0, default, 1.2f);
 				dust.noGravity = true;
 			}
 			if (inCycle == DashTell - 1)
@@ -225,7 +225,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			return true;
 		}
 
-		// A dasher's long sharp spikes: one at each of the star's eight points, golden with a blood-red tip, drawn from strips of the
+		// A dasher's long sharp spikes: one at each of the star's eight points, golden with a pale gold tip, drawn from strips of the
 		// game's white pixel (only its 1x1 corner) that get thinner toward the point. They turn with the star. While the dash is being
 		// aimed a thin pale line shows where it will go.
 		private void DrawDasherExtras(SpriteBatch spriteBatch, Vector2 screenPos)
@@ -239,7 +239,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 				spriteBatch.End();
 				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 				float ramp = NPC.localAI[3] / MaxSpin;
-				spriteBatch.Draw(pixel, centre, one, new Color(255, 120, 90) * (0.2f + 0.4f * ramp), NPC.localAI[0], new Vector2(0f, 0.5f), new Vector2(DashSpeed * DashTicks, 4f), SpriteEffects.None, 0f);
+				spriteBatch.Draw(pixel, centre, one, new Color(255, 215, 110) * (0.2f + 0.4f * ramp), NPC.localAI[0], new Vector2(0f, 0.5f), new Vector2(DashSpeed * DashTicks, 4f), SpriteEffects.None, 0f);
 				spriteBatch.End();
 				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 			}
@@ -257,11 +257,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 					float width = 15f * (1f - t) + 1.5f;           // wide at the root, a needle at the tip
 					Vector2 at = centre + direction.ToRotationVector2() * (baseRadius + t * length);
 					float pieceLength = length / pieces + 1.5f;
-					bool blood = t > 0.55f;                         // the top of the spike is bloody
-					Color body = blood ? Color.Lerp(new Color(190, 20, 25), new Color(110, 5, 15), (t - 0.55f) / 0.45f) : Color.Lerp(new Color(255, 220, 90), new Color(240, 170, 30), t / 0.55f);
+					bool tip = t > 0.55f;                           // the outer part of the spike is brighter
+					Color body = tip ? Color.Lerp(new Color(255, 235, 140), new Color(255, 250, 215), (t - 0.55f) / 0.45f) : Color.Lerp(new Color(255, 220, 90), new Color(240, 170, 30), t / 0.55f);
 					spriteBatch.Draw(pixel, at, one, new Color(60, 25, 20), direction, new Vector2(0.5f, 0.5f), new Vector2(pieceLength, width + 3f), SpriteEffects.None, 0f); // dark outline
 					spriteBatch.Draw(pixel, at, one, body, direction, new Vector2(0.5f, 0.5f), new Vector2(pieceLength, width), SpriteEffects.None, 0f);
-					if (width > 5f && !blood)
+					if (width > 5f && !tip)
 					{
 						spriteBatch.Draw(pixel, at + direction.ToRotationVector2().RotatedBy(MathHelper.PiOver2) * (-width * 0.22f), one, new Color(255, 245, 190), direction, new Vector2(0.5f, 0.5f), new Vector2(pieceLength, width * 0.22f), SpriteEffects.None, 0f); // a highlight along one side
 					}

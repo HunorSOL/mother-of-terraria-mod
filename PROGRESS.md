@@ -306,6 +306,11 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 - To tune: DashFirst, DashEvery, DashTell, DashAimFreeze, DashTicks, DashSpeed, DashDamage, MaxSpin (EnchantedCrystal.cs); spike size and colours in DrawDasherExtras.
 - Art note: still all in code on top of the Gold Crystal Star stand-in picture (see ASSETS.md). A real design for the spiked star can replace it.
 
+### Crystals: no blood, slower dashes, slower minions (2026-10-25, owner; BUILT, NOT YET TESTED)
+- Blood removed: the spike tips are now pale gold (no red, and no blood dust: gold dust drips while spinning up; the aim line is pale gold, not red). The earlier "blood-red tips" and "red line" in the entry above are history.
+- Dash slower: DashSpeed 25 -> 16 px/tick, DashTicks 34 -> 46 (about 735 px, so it still passes through the player's spot).
+- All crystals slower: circling speed 7 -> 5.5, the circle turns 0.012 -> 0.009 rad/tick, the hurry-back after a dash 2.3x -> 2x. Spin-up, timing and damage unchanged.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
