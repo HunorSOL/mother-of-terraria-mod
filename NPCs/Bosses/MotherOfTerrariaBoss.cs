@@ -121,6 +121,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float CircleRadius = 260f;     // the circle she draws around herself; the crystals appear on it
 		private const int CrystalCount = 4;
 
+		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
+		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst };
+
 		private enum Attack
 		{
 			SpearFan = 0,
@@ -332,7 +336,15 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private void NextAttack()
 		{
 			Timer = 0;
-			CurrentAttack = (Attack)(((int)CurrentAttack + 1) % AttackCount);
+			if (Stage == 2)
+			{
+				int at = System.Array.IndexOf(StageTwoLoop, CurrentAttack);
+				CurrentAttack = StageTwoLoop[(at + 1) % StageTwoLoop.Length];
+			}
+			else
+			{
+				CurrentAttack = (Attack)(((int)CurrentAttack + 1) % AttackCount);
+			}
 			// She only changes position every StationEvery attacks; the rest of the time she hangs in place.
 			AttacksSinceMove++;
 			if (AttacksSinceMove >= StationEvery)
@@ -401,7 +413,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 					{
 						if (Stage == 2)
 						{
-							ThrowSpear((start + i * step).ToRotationVector2() * RingSpearSpeed, ModContent.ProjectileType<StarlightLance>()); // stage 2: the swarm uses the lance look (same damage as before)
+							ThrowSpear((start + i * step).ToRotationVector2() * RingSpearSpeed, ModContent.ProjectileType<StarlightLance>(), StarlightDamage); // stage 2: the swarm throws lances at 200 each (owner, 2026-10-25)
 						}
 						else
 						{

@@ -350,6 +350,11 @@ Owner sent the stage 2 design (DesignRefs/boss_stage2_design.jpg: the "enraged" 
 - BLACK SPOTS in the gaps between feathers, flames, halo and hair: the old cut only removed background connected to the picture's edge, so enclosed pockets stayed (plain dark pockets, and a darker navy haze behind the halo and hair). Now the mask removes (1) dark areas touching the border, (2) every enclosed dark pocket of real size (POCKET_MIN 30), (3) dark navy haze that forms a thick blob, found by shaving 3 pixels off the dark areas so thin outlines vanish and thick blobs stay (HAZE_MAX 100, HAZE_SHAVE 3, HAZE_MIN 25), and (4) a thin dark fringe next to the background (FRINGE_MAX 85). Checked on a light backdrop: the gaps are clear. A few stray dark pixels remain in the hair; if they bother the owner, the haze numbers are the ones to tune.
 - SPEAR SWARM: the Spear Burst (the two rings of spears) still threw the old Celestial Spear in stage 2. Now in stage 2 it throws Starlight Lances too, at the SAME damage as before (150), so only the look changed. The fan stays at 200.
 
+### Stage 2: swarm at 200 each, and stage 2 no longer reuses the old attacks (2026-10-25, owner; BUILT, NOT YET TESTED)
+- The Spear Burst in stage 2 throws Starlight Lances at 200 base damage EACH (was 150; the fan was already 200).
+- OWNER DECISION: the spear attacks are the only stage 2 attacks that resemble stage 1; ALL other stage 2 attacks will be completely new. So stage 2's loop (StageTwoLoop in the boss class) is now just Spear Fan -> Spear Burst, both with lances. The Death Beam, Falling Stars, Feather Storm and Wing Beams stay in stage 1 only and are not used in stage 2 any more (their code is still there for stage 1). New stage 2 attacks are added to StageTwoLoop one at a time. Until they exist, stage 2 is short and repetitive (two attacks): that is expected.
+- This replaces the earlier "stage 2 loop is the same six attacks" notes.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
