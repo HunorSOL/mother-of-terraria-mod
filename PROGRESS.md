@@ -373,6 +373,7 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 
 ### Cross Beams became a STAR of 8 beams (2026-10-25, owner: "too easy to dodge, make it a star shape"; BUILT, NOT YET TESTED)
 - The plus of 4 beams was too easy to dodge. Now 8 beams leave her, 45 degrees apart (up, up-right, right, ... all round), so they form an eight-pointed star; CrossArms = 8 in the boss class. Everything else is as before (2 s charge with the tell lines for the last 75 ticks, 700 damage each, the slow shared sweep, she is invulnerable meanwhile). The safe gap between two neighbouring beams is now 45 degrees instead of 90 (and the sweep shrinks the gap on one side a little), so the player has to stand right in the middle of a gap and move with it. The entries above that say plus / four beams are history.
+- OWNER CONFIRMED (2026-10-25, "the beams are good"): the 8-beam star, 700 damage and the sweep are approved as they are.
 - To make it harder or easier: CrossArms (6 or 8 or 10), CrossDamage, and the shared beam width and sweep in GoldenDeathray.cs. If 700 damage is too much now that dodging is harder, lower CrossDamage first.
 
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
