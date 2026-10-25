@@ -331,6 +331,9 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 ### Falling star picture shrunk to match (2026-10-25, owner; BUILT, NOT YET TESTED)
 - GoldCrystalStar now draws its picture at 43/52 (about 83%) of its size to match the smaller hitbox (PictureScale). Only the falling stars change: the Enchanted Crystals borrow the same picture file but draw it themselves, so they stay full size. The pulse while hovering, the marks and the ground glow are unchanged.
 
+### Dashing stars slower (2026-10-25, owner, mid-test: "if they are fast it's too hard"; BUILT, NOT YET TESTED)
+- Dashers circle 1.2x the beam stars' speed (was 1.5x) and dash at 14.5 px/tick for 48 ticks (about 700 px; was 17 for 44). Beam stars unchanged. To go slower still: DasherMove down to 1.0 (same as the beam stars) and DashSpeed toward 11-12 (EnchantedCrystal.cs).
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

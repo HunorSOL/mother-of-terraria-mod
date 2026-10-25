@@ -38,10 +38,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int DashEvery = 265;
 		private const int DashTell = 55;
 		private const int DashAimFreeze = 20;
-		private const int DashTicks = 44;
-		private const float DashSpeed = 17f;
+		private const int DashTicks = 48;
+		private const float DashSpeed = 14.5f;
 		private const int DashDamage = 220;
-		private const float DasherMove = 1.5f;   // how much faster than the beam stars the dashers circle
+		private const float DasherMove = 1.2f;   // how much faster than the beam stars the dashers circle
 		private const float MaxSpin = 0.55f;        // radians per tick at full spin
 
 		private bool IsDasher => (int)NPC.ai[2] % 2 == 1;
