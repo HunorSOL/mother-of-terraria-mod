@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace MotherOfTerraria.NPCs.Bosses
 {
-	// One of the four ENCHANTED CRYSTALS the Mother of Terraria releases when she falls to 60% health (the stage 1 -> stage 2
+	// One of the four ENCHANTED CRYSTALS the Mother of Terraria releases when she falls to 50% health (the stage 1 -> stage 2
 	// transition, see MotherOfTerrariaBoss.DoCrystalPhase). While any of them lives she cannot be hurt. They circle the player,
 	// following them around, and each fires a short beam now and then (see Projectiles/CrystalBeam.cs); the player has to destroy all four.
 	// ai[0] = the boss's NPC index, ai[1] = a tick counter, ai[2] = which crystal this is (0-3: its place around the player and when it fires).

@@ -27,7 +27,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//   6. WING BEAMS:  she spreads her wings wide (the tell), then a golden beam fires out of each wing tip, aimed to either side of you;
 	//                  they sweep together and you follow the gap between them.
 	//   ...then back to 1.
-	//   STAGE CHANGE (owner design, 2026-10-25): the moment she falls to 60% health she drops whatever she is doing, stops, and forms a
+	//   STAGE CHANGE (owner design, 2026-10-25): the moment she falls to 50% health she drops whatever she is doing, stops, and forms a
 	//   golden circle for 3 seconds (the tell), then releases FOUR ENCHANTED CRYSTALS (NPCs/Bosses/EnchantedCrystal.cs, 50000 health each).
 	//   While any crystal lives she cannot be hurt. When the last one dies stage 2 begins at once (stage 2's attacks are NOT built yet:
 	//   for now the same six attacks continue). Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
@@ -113,7 +113,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
-		private const float StageTwoAt = 0.6f;       // fraction of her health where it starts (owner decision)
+		public const float StageTwoAt = 0.5f;        // fraction of her health where it starts (owner: 60% first, changed to 50% on 2026-10-25)
 		private const int CrystalTell = 180;         // 3 seconds forming the circle before the crystals appear
 		private const float CircleRadius = 260f;     // the circle she draws around herself; the crystals appear on it
 		private const int CrystalCount = 4;
@@ -272,7 +272,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.15f : 0.25f);
 			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
 
-			// At 60% health the stage change begins, whatever she was doing (her own beams stop; spears and stars already in flight finish).
+			// At 50% health (StageTwoAt) the stage change begins, whatever she was doing (her own beams stop; spears and stars already in flight finish).
 			if (Stage == 1 && CurrentAttack != Attack.CrystalPhase && NPC.life <= NPC.lifeMax * StageTwoAt && Main.netMode != NetmodeID.MultiplayerClient)
 			{
 				StartCrystalPhase();
@@ -524,7 +524,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			}
 		}
 
-		// Starts the stage change. A big hit can carry her past 60%, so her health is put back to exactly 60%.
+		// Starts the stage change. A big hit can carry her past the threshold, so her health is put back to exactly StageTwoAt.
 		private void StartCrystalPhase()
 		{
 			NPC.life = System.Math.Max(NPC.life, (int)System.Math.Ceiling(NPC.lifeMax * StageTwoAt));

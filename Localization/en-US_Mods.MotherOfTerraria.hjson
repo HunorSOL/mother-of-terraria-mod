@@ -27,6 +27,15 @@ Items: {
 			'''
 	}
 
+	DebugStageTester: {
+		DisplayName: Debug Stage Tester
+		Tooltip:
+			'''
+			TESTING ONLY. Remove before release.
+			Hitting the Mother of Terraria with it drops her to the stage 2 health threshold.
+			'''
+	}
+
 	DebugStarterKit: {
 		DisplayName: Debug Starter Kit
 		Tooltip:
@@ -56,6 +65,7 @@ NPCs: {
 	HeavenlyKnight.DisplayName: Heavenly Knight
 	HeavensDragon.DisplayName: Heavens Dragon
 	MotherOfTerrariaBoss.DisplayName: Mother of Terraria
+	EnchantedCrystal.DisplayName: Enchanted Crystal
 }
 
 Projectiles: {
@@ -68,4 +78,5 @@ Projectiles: {
 	LightWall.DisplayName: Light Wall
 	WingBeamLeft.DisplayName: Wing Beam Left
 	WingBeamRight.DisplayName: Wing Beam Right
+	CrystalBeam.DisplayName: Crystal Beam
 }
