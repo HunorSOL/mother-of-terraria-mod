@@ -328,6 +328,9 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 - The crystal beams are back to 900 px (the owner called them perfect; the 1400 change was a mistake from reading "the beam" as theirs). Draw limit back to 1500.
 - What the owner meant: the BOSS's beams (the Death Beam and the Wing Beams): "you could still run them out and not see them", i.e. the beam has an end that can be reached on screen. BeamLength 2600 -> 6000 px (GoldenDeathray; hit and drawn length), draw limit 6000. The "disappearing beams" fix from the entry above (DrawScreenCheckFluff) stays; that may have been a different bug, or the same one. The beam's spark effects still only reach 1400 px along it (cosmetic).
 
+### Falling star picture shrunk to match (2026-10-25, owner; BUILT, NOT YET TESTED)
+- GoldCrystalStar now draws its picture at 43/52 (about 83%) of its size to match the smaller hitbox (PictureScale). Only the falling stars change: the Enchanted Crystals borrow the same picture file but draw it themselves, so they stay full size. The pulse while hovering, the marks and the ground glow are unchanged.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

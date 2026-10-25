@@ -28,6 +28,10 @@ namespace MotherOfTerraria.Projectiles
 		private bool Falling => Projectile.localAI[0] >= Projectile.ai[0];
 		private float groundY; // where the line to the ground ends (a world position)
 
+		// The picture is drawn smaller to match the smaller hitbox (43 px instead of 52, so 43/52; owner, 2026-10-25). Only the falling
+		// stars use this class: the Enchanted Crystals borrow the same picture file but draw it themselves, at full size.
+		private const float PictureScale = 43f / 52f;
+
 		public override void SetDefaults()
 		{
 			Projectile.width = 43;   // was 52: shrunk about 17% at the owner's request (2026-10-25); the picture is unchanged
@@ -175,7 +179,7 @@ namespace MotherOfTerraria.Projectiles
 			}
 
 			float fadeIn = MathHelper.Clamp(Projectile.localAI[0] / 15f, 0f, 1f);
-			Main.spriteBatch.Draw(texture, position, null, Color.White * fadeIn, 0f, StarCentre, scale, SpriteEffects.None, 0f);
+			Main.spriteBatch.Draw(texture, position, null, Color.White * fadeIn, 0f, StarCentre, scale * PictureScale, SpriteEffects.None, 0f);
 			return false;
 		}
 
