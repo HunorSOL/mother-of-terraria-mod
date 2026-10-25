@@ -46,6 +46,8 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Starfire patch (burning ground left by a star) | Projectiles/StarfirePatch.cs | Drawn entirely in code, no file. Real art or a flame sprite could replace it in Phase 7. |
 | Golden Feather (Feather Storm projectile) | Projectiles/GoldenFeather.png | OWNER'S DESIGN (2026-10-24), 25x80, pointing up, made by tools/make_feather.py from DesignRefs/feather_design.jpg (the big feather only; no glow). |
 | Golden Deathray (the boss laser) | Projectiles/GoldenDeathray.cs | Drawn entirely in code from the game's white pixel, no file. Real art (a textured beam, a beam start/end) can replace it in Phase 7. |
+| Enchanted Crystal (stage change enemy) | NPCs/Bosses/EnchantedCrystal.cs (no file of its own) | STAND-IN (2026-10-25): uses Projectiles/GoldCrystalStar.png with a code glow. Needs the owner's crystal design (one frame; hitbox 56x56 in the code). |
+| Crystal Beam (the crystals' short beam) | Projectiles/CrystalBeam.cs | Drawn entirely in code, no file. Real art could replace it in Phase 7. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 
 ## Not built yet (will need owner designs)

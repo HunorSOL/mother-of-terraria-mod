@@ -26,7 +26,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 	//                  and then the other.
 	//   6. WING BEAMS:  she spreads her wings wide (the tell), then a golden beam fires out of each wing tip, aimed to either side of you;
 	//                  they sweep together and you follow the gap between them.
-	//   ...then back to 1. Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
+	//   ...then back to 1.
+	//   STAGE CHANGE (owner design, 2026-10-25): the moment she falls to 60% health she drops whatever she is doing, stops, and forms a
+	//   golden circle for 3 seconds (the tell), then releases FOUR ENCHANTED CRYSTALS (NPCs/Bosses/EnchantedCrystal.cs, 50000 health each).
+	//   While any crystal lives she cannot be hurt. When the last one dies stage 2 begins at once (stage 2's attacks are NOT built yet:
+	//   for now the same six attacks continue). Before each attack she moves to the next of five fixed spots around the player (see Stations): usually a slow drift, every third time a fast dash.
 	// While she is alive no other enemy may be in the Heavens (the spawner stops, and any that are left are removed).
 	// Texture: NPCs/Bosses/MotherOfTerrariaBoss.png (the owner's design, 8 frames of 420x332 made by tools/make_boss_sheet.py, Moon Lord sized: wings flap, hair and robe sway).
 	// ALL NUMBERS BELOW ARE PLACEHOLDERS; the real balance is Phase 6.
@@ -106,7 +110,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int WingBeamsEnd = WingBeamsStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 		private const int LaserEnd = BeamStart + GoldenDeathray.TellTicks + GoldenDeathray.BeamTicks + 15;
 
-		private const int AttackCount = 6;
+		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
+
+		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
+		private const float StageTwoAt = 0.6f;       // fraction of her health where it starts (owner decision)
+		private const int CrystalTell = 180;         // 3 seconds forming the circle before the crystals appear
+		private const float CircleRadius = 260f;     // the circle she draws around herself; the crystals appear on it
+		private const int CrystalCount = 4;
 
 		private enum Attack
 		{
@@ -116,6 +126,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			FallingStars = 3,
 			FeatherStorm = 4,
 			WingBeams = 5,
+			CrystalPhase = 6,                       // not in the loop: started by her health, ends in stage 2
 		}
 
 		private Attack CurrentAttack
@@ -127,6 +138,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private ref float Timer => ref NPC.ai[1];
 		private ref float StationIndex => ref NPC.ai[2];
 		private ref float AttacksSinceMove => ref NPC.ai[3];
+
+		// 1 = stage 1, 2 = stage 2. SINGLEPLAYER-ONLY: localAI is not synced; multiplayer needs this moved to a synced field (Phase 8).
+		private int Stage
+		{
+			get => NPC.localAI[0] > 0f ? 2 : 1;
+			set => NPC.localAI[0] = value == 2 ? 1f : 0f;
+		}
 
 		public override void SetStaticDefaults()
 		{
@@ -169,6 +187,19 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// While dashing she leaves a fading golden after-image trail, then she is drawn normally.
 		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
 		{
+			// While she cannot be hurt (the crystal phase) a golden shield glows around her, growing as the circle forms.
+			if (CurrentAttack == Attack.CrystalPhase && HeavensSkyTextures.Ready)
+			{
+				float grow = MathHelper.Clamp(Timer / CrystalTell, 0.15f, 1f);
+				float pulse = 0.85f + 0.15f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
+				Texture2D glow = HeavensSkyTextures.Soft;
+				spriteBatch.End();
+				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+				spriteBatch.Draw(glow, NPC.Center - screenPos, null, new Color(255, 215, 100, 0) * (0.75f * grow * pulse), 0f, glow.Size() / 2f, 560f / glow.Width, SpriteEffects.None, 0f);
+				spriteBatch.End();
+				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+			}
+
 			if (NPC.velocity.Length() > DashTrailSpeed)
 			{
 				Texture2D texture = TextureAssets.Npc[Type].Value;
@@ -200,7 +231,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 			bool beatingHard = CurrentAttack == Attack.FeatherStorm && Timer < FeatherTell + 30; // the wings beat twice as fast before the storm
 			NPC.frameCounter += beatingHard ? 2 : 1;
 			NPC.frame.Y = (int)(NPC.frameCounter / TicksPerFrame % FrameCount) * frameHeight;
-			if (CurrentAttack == Attack.WingBeams && Timer > 8 && Timer < WingBeamsEnd - 15)
+			if (CurrentAttack == Attack.CrystalPhase)
+			{
+				NPC.frame.Y = WingsSpreadFrame * frameHeight; // wings spread while she forms the circle and while the crystals live
+			}
+			else if (CurrentAttack == Attack.WingBeams && Timer > 8 && Timer < WingBeamsEnd - 15)
 			{
 				NPC.frame.Y = WingsSpreadFrame * frameHeight; // wings held wide for the Wing Wall
 			}
@@ -228,7 +263,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -236,6 +271,13 @@ namespace MotherOfTerraria.NPCs.Bosses
 			float speed = holding ? 0f : System.Math.Min(topSpeed, System.Math.Max(0f, toGoal.Length() - StayWithin) * DashEase);
 			NPC.velocity = Vector2.Lerp(NPC.velocity, toGoal.SafeNormalize(Vector2.Zero) * speed, holding ? 0.15f : 0.25f);
 			NPC.direction = target.Center.X > NPC.Center.X ? 1 : -1;
+
+			// At 60% health the stage change begins, whatever she was doing (her own beams stop; spears and stars already in flight finish).
+			if (Stage == 1 && CurrentAttack != Attack.CrystalPhase && NPC.life <= NPC.lifeMax * StageTwoAt && Main.netMode != NetmodeID.MultiplayerClient)
+			{
+				StartCrystalPhase();
+			}
+			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase;
 
 			Timer++;
 			switch (CurrentAttack)
@@ -257,6 +299,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.WingBeams:
 					DoWingBeams(target);
+					break;
+				case Attack.CrystalPhase:
+					DoCrystalPhase();
 					break;
 			}
 		}
@@ -477,6 +522,84 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				NextAttack();
 			}
+		}
+
+		// Starts the stage change. A big hit can carry her past 60%, so her health is put back to exactly 60%.
+		private void StartCrystalPhase()
+		{
+			NPC.life = System.Math.Max(NPC.life, (int)System.Math.Ceiling(NPC.lifeMax * StageTwoAt));
+			foreach (Projectile projectile in Main.ActiveProjectiles)
+			{
+				if (projectile.ModProjectile is GoldenDeathray)
+				{
+					projectile.Kill(); // her death beam and wing beams stop at once (they are tied to her)
+				}
+			}
+			CurrentAttack = Attack.CrystalPhase;
+			Timer = 0;
+			NPC.netUpdate = true;
+		}
+
+		// She stops and draws a golden circle around herself for CrystalTell ticks (dust fills in the circle a little more every
+		// tick: the tell), then four Enchanted Crystals appear on the circle. She stays untouchable until all four are dead,
+		// and then stage 2 starts at once.
+		private void DoCrystalPhase()
+		{
+			if (Timer < CrystalTell)
+			{
+				float filled = Timer / CrystalTell;
+				for (int i = 0; i < 5; i++)
+				{
+					float angle = -MathHelper.PiOver2 + Main.rand.NextFloat() * filled * MathHelper.TwoPi; // the circle grows clockwise from the top
+					Dust dust = Dust.NewDustPerfect(NPC.Center + angle.ToRotationVector2() * CircleRadius, DustID.GoldCoin, Vector2.Zero, 0, default, 1.5f);
+					dust.noGravity = true;
+					dust.velocity = angle.ToRotationVector2() * 0.4f;
+				}
+				GatherLight(1f + filled);
+				if (Timer == 1 || Timer % 60 == 0)
+				{
+					SoundEngine.PlaySound(SoundID.Item29 with { Pitch = -0.5f + filled }, NPC.Center); // a chime that rises as the circle closes
+				}
+			}
+			else if (Timer == CrystalTell)
+			{
+				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					for (int i = 0; i < CrystalCount; i++)
+					{
+						Vector2 position = NPC.Center + (-MathHelper.PiOver4 + i * MathHelper.PiOver2).ToRotationVector2() * CircleRadius;
+						NPC.NewNPC(NPC.GetSource_FromAI(), (int)position.X, (int)position.Y, ModContent.NPCType<EnchantedCrystal>(), 0, NPC.whoAmI, 0f, i);
+					}
+				}
+			}
+			else if (Timer > CrystalTell + 10 && !CrystalsAlive())
+			{
+				// Stage 2 begins at once: a burst of light, and she is vulnerable again (dontTakeDamage follows the attack).
+				SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
+				for (int i = 0; i < 60; i++)
+				{
+					Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.GoldCoin, Main.rand.NextVector2Circular(14f, 14f), 0, default, 1.8f);
+					dust.noGravity = true;
+				}
+				Stage = 2;
+				CurrentAttack = Attack.SpearFan; // placeholder: stage 2's own attacks are not built yet
+				Timer = 0;
+				NPC.netUpdate = true;
+			}
+		}
+
+		private bool CrystalsAlive()
+		{
+			int crystal = ModContent.NPCType<EnchantedCrystal>();
+			foreach (NPC npc in Main.ActiveNPCs)
+			{
+				if (npc.type == crystal && (int)npc.ai[0] == NPC.whoAmI)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		// One Celestial Spear: her own spear, which uses the boss's stronger homing (see Projectiles/HeavenlySpear.cs).
