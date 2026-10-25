@@ -49,6 +49,14 @@ namespace MotherOfTerraria.Projectiles
 			}
 		}
 
+		// The game only draws a projectile when its position is within about 360 px of the screen. A beam starts at the boss
+		// (or a wing tip) but is 2600 px long, so whenever the start was off the screen the beam was not drawn at all, although it
+		// still hurt. The limit is raised so the whole beam is always drawn. (Applies to the wing beams too.)
+		public override void SetStaticDefaults()
+		{
+			ProjectileID.Sets.DrawScreenCheckFluff[Type] = 3000;
+		}
+
 		public override void SetDefaults()
 		{
 			Projectile.width = 40;

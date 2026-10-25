@@ -29,6 +29,12 @@ namespace MotherOfTerraria.Projectiles
 
 		private bool Firing => Projectile.localAI[0] >= TellTicks;
 
+		// Same fix as the boss's beam: draw it even when the crystal itself is off the screen (see GoldenDeathray).
+		public override void SetStaticDefaults()
+		{
+			ProjectileID.Sets.DrawScreenCheckFluff[Type] = 1500;
+		}
+
 		public override void SetDefaults()
 		{
 			Projectile.width = 30;

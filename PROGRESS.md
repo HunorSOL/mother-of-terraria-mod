@@ -315,6 +315,10 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 - Health 50,000 -> 30,000 each (EnchantedCrystal.CrystalLife; 120,000 for the four). Earlier entries that say 50,000 are history.
 - Slower: circling speed 5.5 -> 4, the circle turns 0.009 -> 0.006 rad/tick, dash speed 16 -> 11 px/tick for 60 ticks (about 660 px), and fewer attacks: a beam star fires every 260 ticks (was 200), a dasher dashes every 300 ticks (was 230). Spin-up tell (55 ticks), aim lock and damage unchanged.
 
+### Crystals a bit harder again, and the disappearing beams fixed (2026-10-25, owner: "now too easy"; BUILT, NOT YET TESTED)
+- Crystal health back to 50,000 each. Between the two last settings: circling speed 4 -> 5, the circle turns 0.0075 rad/tick, dash speed 11 -> 14 px/tick for 50 ticks (about 700 px), a beam star fires every 230 ticks, a dasher dashes every 265 ticks.
+- BUG: the boss's beams (and the wing beams) sometimes vanished from the screen (but may still have hurt). LIKELY CAUSE (not seen directly, found by reasoning): Terraria only draws a projectile when its position is within about 360 px of the screen (ProjectileID.Sets.DrawScreenCheckFluff, default 360); a beam's position is at the boss or a wing tip, but the beam is 2600 px long, so whenever its start was off the screen the beam was not drawn. FIX: GoldenDeathray (and so WingBeamLeft/Right) sets DrawScreenCheckFluff to 3000, CrystalBeam to 1500. If beams still vanish, ask the owner WHEN (during the tell, while firing, after the boss dashes, at the screen edge, when she moves), then look at the beam's end rules (owner dead, Strength fade).
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
