@@ -311,6 +311,10 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 - Dash slower: DashSpeed 25 -> 16 px/tick, DashTicks 34 -> 46 (about 735 px, so it still passes through the player's spot).
 - All crystals slower: circling speed 7 -> 5.5, the circle turns 0.012 -> 0.009 rad/tick, the hurry-back after a dash 2.3x -> 2x. Spin-up, timing and damage unchanged.
 
+### Crystals slower again, 30,000 health (2026-10-25, owner: "still pretty hectic"; BUILT, NOT YET TESTED)
+- Health 50,000 -> 30,000 each (EnchantedCrystal.CrystalLife; 120,000 for the four). Earlier entries that say 50,000 are history.
+- Slower: circling speed 5.5 -> 4, the circle turns 0.009 -> 0.006 rad/tick, dash speed 16 -> 11 px/tick for 60 ticks (about 660 px), and fewer attacks: a beam star fires every 260 ticks (was 200), a dasher dashes every 300 ticks (was 230). Spin-up tell (55 ticks), aim lock and damage unchanged.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

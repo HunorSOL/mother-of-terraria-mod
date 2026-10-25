@@ -23,23 +23,23 @@ namespace MotherOfTerraria.NPCs.Bosses
 	// SINGLEPLAYER-ONLY: none known; spawning and firing run on the server / single player, but this has not been tested in multiplayer.
 	public class EnchantedCrystal : ModNPC
 	{
-		public const int CrystalLife = 50000;      // owner, 2026-10-25
+		public const int CrystalLife = 30000;      // owner, 2026-10-25 (50000 at first, lowered to 30000)
 		private const float OrbitRadius = 330f;     // how far from the player it hovers
-		private const float OrbitSpin = 0.009f;     // radians per tick the four crystals turn around the player
-		private const float Speed = 5.5f;
+		private const float OrbitSpin = 0.006f;     // radians per tick the four crystals turn around the player
+		private const float Speed = 4f;
 		private const int FirstShot = 90;           // ticks after appearing before the first beam
-		private const int ShotEvery = 200;          // ticks between one crystal's beams
+		private const int ShotEvery = 260;          // ticks between one crystal's beams
 		private const int ShotOffset = 50;          // each crystal fires this much later than the one before, so they never all fire together
 		private const int BeamDamage = 200;
 
 		// The dashing stars. Cycle: circle for DashFirst ticks, then spin up for DashTell ticks (the aim locks DashAimFreeze ticks before
 		// the dash, and a thin line shows it), dash for DashTicks, repeat every DashEvery. The second dasher is half a cycle behind.
 		private const int DashFirst = 130;
-		private const int DashEvery = 230;
+		private const int DashEvery = 300;
 		private const int DashTell = 55;
 		private const int DashAimFreeze = 20;
-		private const int DashTicks = 46;
-		private const float DashSpeed = 16f;
+		private const int DashTicks = 60;
+		private const float DashSpeed = 11f;
 		private const int DashDamage = 220;
 		private const float MaxSpin = 0.55f;        // radians per tick at full spin
 
