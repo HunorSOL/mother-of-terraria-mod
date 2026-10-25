@@ -5,6 +5,7 @@ using MotherOfTerraria.Systems;
 using MotherOfTerraria.Projectiles;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using ReLogic.Content;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Audio;
@@ -44,6 +45,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int BossLife = 1014000;
 
 		private const int FrameCount = 8;
+		private static Asset<Texture2D> stageTwoTexture; // the stage 2 sheet (same frame size as stage 1), loaded the first time it is drawn
 		private const int WingsSpreadFrame = 2;   // the animation frame where the wings are raised highest
 		private const int TicksPerFrame = 6;        // wing-beat speed: one full flap takes 8 x 6 = 48 ticks
 
@@ -69,6 +71,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float SpearSpeed = 9f;
 		private const int SpearDamage = 150;
 		private const int SpearsInFan = 3;
+		private const int StarlightDamage = 300;    // STAGE 2: the spear fan throws Starlight Lances that hit twice as hard (owner, 2026-10-25: "same as the last one but much more powerful")
 		private const float FanSpread = 0.28f;      // radians between neighbouring spears
 		private const int RingSpears = 18;          // spears per ring in the burst
 		private const float RingSpearSpeed = 7f;
@@ -202,7 +205,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			if (NPC.velocity.Length() > DashTrailSpeed)
 			{
-				Texture2D texture = TextureAssets.Npc[Type].Value;
+				Texture2D texture = BodyTexture;
 				Vector2 origin = NPC.frame.Size() / 2f;
 				for (int i = NPC.oldPos.Length - 1; i >= 1; i--)
 				{
@@ -215,7 +218,26 @@ namespace MotherOfTerraria.NPCs.Bosses
 					spriteBatch.Draw(texture, position, NPC.frame, new Color(255, 215, 110, 0) * (0.45f * fade), 0f, origin, 1f, SpriteEffects.None, 0f);
 				}
 			}
+			if (Stage == 2)
+			{
+				// The stage 2 picture (the owner's enraged design) replaces the normal one.
+				spriteBatch.Draw(BodyTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColor, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, SpriteEffects.None, 0f);
+				return false;
+			}
 			return true;
+		}
+
+		private Texture2D BodyTexture
+		{
+			get
+			{
+				if (Stage != 2)
+				{
+					return TextureAssets.Npc[Type].Value;
+				}
+				stageTwoTexture ??= ModContent.Request<Texture2D>("MotherOfTerraria/NPCs/Bosses/MotherOfTerrariaBoss_Stage2", AssetRequestMode.ImmediateLoad);
+				return stageTwoTexture.Value;
+			}
 		}
 
 		// Runs once when she appears, after the game has scaled her health for the difficulty: put it back to exactly BossLife.
@@ -344,7 +366,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 					for (int i = 0; i < SpearsInFan; i++)
 					{
 						float angle = (i - (SpearsInFan - 1) / 2f) * FanSpread;
-						ThrowSpear(aim.RotatedBy(angle) * SpearSpeed);
+						if (Stage == 2)
+						{
+							ThrowSpear(aim.RotatedBy(angle) * SpearSpeed, ModContent.ProjectileType<StarlightLance>(), StarlightDamage); // stage 2: Starlight Lances
+						}
+						else
+						{
+							ThrowSpear(aim.RotatedBy(angle) * SpearSpeed);
+						}
 					}
 				}
 			}
@@ -603,11 +632,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 		}
 
 		// One Celestial Spear: her own spear, which uses the boss's stronger homing (see Projectiles/HeavenlySpear.cs).
-		private void ThrowSpear(Vector2 velocity)
+		private void ThrowSpear(Vector2 velocity, int type = -1, int baseDamage = SpearDamage)
 		{
-			int damage = NPC.GetAttackDamage_ForProjectiles(SpearDamage, SpearDamage * 0.8f);
+			int damage = NPC.GetAttackDamage_ForProjectiles(baseDamage, baseDamage * 0.8f);
 			Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity,
-				ModContent.ProjectileType<CelestialSpear>(), damage, 2f, Main.myPlayer);
+				type < 0 ? ModContent.ProjectileType<CelestialSpear>() : type, damage, 2f, Main.myPlayer);
 		}
 
 		// Owner rule (2026-10-14): the Basket empties when the boss is KILLED (and when the player dies, which

@@ -334,9 +334,18 @@ Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dash
 ### Dashing stars slower (2026-10-25, owner, mid-test: "if they are fast it's too hard"; BUILT, NOT YET TESTED)
 - Dashers circle 1.2x the beam stars' speed (was 1.5x) and dash at 14.5 px/tick for 48 ticks (about 700 px; was 17 for 44). Beam stars unchanged. To go slower still: DasherMove down to 1.0 (same as the beam stars) and DashSpeed toward 11-12 (EnchantedCrystal.cs).
 
+### Stage 2 begins: her new look and the Starlight Lance fan (2026-10-25; BUILT, NOT YET TESTED)
+Owner sent the stage 2 design (DesignRefs/boss_stage2_design.jpg: the "enraged" boss with fiery pink-blue-gold wings, an Enraged Trophy, an Enraged Treasure Bag, a Starlight Lance and a Cosmic Barrage) and asked for the FIRST stage 2 attack: the same spear throw as before but much more powerful, with more damage, using the new lance.
+- Her stage 2 look: NPCs/Bosses/MotherOfTerrariaBoss_Stage2.png, made by tools/make_boss_stage2_sheet.py exactly like the stage 1 sheet (box-filter shrink, 60-colour palette, the same wing-flap and robe-sway warp, crisp 2x). It is fitted into the SAME 420x332 frame, so her size, hitbox (130x210) and attack origins are unchanged. The boss class swaps to it the moment stage 2 starts (BodyTexture in MotherOfTerrariaBoss.cs, loaded the first time it is drawn; the dash after-images use it too). The boss bar head icon is still the stage 1 one.
+- The first stage 2 attack: in stage 2 the SPEAR FAN throws 3 STARLIGHT LANCES (Projectiles/StarlightLance.cs, art 49x104 from the owner's lance, same flight and homing as the Celestial Spear) at 300 base damage (StarlightDamage; the stage 1 spears are 150, so twice as hard). Same pattern, tell, speed (9) and timing as before (no speed-up, owner's rule). So the stage 2 loop is for now the SAME six attacks in the same order, with the fan replaced by the lance fan; more stage 2 attacks and the shuffled order are still to come (the owner has not answered my last questions yet: shuffled order, falling spear vs light column for the Judgment Mark).
+- To test: Debug Stage Tester sword, hit her, kill the four crystals, and watch her swap look and throw lances. Check the new picture against the screen and the lance's hit line (HalfLength 46 like the Celestial Spear).
+- Cut out for later (NOT used yet): DesignRefs/boss_stage2_trophy.png, boss_stage2_bag.png (the Enraged Trophy and Enraged Treasure Bag, probably the Expert/Master versions), boss_stage2_barrage.png (the Cosmic Barrage, a star-barrage picture that may suit a later attack), boss_stage2_lance.png.
+- To tune: StarlightDamage (boss class); the colours or size via tools/make_boss_stage2_sheet.py (COLOURS, FIT_W/FIT_H, LANCE_LENGTH).
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
+- Stage 2: her new look (the swap and the size), the Starlight Lance fan at 300 damage.
 - The dashing stars (spikes, spin-up tell, dash, damage) and the longer crystal beams.
 - The stage change at 50% (use the Debug Stage Tester sword; circle tell, 4 crystals, her invulnerability, the crystal beams, the switch to stage 2) and the removal of the Halo Rings.
 - Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.
