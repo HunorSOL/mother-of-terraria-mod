@@ -71,7 +71,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const float SpearSpeed = 9f;
 		private const int SpearDamage = 150;
 		private const int SpearsInFan = 3;
-		private const int StarlightDamage = 300;    // STAGE 2: the spear fan throws Starlight Lances that hit twice as hard (owner, 2026-10-25: "same as the last one but much more powerful")
+		private const int StarlightDamage = 200;    // STAGE 2: the spear fan throws Starlight Lances that hit harder than the 150 spears (owner, 2026-10-25: "much more powerful"; 300 was extreme, so 200)
 		private const float FanSpread = 0.28f;      // radians between neighbouring spears
 		private const int RingSpears = 18;          // spears per ring in the burst
 		private const float RingSpearSpeed = 7f;

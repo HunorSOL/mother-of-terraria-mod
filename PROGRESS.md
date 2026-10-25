@@ -342,10 +342,13 @@ Owner sent the stage 2 design (DesignRefs/boss_stage2_design.jpg: the "enraged" 
 - Cut out for later (NOT used yet): DesignRefs/boss_stage2_trophy.png, boss_stage2_bag.png (the Enraged Trophy and Enraged Treasure Bag, probably the Expert/Master versions), boss_stage2_barrage.png (the Cosmic Barrage, a star-barrage picture that may suit a later attack), boss_stage2_lance.png.
 - To tune: StarlightDamage (boss class); the colours or size via tools/make_boss_stage2_sheet.py (COLOURS, FIT_W/FIT_H, LANCE_LENGTH).
 
+### Starlight Lance damage 300 -> 200 (2026-10-25, owner: "300 is extreme")
+- StarlightDamage is now 200 base (the stage 1 spears are 150, so a third more). The entry above that says 300 and "twice as hard" is history.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
-- Stage 2: her new look (the swap and the size), the Starlight Lance fan at 300 damage.
+- Stage 2: her new look (the swap and the size), the Starlight Lance fan at 200 damage.
 - The dashing stars (spikes, spin-up tell, dash, damage) and the longer crystal beams.
 - The stage change at 50% (use the Debug Stage Tester sword; circle tell, 4 crystals, her invulnerability, the crystal beams, the switch to stage 2) and the removal of the Halo Rings.
 - Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.
