@@ -117,7 +117,44 @@ def cut_boss():
     subprocess.check_call(["magick", "/tmp/boss2_fit.png", "-alpha", "off", "-colors", str(COLOURS), "+dither", "/tmp/boss2_q.png"])
     q = mb.read_rgba("/tmp/boss2_q.png")
     q[..., 3] = np.where(alpha > 128, 255, 0)
+    # where the face is in the fitted picture (the design's face centre, carried through the same crop and shrink)
+    cw, ch = cx1 - cx0, cy1 - cy0
+    k = min(FIT_W / cw, FIT_H / ch)
+    face_x = (FACE_X - cx0) * k + (FIT_W - cw * k) / 2
+    face_y = (FACE_Y - cy0) * k + (FIT_H - ch * k)
+    paint_face(q, int(round(face_x)), int(round(face_y)))
     return q
+
+
+# THE ANGRY FACE (owner, 2026-10-25: her second phase face is angry on purpose and the eyes and face must show). At this size the whole face
+# is about 8x7 art pixels, so the shrink turns it into a pale blob; the features are painted by hand here instead: glowing white eyes,
+# brows that slant down toward the nose, a shaded nose and a frowning mouth. Each row: (dy, {dx: colour letter}).
+SKIN = (246, 213, 186)
+SHADE = (222, 170, 150)
+BROW = (70, 38, 125)
+EYE = (255, 255, 255)
+GLOW = (196, 240, 255)
+MOUTH = (150, 70, 110)
+FACE = [
+    # dy, features
+    (-4, {-4: "B", -3: "B", 3: "B", 4: "B"}),                 # outer ends of the brows, raised
+    (-3, {-2: "B", -1: "B", 1: "B", 2: "B"}),                 # inner ends lower: the angry V
+    (-2, {-4: "g", -3: "E", -2: "E", -1: "S", 1: "S", 2: "E", 3: "E", 4: "g"}),   # the glowing eyes
+    (-1, {-3: "S", -2: "S", -1: "S", 0: "N", 1: "S", 2: "S", 3: "S"}),             # nose
+    (0, {-2: "S", -1: "S", 0: "N", 1: "S", 2: "S"}),
+    (1, {-2: "S", -1: "M", 0: "M", 1: "M", 2: "S"}),          # the mouth
+    (2, {-2: "M", -1: "S", 0: "S", 1: "S", 2: "M"}),          # its corners turn down: a frown
+]
+FACE_COLOURS = {"S": SKIN, "N": SHADE, "B": BROW, "E": EYE, "g": GLOW, "M": MOUTH}
+FACE_X, FACE_Y = 1375, 490      # the face's centre in the original design picture
+
+
+def paint_face(img, cx, cy):
+    for dy, row in FACE:
+        for dx, letter in row.items():
+            x, y = cx + dx, cy + dy
+            if 0 <= y < img.shape[0] and 0 <= x < img.shape[1] and img[y, x, 3] > 0:
+                img[y, x, :3] = FACE_COLOURS[letter]
 
 
 def cut_items():

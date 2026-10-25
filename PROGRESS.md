@@ -355,6 +355,11 @@ Owner sent the stage 2 design (DesignRefs/boss_stage2_design.jpg: the "enraged" 
 - OWNER DECISION: the spear attacks are the only stage 2 attacks that resemble stage 1; ALL other stage 2 attacks will be completely new. So stage 2's loop (StageTwoLoop in the boss class) is now just Spear Fan -> Spear Burst, both with lances. The Death Beam, Falling Stars, Feather Storm and Wing Beams stay in stage 1 only and are not used in stage 2 any more (their code is still there for stage 1). New stage 2 attacks are added to StageTwoLoop one at a time. Until they exist, stage 2 is short and repetitive (two attacks): that is expected.
 - This replaces the earlier "stage 2 loop is the same six attacks" notes.
 
+### Stage 2: her angry face (2026-10-25, owner: "include her eyes and her face, she is purposefully angry"; BUILT, NOT YET TESTED)
+- PROBLEM: at the sprite's size her whole face is only about 8x7 art pixels, so shrinking the design turned it into a pale blob and the eyes and the angry look were lost.
+- FIX: the face is now painted by hand at the sprite's own pixel size on top of the cut-out, before the animation warp (so it moves with her): glowing white eyes with a pale cyan glow at the sides, brows that slant down toward the nose (the angry V, outer ends raised), a shaded nose, skin tone cheeks and a frowning mouth with downturned corners, in tools/make_boss_stage2_sheet.py (the FACE table, colours SKIN, SHADE, BROW, EYE, GLOW, MOUTH; its place is the design's face centre FACE_X/FACE_Y carried through the same crop and shrink). Checked in two animation frames. Stage 1 is untouched.
+- To tune: edit the FACE table (each row is a height and which pixels get which colour) and re-run the script.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
