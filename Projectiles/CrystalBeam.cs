@@ -21,7 +21,7 @@ namespace MotherOfTerraria.Projectiles
 		private const int BeamTicks = 24;
 		private const int AimFreezeTicks = 15;
 		private const float TrackTurnPerTick = 0.03f;
-		private const float BeamLength = 480f;          // short, owner request
+		private const float BeamLength = 900f;          // the owner liked the beams and asked for them longer (2026-10-25; was 480)
 		private const float BeamHitWidth = 22f;
 		private const float BeamDrawWidth = 44f;
 

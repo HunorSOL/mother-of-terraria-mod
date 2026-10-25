@@ -299,9 +299,17 @@ Owner's design: the moment she falls to 60% health (CHANGED TO 50% the same day,
 - OWNER DECISION: the stage change starts at 50% health (it was 60%; the owner agreed "you were right", my earlier suggestion had been 50%). Constant MotherOfTerrariaBoss.StageTwoAt = 0.5 (now public). She now needs to lose 507,000 health (of 1,014,000) before the circle starts. Older entries below that say 60% are history.
 - DEBUG ITEM (TESTING ONLY, REMOVE BEFORE RELEASE, together with the other debug items): Items/Debug/DebugStageTester ("Debug Stage Tester", craft from 1 Dirt + 1 Stone; the icon is a copy of the other debug icons). A 1-damage sword: when it hits her it sets her health to exactly the threshold (507,000), so her own AI starts the stage change on its next tick. It does nothing once the stage change has begun. To be removed when stage 2 has been tested (owner's instruction).
 
+### Crystal layout: 2 beam stars and 2 dashing stars (2026-10-25; BUILT, NOT YET TESTED)
+Owner tested the crystals ("great") and set the layout: 2 beam stars, and 2 dashing stars with sharp spikes that spin up when they start to dash. (I read "make some stages" as this layout of the four crystals.)
+- Beam stars (crystals 0 and 2): unchanged except the beam is LONGER: 480 -> 900 px (CrystalBeam.BeamLength).
+- Dashing stars (crystals 1 and 3, in EnchantedCrystal.cs): a long sharp spike at each of the star's 8 points (4 long, 4 short diagonal), drawn in code (DrawDasherExtras): a golden shaft with a pale highlight and a dark outline, the outer 45% BLOODY dark red. Nothing is drawn for the beam stars. Behaviour: they circle like the others until 130 ticks after appearing (the second dasher is half a cycle, 115 ticks, later), then SPIN UP for 55 ticks (the spin ramps from slow to 0.55 rad/tick, blood dust drips, a thin red line shows the dash direction; the aim follows the player and LOCKS for the last 20 ticks), then DASH 34 ticks at 25 px/tick (about 850 px, through the player's spot and out the other side), then return to circling (fast, 2.3x) and wind down the spin; one dash every 230 ticks each. Contact damage 220 (base) only while dashing, 0 while circling; their hitbox grows from 56 to 110 px during the dash to cover the spikes. They do not fire beams.
+- To tune: DashFirst, DashEvery, DashTell, DashAimFreeze, DashTicks, DashSpeed, DashDamage, MaxSpin (EnchantedCrystal.cs); spike size and colours in DrawDasherExtras.
+- Art note: still all in code on top of the Gold Crystal Star stand-in picture (see ASSETS.md). A real design for the spiked star can replace it.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
+- The dashing stars (spikes, spin-up tell, dash, damage) and the longer crystal beams.
 - The stage change at 50% (use the Debug Stage Tester sword; circle tell, 4 crystals, her invulnerability, the crystal beams, the switch to stage 2) and the removal of the Halo Rings.
 - Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.
 - Wing Beams (the gap between the two beams) and the beam aim freeze (12 ticks).
