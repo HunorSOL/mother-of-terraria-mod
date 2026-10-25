@@ -51,6 +51,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Mother of Terraria STAGE 2 sprite | NPCs/Bosses/MotherOfTerrariaBoss_Stage2.png | OWNER'S DESIGN (2026-10-25, DesignRefs/boss_stage2_design.jpg), made game-ready by tools/make_boss_stage2_sheet.py: 8 frames of 420x332 (the same size as stage 1), animated by warping the one picture. Same note as the stage 1 sprite: the owner may send real frames. |
 | Starlight Lance (stage 2 spear projectile) | Projectiles/StarlightLance.png | OWNER'S DESIGN (2026-10-25), 49x104, pointing up, made by tools/make_boss_stage2_sheet.py (loose sparks removed). |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
+| Debug Stage Two Skipper icon | Items/Debug/DebugStageTwoSkipper.png | TESTING ONLY, copy of the same icon; deleted before release. |
 | Debug Stage Tester icon | Items/Debug/DebugStageTester.png | TESTING ONLY, copy of the same icon; deleted before release (with the item, after stage 2 is tested). |
 
 | Stage 2 reference cut-outs | DesignRefs/boss_stage2_trophy.png, boss_stage2_bag.png, boss_stage2_lance.png, boss_stage2_barrage.png | Cut from the stage 2 design sheet. Trophy ("Enraged Trophy"), bag ("Enraged Treasure Bag") and the Cosmic Barrage are NOT built yet; need item sprites in Terraria size. |

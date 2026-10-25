@@ -36,6 +36,15 @@ Items: {
 			'''
 	}
 
+	DebugStageTwoSkipper: {
+		DisplayName: Debug Stage Two Skipper
+		Tooltip:
+			'''
+			TESTING ONLY. Remove before release.
+			Hitting the Mother of Terraria with it starts stage 2 at once, skipping the crystals.
+			'''
+	}
+
 	DebugStarterKit: {
 		DisplayName: Debug Starter Kit
 		Tooltip:
@@ -80,4 +89,5 @@ Projectiles: {
 	WingBeamRight.DisplayName: Wing Beam Right
 	CrystalBeam.DisplayName: Crystal Beam
 	StarlightLance.DisplayName: Starlight Lance
+	CrossBeam.DisplayName: Cross Beam
 }

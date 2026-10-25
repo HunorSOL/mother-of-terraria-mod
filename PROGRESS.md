@@ -367,6 +367,10 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - Beams are 6000 px long (nothing to outrun) and are drawn even when she is off the screen. The beams die with her (crystal phase cannot happen in stage 2).
 - To tune: CrossDamage, CrossCharge (the 2 s), the beam's tell/fire times and sweep are the shared constants in GoldenDeathray.cs.
 
+### Debug Stage Two Skipper (2026-10-25, owner request; BUILT, NOT YET TESTED)
+- TESTING ONLY, REMOVE BEFORE RELEASE with the other debug items. Items/Debug/DebugStageTwoSkipper ("Debug Stage Two Skipper", craft from 1 Dirt + 1 Stone; icon is a copy of the other debug icons): a 1-damage sword that, when it hits her in stage 1, starts STAGE 2 at once and skips the Enchanted Crystals (they are still in the game for the real fight; any that exist are removed). It calls MotherOfTerrariaBoss.DebugSkipToStageTwo(), which sets her health to 50% if above, swaps her to stage 2 and starts the stage 2 loop at the Spear Fan. Use the Debug Stage Tester instead to test the crystal fight. She must be hittable: it does nothing while she is untouchable (the crystal phase, the cross beams).
+- Delete both debug items and DebugSkipToStageTwo() when stage 2 is tested.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

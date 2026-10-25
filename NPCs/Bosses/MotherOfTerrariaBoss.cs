@@ -692,6 +692,35 @@ namespace MotherOfTerraria.NPCs.Bosses
 			}
 		}
 
+		// TESTING ONLY (the Debug Stage Two Skipper item calls this; remove with it): jump straight to stage 2, skipping the crystals.
+		public void DebugSkipToStageTwo()
+		{
+			if (Stage == 2 || Main.netMode == NetmodeID.MultiplayerClient)
+			{
+				return;
+			}
+			int crystal = ModContent.NPCType<EnchantedCrystal>();
+			foreach (NPC npc in Main.ActiveNPCs)
+			{
+				if (npc.type == crystal && (int)npc.ai[0] == NPC.whoAmI)
+				{
+					npc.active = false;
+				}
+			}
+			foreach (Projectile projectile in Main.ActiveProjectiles)
+			{
+				if (projectile.ModProjectile is GoldenDeathray)
+				{
+					projectile.Kill();
+				}
+			}
+			NPC.life = System.Math.Min(NPC.life, (int)System.Math.Ceiling(NPC.lifeMax * StageTwoAt));
+			Stage = 2;
+			CurrentAttack = Attack.SpearFan;
+			Timer = 0;
+			NPC.netUpdate = true;
+		}
+
 		private bool CrystalsAlive()
 		{
 			int crystal = ModContent.NPCType<EnchantedCrystal>();
