@@ -279,7 +279,7 @@ Every attack is shorter and the rests are almost gone (tell = the visible warnin
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
-- Her health: the bar must now show exactly 1,014,000 (it showed about half before the OnSpawn fix). If the fight is too long, change BossLife.
+- Her health: CONFIRMED by the owner (2026-10-25): the bar shows exactly 1,014,000. If the fight is too long, change BossLife.
 - Halo Rings: readable, fair at 6 px/tick with a 45-degree gap and 280 damage.
 - Wing Beams (the gap between the two beams) and the beam aim freeze (12 ticks).
 - Falling Stars as they are now (stars 520 px above, single row, original speed, thick marks).
