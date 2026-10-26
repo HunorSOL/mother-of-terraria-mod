@@ -26,7 +26,11 @@ namespace MotherOfTerraria.Projectiles
 		public const int LingerTicks = 90;
 		public const int TotalTicks = FollowTicks + LockTicks + StrikeTicks + LingerTicks;
 
-		private const float FollowSpeed = 5.5f;       // pixels per tick (a running player does about 7 to 9, wings and boots more)
+		private const float FollowSpeed = 5.5f;       // pixels per tick when close (a running player does about 7 to 9, wings and boots more)
+		// Owner, 2026-10-26: a flying player outran the mark and could not see it. Far away it now speeds up in proportion to the distance (so it stays on
+		// screen, about 200 px behind a fast flyer) and slows to FollowSpeed when it is close, then locks and strikes where it stops.
+		private const float CatchUpPerPixel = 0.08f;
+		private const float MaxFollowSpeed = 30f;
 		private const float ColumnHalfWidth = 75f;    // the lance's column is 150 wide
 		// The lance now hits the WHOLE height of the map in its column (owner, 2026-10-26: "from top to bottom"): from y = 0 to the bottom of the world.
 		private static float ColumnTop => 0f;
@@ -73,7 +77,7 @@ namespace MotherOfTerraria.Projectiles
 				{
 					Player target = Main.player[owner.target];
 					Vector2 toPlayer = target.Center - Projectile.Center;
-					float move = System.Math.Min(FollowSpeed, toPlayer.Length());
+					float move = System.Math.Min(MathHelper.Clamp(toPlayer.Length() * CatchUpPerPixel, FollowSpeed, MaxFollowSpeed), toPlayer.Length());
 					Projectile.Center += toPlayer.SafeNormalize(Vector2.Zero) * move;
 					Projectile.netUpdate = true;
 				}

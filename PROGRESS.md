@@ -459,6 +459,9 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - All numbers are constants at the top of `JudgmentMark.cs` and `MarkCount` / `MarkDamage` in the boss class. No new picture files (the lance is the Starlight Lance picture).
 - To test: is 70 ticks of following too long or short, is 35 ticks of lock enough to get out of the 150 px column when you are running, is 550 right, does the column line read clearly, does a flying player get pulled into it by the same rule (the mark sits at your centre, flying or not).
 
+### Judgment Mark: the mark keeps up with a flying player (2026-10-26, owner: in the air you cannot see the mark tracking you; BUILT, NOT YET TESTED)
+- Cause: the mark followed at a fixed 5.5 px/tick, so a flying player left it far off screen and it locked out of sight. Now it speeds up with distance (0.08 x the distance, between 5.5 and 30 px/tick, constants CatchUpPerPixel and MaxFollowSpeed in `Projectiles/JudgmentMark.cs`), so it stays about 200 px behind a fast flyer, on screen; close up it is still the slow 5.5, so walkers dodge as before. It still stops, locks and strikes where it stops. If a flyer can still outrun it, raise CatchUpPerPixel; if it is too hard to shake, lower it.
+
 ### Homing stars health 4,000 (2026-10-26, owner; CONFIRMED: "this works")
 - Star Hell stars: health 3,000 -> 4,000 (`StarLife` in `SeekerStar.cs`). Speed 10.8, touch damage 400 with 40% armor penetration, defense 5 are unchanged.
 
