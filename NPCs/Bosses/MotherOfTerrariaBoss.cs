@@ -138,6 +138,20 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int MirrorMaxUses = 2;            // owner, 2026-10-26: it can happen only this many times in one fight
 		private const int OtherAttackWeight = 4;        // owner, 2026-10-26: Mirror Court must be the LEAST likely attack (weight 1 against this for every other)
 
+		// GRAND STARS (stage 2, owner's design 2026-10-26): a bigger, stronger Falling Stars that ALSO comes sideways, so the gaps are smaller. Thick tell
+		// lines show every star's path. Six big stars drop in a sweep (like stage 1), then three more fly across from the screen edge, one row after another.
+		private const int GrandDamage = 450;            // stage 1 stars hit for 320
+		private const int GrandColumns = 6;
+		private const float GrandSpacing = 200f;        // sideways gap between falling stars (stage 1: 190, but these are 60% wider, so the gap is smaller)
+		private const int GrandRows = 3;
+		private const float GrandRowSpacing = 175f;     // gap between the flying rows
+		private const int GrandSpawnAt = 30;
+		private const int GrandHover = 50;              // before the first falling star drops
+		private const int GrandGap = 13;                // between falling stars
+		private const int GrandSidePause = 45;          // after the last falling star drops, before the first sideways one
+		private const int GrandRowGap = 28;             // between the sideways rows
+		private const int GrandEnd = GrandSpawnAt + GrandHover + GrandColumns * GrandGap + GrandSidePause + GrandRows * GrandRowGap + 110;
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -149,7 +163,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
 		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.GrandStars };
 
 		private enum Attack
 		{
@@ -162,6 +176,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			CrystalPhase = 6,                       // not in the loop: started by her health, ends in stage 2
 			CrossBeams = 7,                         // stage 2 only (see StageTwoLoop)
 			MirrorCourt = 8,                        // stage 2 only
+			GrandStars = 9,                         // stage 2 only
 		}
 
 		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
@@ -381,6 +396,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.MirrorCourt:
 					DoMirrorCourt(target);
+					break;
+				case Attack.GrandStars:
+					DoGrandStars(target);
 					break;
 			}
 		}
@@ -688,6 +706,49 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= CrossEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// GRAND STARS: see the constants. Falling stars hang above the player in a row; sideways stars hang at the screen edge, one per row, with
+		// lines across. First the falling ones sweep down, then the sideways rows go one after another (top to bottom or bottom to top).
+		private void DoGrandStars(Player target)
+		{
+			if (Timer > 0 && Timer < GrandSpawnAt)
+			{
+				GatherLight(1.5f);
+			}
+			if (Timer == GrandSpawnAt)
+			{
+				SoundEngine.PlaySound(SoundID.Item119 with { Pitch = -0.3f }, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					int damage = NPC.GetAttackDamage_ForProjectiles(GrandDamage, GrandDamage * 0.8f);
+					int grand = ModContent.ProjectileType<GrandStar>();
+					float y = System.Math.Max(target.Center.Y - StarHeight, 200f);
+					bool leftToRight = Main.rand.NextBool();
+					for (int i = 0; i < GrandColumns; i++)
+					{
+						int order = leftToRight ? i : GrandColumns - 1 - i;
+						float x = target.Center.X + (i - (GrandColumns - 1) / 2f) * GrandSpacing;
+						Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(x, y), Vector2.Zero, grand, damage, 0f, Main.myPlayer, GrandHover + order * GrandGap, 0f, 0f);
+					}
+					// The sideways rows: all from one side, centred a little above the player's feet, in a random order.
+					int side = Main.rand.NextBool() ? 1 : -1;       // +1 = they fly to the right (so they start on the left)
+					bool topFirst = Main.rand.NextBool();
+					float edge = System.Math.Max(Main.screenWidth / 2f - 70f, 500f);
+					float centreY = target.Center.Y - 90f + Main.rand.NextFloat(-40f, 40f);
+					int firstDelay = GrandHover + GrandColumns * GrandGap + GrandSidePause;
+					for (int row = 0; row < GrandRows; row++)
+					{
+						int order = topFirst ? row : GrandRows - 1 - row;
+						float rowY = centreY + (row - (GrandRows - 1) / 2f) * GrandRowSpacing;
+						Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(target.Center.X - side * edge, rowY), Vector2.Zero, grand, damage, 0f, Main.myPlayer, firstDelay + order * GrandRowGap, 0f, side);
+					}
+				}
+			}
+			if (Timer >= GrandEnd)
 			{
 				NextAttack();
 			}
