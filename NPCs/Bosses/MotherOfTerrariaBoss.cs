@@ -123,6 +123,19 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int CrossSpawnAt = CrossCharge - GoldenDeathray.TellTicks;   // the beams (and their tell lines) appear this far in, so they fire at CrossCharge
 		private const int CrossEnd = CrossCharge + GoldenDeathray.BeamTicks + 15;
 
+		// MIRROR COURT (stage 2, owner's design 2026-10-26): she gets an invisible SHIELD of MirrorShield health. She vanishes, and four figures appear
+		// around the player: the real her and three MirrorClone copies. All four close in slowly. While the shield holds, her real health cannot drop;
+		// hits on the real one (clones cannot be hit) wear the shield down. Break it and the clones vanish and the fight goes on as normal; if the
+		// clones arrive first they hurt the player. The real one has a faint halo the clones lack. A rare "stall" attack (see NextAttack).
+		public const float MirrorSpeed = 1.1f;          // pixels per tick everyone closes in (500 px takes about 7.5 s)
+		private const int MirrorShield = 5000;          // owner, 2026-10-26
+		private const int MirrorAppear = 60;             // she gathers light this long, then the four figures appear
+		private const float MirrorDistance = 500f;      // how far from the player the four start
+		private const int MirrorApproach = 540;         // ticks from the appearing until they reach the player
+		private const int MirrorLinger = 120;           // how long they stay on the player (hurting) before the attack gives up
+		private const int MirrorEnd = MirrorAppear + MirrorApproach + MirrorLinger;
+		private const int MirrorRepeatGap = 3;          // Mirror Court can only come up again after this many other attacks
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -133,7 +146,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams };
+		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt };
 
 		private enum Attack
 		{
@@ -145,7 +159,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 			WingBeams = 5,
 			CrystalPhase = 6,                       // not in the loop: started by her health, ends in stage 2
 			CrossBeams = 7,                         // stage 2 only (see StageTwoLoop)
+			MirrorCourt = 8,                        // stage 2 only
 		}
+
+		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
+		// SINGLEPLAYER-ONLY: not synced to clients (the server runs the AI, so it works there; clients only need the picture).
+		private int shieldLeft;
+		private int lifeAtShield;
+		private int attacksSinceMirror = MirrorRepeatGap;
 
 		private Attack CurrentAttack
 		{
@@ -214,6 +235,18 @@ namespace MotherOfTerraria.NPCs.Bosses
 				spriteBatch.End();
 				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 				spriteBatch.Draw(glow, NPC.Center - screenPos, null, new Color(255, 215, 100, 0) * (0.75f * grow * pulse), 0f, glow.Size() / 2f, 560f / glow.Width, SpriteEffects.None, 0f);
+				spriteBatch.End();
+				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+			}
+
+			// Mirror Court: only the real her has a faint halo (how to tell her from the clones).
+			if (CurrentAttack == Attack.MirrorCourt && Timer >= MirrorAppear && HeavensSkyTextures.Ready)
+			{
+				float pulse = 0.8f + 0.2f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 3f);
+				Texture2D glow = HeavensSkyTextures.Soft;
+				spriteBatch.End();
+				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+				spriteBatch.Draw(glow, NPC.Center - screenPos, null, new Color(255, 215, 100, 0) * (0.3f * pulse), 0f, glow.Size() / 2f, 340f / glow.Width, SpriteEffects.None, 0f);
 				spriteBatch.End();
 				spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 			}
@@ -300,7 +333,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -343,6 +376,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 				case Attack.CrossBeams:
 					DoCrossBeams();
 					break;
+				case Attack.MirrorCourt:
+					DoMirrorCourt(target);
+					break;
 			}
 		}
 
@@ -352,8 +388,21 @@ namespace MotherOfTerraria.NPCs.Bosses
 			Timer = 0;
 			if (Stage == 2)
 			{
-				int at = System.Array.IndexOf(StageTwoLoop, CurrentAttack);
-				CurrentAttack = StageTwoLoop[(at + 1) % StageTwoLoop.Length];
+				// Shuffled: any stage 2 attack except the one that just ran; Mirror Court only after MirrorRepeatGap other attacks.
+				attacksSinceMirror++;
+				System.Collections.Generic.List<Attack> choices = new();
+				foreach (Attack candidate in StageTwoLoop)
+				{
+					if (candidate != CurrentAttack && (candidate != Attack.MirrorCourt || attacksSinceMirror >= MirrorRepeatGap))
+					{
+						choices.Add(candidate);
+					}
+				}
+				CurrentAttack = choices[Main.rand.Next(choices.Count)];
+				if (CurrentAttack == Attack.MirrorCourt)
+				{
+					attacksSinceMirror = 0;
+				}
 			}
 			else
 			{
@@ -626,6 +675,92 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				NextAttack();
 			}
+		}
+
+		// MIRROR COURT. She gathers light for a second (the tell), then the four figures appear on a ring around the player (she takes a random
+		// one of the four places, the clones the rest) and everyone walks in. Her health is put back every tick and the difference is taken off the shield.
+		private void DoMirrorCourt(Player target)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+			{
+				return;
+			}
+			if (Timer == 1)
+			{
+				shieldLeft = MirrorShield;
+				lifeAtShield = NPC.life;
+				SoundEngine.PlaySound(SoundID.Item29 with { Pitch = -0.2f }, NPC.Center);
+			}
+			int dealt = lifeAtShield - NPC.life;
+			if (dealt > 0)
+			{
+				shieldLeft -= dealt;
+			}
+			NPC.life = lifeAtShield; // her real health cannot drop while the shield holds
+
+			if (Timer < MirrorAppear)
+			{
+				GatherLight(1f + Timer / (float)MirrorAppear);
+			}
+			else if (Timer == MirrorAppear)
+			{
+				SoundEngine.PlaySound(SoundID.Item119, NPC.Center);
+				float startAngle = Main.rand.NextFloat(MathHelper.TwoPi);
+				int real = Main.rand.Next(4);
+				for (int i = 0; i < 4; i++)
+				{
+					Vector2 place = target.Center + (startAngle + i * MathHelper.PiOver2).ToRotationVector2() * MirrorDistance;
+					for (int d = 0; d < 30; d++)
+					{
+						Dust dust = Dust.NewDustPerfect(place + Main.rand.NextVector2Circular(60f, 100f), DustID.GoldCoin, Main.rand.NextVector2Circular(5f, 5f), 0, default, 1.6f);
+						dust.noGravity = true;
+					}
+					if (i == real)
+					{
+						NPC.Center = place;
+						NPC.velocity = Vector2.Zero;
+						System.Array.Clear(NPC.oldPos);
+					}
+					else
+					{
+						NPC.NewNPC(NPC.GetSource_FromAI(), (int)place.X, (int)place.Y, ModContent.NPCType<MirrorClone>(), 0, NPC.whoAmI);
+					}
+				}
+			}
+			else
+			{
+				// everyone walks in (she overrides her usual movement, which holds her still during this attack)
+				Vector2 toPlayer = target.Center - NPC.Center;
+				NPC.velocity = toPlayer.Length() > 50f ? toPlayer.SafeNormalize(Vector2.Zero) * MirrorSpeed : Vector2.Zero;
+			}
+
+			if (Timer > MirrorAppear && shieldLeft <= 0)
+			{
+				SoundEngine.PlaySound(SoundID.Item107, NPC.Center); // the shield shatters
+				for (int i = 0; i < 40; i++)
+				{
+					Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.GoldCoin, Main.rand.NextVector2Circular(12f, 12f), 0, default, 1.8f);
+					dust.noGravity = true;
+				}
+				EndMirrorCourt();
+			}
+			else if (Timer >= MirrorEnd)
+			{
+				EndMirrorCourt(); // the clones reached the player and had their chance; the shield drops
+			}
+		}
+
+		private void EndMirrorCourt()
+		{
+			int clone = ModContent.NPCType<MirrorClone>();
+			foreach (NPC npc in Main.ActiveNPCs)
+			{
+				if (npc.type == clone && (int)npc.ai[0] == NPC.whoAmI)
+				{
+					MirrorClone.Vanish(npc);
+				}
+			}
+			NextAttack();
 		}
 
 		// Starts the stage change. A big hit can carry her past the threshold, so her health is put back to exactly StageTwoAt.
