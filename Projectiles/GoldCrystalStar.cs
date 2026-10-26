@@ -90,12 +90,10 @@ namespace MotherOfTerraria.Projectiles
 		}
 
 		// Scans down from the star for the first solid tile (or platform), for the warning line. Scans all the way to the bottom of the world (the stars hang at the top of the map, so the islands are 200+ tiles below).
-		private float FindGroundY() => FindGroundY(Projectile.Center);
-
-		public static float FindGroundY(Vector2 centre)
+		private float FindGroundY()
 		{
-			int x = (int)(centre.X / 16f);
-			int startY = (int)(centre.Y / 16f);
+			int x = (int)(Projectile.Center.X / 16f);
+			int startY = (int)(Projectile.Center.Y / 16f);
 			for (int y = startY; y < Main.maxTilesY - 2; y++)
 			{
 				if (!WorldGen.InWorld(x, y, 2))
