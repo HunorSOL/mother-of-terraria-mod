@@ -93,4 +93,6 @@ Projectiles: {
 	StarlightLance.DisplayName: Starlight Lance
 	CrossBeam.DisplayName: Cross Beam
 	GrandStar.DisplayName: Grand Star
+	GravityLance.DisplayName: Gravity Lance
+	GravityWell.DisplayName: Gravity Well
 }

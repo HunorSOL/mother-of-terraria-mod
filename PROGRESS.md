@@ -436,6 +436,10 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - All numbers are constants at the top of `GravityWell.cs` and `GravityLance.cs` (PullRadius, PullAtEdge, PullAtCore, MaxPullSpeed, LanceEvery, LanceRing, Speed, Sideways) and `WellDistance` / `WellDamage` in the boss class. No picture files (the lance uses the Starlight Lance picture, the well is drawn in code).
 - To test: does the pull feel strong enough to matter but beatable with wings or boots; can a grounded player cope (gravity is 0.4 per tick, so near the core the pull can lift you); do the spiralling lances read clearly; is the tell enough; does the ring showing the reach help or clutter.
 
+### Gravity Well: invulnerable during it, and much rarer (2026-10-26, owner; BUILT, NOT YET TESTED)
+- She is INVULNERABLE from the moment the well opens (after the 1 s gathering) until the attack ends, with the golden glow (as in Star Hell and the Cross Beams). Before it opens she can still be hit.
+- RARER: Gravity Well now has weight 1 in the shuffle against 4 for the ordinary attacks, the same as Mirror Court, and it can only come up after 3 other attacks (`WellRepeatGap`). It has no maximum number of uses (Mirror Court still has its cap of 2). If it is still too frequent, raise `WellRepeatGap` or give it a cap like Mirror Court.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

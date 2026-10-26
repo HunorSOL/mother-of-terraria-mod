@@ -156,6 +156,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int WellTell = 60;
 		private const float WellDistance = 450f;
 		private const int WellDamage = 400;             // the dark core's touch (the lances do 55% of it)
+		private const int WellRepeatGap = 3;           // owner, 2026-10-26: it must be rare: weight 1 in the shuffle (against OtherAttackWeight) and only after this many other attacks
 		private const int WellEnd = WellTell + GravityWell.TotalTicks + 15;
 
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
@@ -191,6 +192,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private int shieldLeft;
 		private int lifeAtShield;
 		private int attacksSinceMirror = MirrorRepeatGap;
+		private int attacksSinceWell = WellRepeatGap;
 		private int mirrorUses;
 
 		private Attack CurrentAttack
@@ -253,10 +255,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 		{
 			// While she cannot be hurt (the crystal phase) a golden shield glows around her, growing as the circle forms.
 			bool hellShield = CurrentAttack == Attack.StarHell && Timer >= HellTell; // invulnerable from the moment she releases the stars
+			bool wellShield = CurrentAttack == Attack.GravityWell && Timer >= WellTell; // invulnerable from the moment the well opens
 			bool beamShield = BeamsShielded; // stage 1 Death Beam / Wing Beams: shielded while she holds still for the beam
-			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || hellShield || beamShield) && HeavensSkyTextures.Ready)
+			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || hellShield || wellShield || beamShield) && HeavensSkyTextures.Ready)
 			{
-				float grow = hellShield || beamShield ? 1f : MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
+				float grow = hellShield || wellShield || beamShield ? 1f : MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
 				float pulse = 0.85f + 0.15f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
 				Texture2D glow = HeavensSkyTextures.Soft;
 				spriteBatch.End();
@@ -374,7 +377,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				StartCrystalPhase();
 			}
-			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.StarHell && Timer >= HellTell) || BeamsShielded; // untouchable while the crystals live, during the cross beams, and from the moment the Star Hell stars are released (owner, 2026-10-26)
+			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.StarHell && Timer >= HellTell) || (CurrentAttack == Attack.GravityWell && Timer >= WellTell) || BeamsShielded; // untouchable while the crystals live, during the cross beams, and from the moment the Star Hell stars are released (owner, 2026-10-26)
 
 			Timer++;
 			if (Timer < 0)
@@ -434,6 +437,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 				// Shuffled: any stage 2 attack except the one that just ran. Mirror Court is the rarest: weight 1 against OtherAttackWeight,
 				// only after MirrorRepeatGap other attacks, and at most MirrorMaxUses times in the whole fight.
 				attacksSinceMirror++;
+				attacksSinceWell++;
 				System.Collections.Generic.List<Attack> choices = new();
 				foreach (Attack candidate in StageTwoLoop)
 				{
@@ -441,7 +445,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 					{
 						continue;
 					}
-					if (candidate != Attack.MirrorCourt)
+					if (candidate == Attack.GravityWell)
+					{
+						if (attacksSinceWell >= WellRepeatGap)
+						{
+							choices.Add(candidate); // weight 1: the rarest, with Mirror Court
+						}
+					}
+					else if (candidate != Attack.MirrorCourt)
 					{
 						for (int w = 0; w < OtherAttackWeight; w++)
 						{
@@ -454,6 +465,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 					}
 				}
 				CurrentAttack = choices[Main.rand.Next(choices.Count)];
+				if (CurrentAttack == Attack.GravityWell)
+				{
+					attacksSinceWell = 0;
+				}
 				if (CurrentAttack == Attack.MirrorCourt)
 				{
 					attacksSinceMirror = 0;
