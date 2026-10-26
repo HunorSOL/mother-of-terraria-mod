@@ -138,6 +138,15 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int MirrorMaxUses = 2;            // owner, 2026-10-26: it can happen only this many times in one fight
 		private const int OtherAttackWeight = 4;        // owner, 2026-10-26: Mirror Court must be the LEAST likely attack (weight 1 against this for every other)
 
+		// STAR HELL (stage 2, owner's design 2026-10-26): she stops for a second and gathers energy, then sends 20 very strongly homing stars (SeekerStar,
+		// 1000 health each, 200 damage on touch, then they explode) in waves. The only real answer is to shoot them down. She waits until they are all gone.
+		private const int HellCount = 20;
+		private const int HellTell = 60;                // the second of gathering energy
+		private const int HellWaves = 5;                // the stars leave in this many waves (4 each) ...
+		private const int HellWaveGap = 10;             // ... this many ticks apart, so they do not all arrive in one frame
+		private const int HellMin = HellTell + HellWaves * HellWaveGap + 20;  // she never moves on before this
+		private const int HellMax = HellTell + HellWaves * HellWaveGap + SeekerStar.SeekerLife + 60; // ... and never waits longer than this
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -149,7 +158,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
 		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell };
 
 		private enum Attack
 		{
@@ -162,6 +171,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			CrystalPhase = 6,                       // not in the loop: started by her health, ends in stage 2
 			CrossBeams = 7,                         // stage 2 only (see StageTwoLoop)
 			MirrorCourt = 8,                        // stage 2 only
+			StarHell = 9,                           // stage 2 only
 		}
 
 		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
@@ -336,7 +346,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -381,6 +391,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.MirrorCourt:
 					DoMirrorCourt(target);
+					break;
+				case Attack.StarHell:
+					DoStarHell();
 					break;
 			}
 		}
@@ -691,6 +704,59 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				NextAttack();
 			}
+		}
+
+		// STAR HELL: she holds still for a second gathering energy (the tell), then sends the stars out in waves; she moves on when they are all gone.
+		private void DoStarHell()
+		{
+			if (Timer < HellTell)
+			{
+				float charge = Timer / (float)HellTell;
+				for (int i = 0; i < 3; i++)
+				{
+					Vector2 direction = Main.rand.NextVector2Unit();
+					Dust dust = Dust.NewDustPerfect(NPC.Center + direction * Main.rand.NextFloat(150f, 260f), DustID.GoldCoin, -direction * (3f + 5f * charge), 0, default, 1.3f);
+					dust.noGravity = true;
+				}
+				GatherLight(1f + charge * 1.5f);
+				if (Timer == 1)
+				{
+					SoundEngine.PlaySound(SoundID.Item29 with { Pitch = -0.3f }, NPC.Center);
+				}
+			}
+			int sinceStart = (int)Timer - HellTell;
+			if (sinceStart >= 0 && sinceStart % HellWaveGap == 0 && sinceStart / HellWaveGap < HellWaves)
+			{
+				int wave = sinceStart / HellWaveGap;
+				SoundEngine.PlaySound(SoundID.Item119 with { Volume = 0.7f, Pitch = 0.2f }, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					int perWave = HellCount / HellWaves;
+					float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+					for (int i = 0; i < perWave; i++)
+					{
+						float angle = offset + (i + wave * 0.5f) * MathHelper.TwoPi / perWave;
+						NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<SeekerStar>(), 0, NPC.whoAmI, angle);
+					}
+				}
+			}
+			if (Timer >= HellMin && (Timer >= HellMax || !StarsAlive()))
+			{
+				NextAttack();
+			}
+		}
+
+		private bool StarsAlive()
+		{
+			int star = ModContent.NPCType<SeekerStar>();
+			foreach (NPC npc in Main.ActiveNPCs)
+			{
+				if (npc.type == star && (int)npc.ai[0] == NPC.whoAmI)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		// MIRROR COURT. She gathers light for a second (the tell), then the four figures appear on a ring around the player (she takes a random
