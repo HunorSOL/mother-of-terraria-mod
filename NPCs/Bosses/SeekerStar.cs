@@ -10,14 +10,14 @@ using Terraria.ModLoader;
 namespace MotherOfTerraria.NPCs.Bosses
 {
 	// One of the twenty homing stars of the STAR HELL attack (owner design, 2026-10-26; see MotherOfTerrariaBoss.DoStarHell). It is a real (small) enemy
-	// so the player's weapons can shoot it down: exactly 3000 health, defense 5. It fans out from her, then LOCKS ON and homes on the player extremely hard
+	// so the player's weapons can shoot it down: exactly 4000 health, defense 5. It fans out from her, then LOCKS ON and homes on the player extremely hard
 	// (it turns almost at once, so sidestepping does not work); it is fast but a player with wings or boots can outrun it. If it touches the player it
 	// hurts (400, ignoring 40% of armor) and explodes; if it is shot down it pops harmlessly; after SeekerLife ticks it fizzles out. It drops nothing.
 	// ai[0] = the boss's NPC index, ai[1] = the direction (radians) it fans out in. localAI[0] = its age in ticks.
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them). SINGLEPLAYER-ONLY: none known; not tested in multiplayer.
 	public class SeekerStar : ModNPC
 	{
-		public const int StarLife = 3000;          // owner, 2026-10-26: 1000 first, tripled the same day to make it harder
+		public const int StarLife = 4000;          // owner, 2026-10-26: 1000 first, then 3000, then 4000 (to make it harder)
 		public const int SeekerLife = 600;         // ticks before it gives up (10 s)
 		private const float Speed = 10.8f;         // pixels per tick (was 9, +20%, owner 2026-10-26): fast, but wings and boots can beat it
 		private const float FanSpeed = 13f;        // the first moments, while it fans out

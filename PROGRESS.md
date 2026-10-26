@@ -447,6 +447,9 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - All numbers are constants at the top of `JudgmentMark.cs` and `MarkCount` / `MarkDamage` in the boss class. No new picture files (the lance is the Starlight Lance picture).
 - To test: is 70 ticks of following too long or short, is 35 ticks of lock enough to get out of the 150 px column when you are running, is 550 right, does the column line read clearly, does a flying player get pulled into it by the same rule (the mark sits at your centre, flying or not).
 
+### Homing stars health 4,000 (2026-10-26, owner; BUILT, NOT YET TESTED)
+- Star Hell stars: health 3,000 -> 4,000 (`StarLife` in `SeekerStar.cs`). Speed 10.8, touch damage 400 with 40% armor penetration, defense 5 are unchanged.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
