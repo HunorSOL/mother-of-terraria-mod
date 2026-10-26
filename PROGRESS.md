@@ -398,6 +398,9 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - Things I chose: no tracking star, the sideways stars all come from one side per use, about 6 s long. All numbers are constants `Grand*` at the top of the boss class. Falling and sideways stars never fall at the same moment (the sideways ones start after the falling ones), because the owner found the doubled stage 1 stars too hard.
 - To test: is the gap fair (6 falling stars at 200 spacing; the 3 rows 175 apart need a jump or a dip), are the sideways lines readable, is 450 right. In the shuffle with weight 4 like the others.
 
+### Grand Stars REMOVED (2026-10-26, owner: "now it feels just overdone")
+- The Grand Stars attack (bigger falling stars plus sideways stars) was built the same day, then removed at the owner's request: too similar to the stage 1 Falling Stars. The code was reverted (commit 45e4dc3 holds it if it is ever wanted again). Owner rule: no more star-style attacks in stage 2; new stage 2 attacks must feel different from the stage 1 ones. Stage 2 pool is again Spear Fan, Spear Burst, Cross Beams, Mirror Court.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

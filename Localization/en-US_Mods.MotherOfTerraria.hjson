@@ -91,4 +91,5 @@ Projectiles: {
 	CrystalBeam.DisplayName: Crystal Beam
 	StarlightLance.DisplayName: Starlight Lance
 	CrossBeam.DisplayName: Cross Beam
+	GrandStar.DisplayName: Grand Star
 }
