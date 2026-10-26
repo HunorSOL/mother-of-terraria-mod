@@ -75,6 +75,7 @@ NPCs: {
 	HeavensDragon.DisplayName: Heavens Dragon
 	MotherOfTerrariaBoss.DisplayName: Mother of Terraria
 	EnchantedCrystal.DisplayName: Enchanted Crystal
+	MirrorClone.DisplayName: Mirror Clone
 }
 
 Projectiles: {

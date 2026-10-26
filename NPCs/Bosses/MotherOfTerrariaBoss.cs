@@ -135,6 +135,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int MirrorLinger = 120;           // how long they stay on the player (hurting) before the attack gives up
 		private const int MirrorEnd = MirrorAppear + MirrorApproach + MirrorLinger;
 		private const int MirrorRepeatGap = 3;          // Mirror Court can only come up again after this many other attacks
+		private const int MirrorMaxUses = 2;            // owner, 2026-10-26: it can happen only this many times in one fight
+		private const int OtherAttackWeight = 4;        // owner, 2026-10-26: Mirror Court must be the LEAST likely attack (weight 1 against this for every other)
 
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
@@ -167,6 +169,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private int shieldLeft;
 		private int lifeAtShield;
 		private int attacksSinceMirror = MirrorRepeatGap;
+		private int mirrorUses;
 
 		private Attack CurrentAttack
 		{
@@ -388,12 +391,24 @@ namespace MotherOfTerraria.NPCs.Bosses
 			Timer = 0;
 			if (Stage == 2)
 			{
-				// Shuffled: any stage 2 attack except the one that just ran; Mirror Court only after MirrorRepeatGap other attacks.
+				// Shuffled: any stage 2 attack except the one that just ran. Mirror Court is the rarest: weight 1 against OtherAttackWeight,
+				// only after MirrorRepeatGap other attacks, and at most MirrorMaxUses times in the whole fight.
 				attacksSinceMirror++;
 				System.Collections.Generic.List<Attack> choices = new();
 				foreach (Attack candidate in StageTwoLoop)
 				{
-					if (candidate != CurrentAttack && (candidate != Attack.MirrorCourt || attacksSinceMirror >= MirrorRepeatGap))
+					if (candidate == CurrentAttack)
+					{
+						continue;
+					}
+					if (candidate != Attack.MirrorCourt)
+					{
+						for (int w = 0; w < OtherAttackWeight; w++)
+						{
+							choices.Add(candidate);
+						}
+					}
+					else if (attacksSinceMirror >= MirrorRepeatGap && mirrorUses < MirrorMaxUses)
 					{
 						choices.Add(candidate);
 					}
@@ -402,6 +417,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 				if (CurrentAttack == Attack.MirrorCourt)
 				{
 					attacksSinceMirror = 0;
+					mirrorUses++;
 				}
 			}
 			else
