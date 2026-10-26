@@ -99,10 +99,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// feathers that turn slowly one way and then the other. You dodge by moving with the gaps between the arms.
 		private const int FeatherDamage = 180;
 		private const int FeatherTell = 40;
-		private const int FeatherEmits = 70;        // how many times she throws (one feather per arm each time)
-		private const int FeatherEvery = 4;         // ticks between throws
+		private const int FeatherEmits = 35;        // how many times she throws (one feather per arm each time)
+		private const int FeatherEvery = 8;         // ticks between throws
 		private const int FeatherArms = 3;
-		private const float FeatherTurn = 0.04f;    // radians the spiral turns per throw (about 0.6 radians a second)
+		private const float FeatherTurn = 0.08f;    // radians the spiral turns per throw (about 0.6 radians a second)
 		private const float FeatherStartSpeed = 5f;
 		private const int FeatherEnd = FeatherTell + FeatherEmits * FeatherEvery + 25;  // she moves on while the last feathers are still flying
 		// WING BEAMS: she spreads her wings wide and holds them there (the tell: thin lines from both wing tips follow you),

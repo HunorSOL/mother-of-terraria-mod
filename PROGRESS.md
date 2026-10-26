@@ -417,6 +417,9 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - Her defense is now 120 (was 100, then 200 as a test); change `NPC.defense` in `SetDefaults` if it needs to go back.
 - Star Hell stars: touch damage 300 -> 400, and ARMOR PENETRATION: a touch ignores ALL of the player's defense (`ModifyHitPlayer` in `SeekerStar.cs`, ScalingArmorPenetration +100%; the owner found the player's armor cancelled their hit to zero). Lower that number (for example 0.5f for half) if it hurts too much.
 
+### Feather Storm: bigger gaps between the feathers (2026-10-26, owner: "the feather attack is undodgeable"; BUILT, NOT YET TESTED)
+- Stage 1 Feather Storm: she now throws every 8 ticks instead of 4, 35 times instead of 70, and each throw turns the spiral 0.08 radians instead of 0.04. So the attack lasts as long as before and the spiral turns at the same rate, but there are HALF as many feathers, with about twice the empty space between one feather and the next along each arm (and between successive lines). The three arms and the damage are unchanged. Constants `FeatherEmits`, `FeatherEvery`, `FeatherTurn` in the boss class. If it is still too dense, raise `FeatherEvery` (and lower `FeatherEmits`, raise `FeatherTurn` the same way to keep the length); if too easy, go back toward 4 / 70 / 0.04.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
