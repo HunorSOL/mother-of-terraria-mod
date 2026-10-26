@@ -167,6 +167,21 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int MarkDamage = 550;
 		private const int MarkEnd = MarkTell + (MarkCount - 1) * MarkGap + JudgmentMark.TotalTicks + 10;
 
+		// MIRROR DASH (stage 2, owner approved 2026-10-26): she flashes away to a spot about 600 px from the player and aims (a thin line follows the player, then locks
+		// into a thick corridor), then charges down the corridor three times, each time from the other side or a new angle. Her body does the big damage (contact damage x
+		// MirrorDashContactFactor while she charges), the corridor burns a moment afterwards (see Projectiles/MirrorDashLine.cs). She flashes back to her station at the end.
+		private const int DashTell = 40;
+		private const int DashCount = 3;
+		private const int DashGap = 8;                  // ticks between one charge ending and the next flash
+		private const int DashPer = MirrorDashLine.FollowTicks + MirrorDashLine.LockTicks + MirrorDashLine.DashTicks + DashGap;
+		private const int DashEnd = DashTell + DashCount * DashPer + 20;
+		private const int MirrorDashContactFactor = 3;  // her contact damage (200) times this = 600 while she charges
+		private const int MirrorDashTrailDamage = 250;  // the afterglow's damage
+		private const float DashStartFar = 650f;        // how far from the player she appears (a little less for steep angles, so she stays on screen)
+		private const float DashStartNear = 520f;
+		private int dashContactDamage;                  // her normal contact damage, remembered while she charges
+		private int dashSide = 1;                       // the side the last dash came from (the next one comes from the other side)
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -178,7 +193,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
 		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell, Attack.JudgmentMark };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell, Attack.JudgmentMark, Attack.MirrorDash };
 
 		private enum Attack
 		{
@@ -194,6 +209,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			StarHell = 9,                           // stage 2 only
 			GravityWell = 10,                       // stage 2 only
 			JudgmentMark = 11,                      // stage 2 only
+			MirrorDash = 12,                        // stage 2 only
 		}
 
 		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
@@ -372,7 +388,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || CurrentAttack == Attack.JudgmentMark || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || CurrentAttack == Attack.JudgmentMark || CurrentAttack == Attack.MirrorDash || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -431,6 +447,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.JudgmentMark:
 					DoJudgmentMark(target);
+					break;
+				case Attack.MirrorDash:
+					DoMirrorDash(target);
 					break;
 			}
 		}
@@ -757,6 +776,92 @@ namespace MotherOfTerraria.NPCs.Bosses
 			if (Timer >= CrossEnd)
 			{
 				NextAttack();
+			}
+		}
+
+		// MIRROR DASH: see the constants. Per dash: flash to a new spot, FollowTicks of aiming, LockTicks of the locked corridor, then the charge.
+		private void DoMirrorDash(Player target)
+		{
+			if (Timer < DashTell)
+			{
+				GatherLight(1.5f);
+				if (Timer == 1)
+				{
+					SoundEngine.PlaySound(SoundID.Item29 with { Pitch = 0.2f }, NPC.Center);
+				}
+				return;
+			}
+			int since = (int)Timer - DashTell;
+			int index = since / DashPer;
+			int local = since % DashPer;
+			int chargeStart = MirrorDashLine.FollowTicks + MirrorDashLine.LockTicks;
+			int chargeEnd = chargeStart + MirrorDashLine.DashTicks;
+			if (index < DashCount)
+			{
+				if (local == 0)
+				{
+					// flash away to a new spot: alternating sides, a random height, and never so steep that she is off screen
+					dashSide = index == 0 ? (Main.rand.NextBool() ? 1 : -1) : -dashSide;
+					float elevation = MathHelper.ToRadians(Main.rand.NextFloat(-5f, 60f));
+					float distance = elevation > MathHelper.ToRadians(35f) ? DashStartNear : DashStartFar;
+					DashFlash(NPC.Center);
+					NPC.Center = target.Center + new Vector2(dashSide * (float)System.Math.Cos(elevation), -(float)System.Math.Sin(elevation)) * distance;
+					NPC.velocity = Vector2.Zero;
+					System.Array.Clear(NPC.oldPos); // no after-image streak back to where she was
+					DashFlash(NPC.Center);
+					dashContactDamage = NPC.damage;
+					if (Main.netMode != NetmodeID.MultiplayerClient)
+					{
+						NPC.localAI[1] = (target.Center - NPC.Center).ToRotation();
+						int damage = NPC.GetAttackDamage_ForProjectiles(MirrorDashTrailDamage, MirrorDashTrailDamage * 0.8f);
+						Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<MirrorDashLine>(), damage, 0f, Main.myPlayer, NPC.whoAmI);
+					}
+				}
+				if (local < MirrorDashLine.FollowTicks)
+				{
+					NPC.localAI[1] = (target.Center - NPC.Center).ToRotation(); // the line keeps pointing at the player until it locks
+					NPC.velocity = Vector2.Zero;
+					GatherLight(1f + local / (float)MirrorDashLine.FollowTicks);
+				}
+				else if (local < chargeStart)
+				{
+					NPC.velocity = Vector2.Zero; // locked: she waits for the charge
+				}
+				else if (local < chargeEnd)
+				{
+					if (local == chargeStart)
+					{
+						SoundEngine.PlaySound(SoundID.Item74, NPC.Center);
+						NPC.damage = dashContactDamage * MirrorDashContactFactor;
+					}
+					NPC.velocity = NPC.localAI[1].ToRotationVector2() * (MirrorDashLine.DashDistance / MirrorDashLine.DashTicks);
+				}
+				else
+				{
+					NPC.velocity = Vector2.Zero;
+					NPC.damage = dashContactDamage;
+				}
+			}
+			else if (Timer >= DashEnd)
+			{
+				// flash back to her station and go on
+				DashFlash(NPC.Center);
+				NPC.Center = target.Center + Stations[(int)StationIndex % Stations.Length];
+				NPC.velocity = Vector2.Zero;
+				System.Array.Clear(NPC.oldPos);
+				DashFlash(NPC.Center);
+				NextAttack();
+			}
+		}
+
+		// A burst of gold light where she vanishes or appears.
+		private void DashFlash(Vector2 place)
+		{
+			SoundEngine.PlaySound(SoundID.Item29 with { Pitch = 0.6f }, place);
+			for (int i = 0; i < 40; i++)
+			{
+				Dust dust = Dust.NewDustPerfect(place + Main.rand.NextVector2Circular(60f, 100f), DustID.GoldCoin, Main.rand.NextVector2Circular(8f, 8f), 0, default, 1.8f);
+				dust.noGravity = true;
 			}
 		}
 
