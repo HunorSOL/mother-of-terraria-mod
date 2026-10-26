@@ -414,7 +414,7 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 
 ### Defense 120, and the homing stars: 400 damage and armor penetration (2026-10-26, owner; BUILT, NOT YET TESTED)
 - Her defense is now 120 (was 100, then 200 as a test); change `NPC.defense` in `SetDefaults` if it needs to go back.
-- Star Hell stars: touch damage 300 -> 400, and ARMOR PENETRATION 200 (`SeekerStar.ArmorPenetration`; the owner found the player's armor cancelled their hit to zero). 200 is a large number on purpose, meaning "ignores all normal armor"; lower it if it hurts too much on a low-armor character.
+- Star Hell stars: touch damage 300 -> 400, and ARMOR PENETRATION: a touch ignores ALL of the player's defense (`ModifyHitPlayer` in `SeekerStar.cs`, ScalingArmorPenetration +100%; the owner found the player's armor cancelled their hit to zero). Lower that number (for example 0.5f for half) if it hurts too much.
 
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).

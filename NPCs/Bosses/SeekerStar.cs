@@ -18,7 +18,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 	public class SeekerStar : ModNPC
 	{
 		public const int StarLife = 3000;          // owner, 2026-10-26: 1000 first, tripled the same day to make it harder
-		public const int ArmorPenetration = 200;    // how much of the player's defense a touch ignores (owner asked for it, 2026-10-26)
 		public const int SeekerLife = 600;         // ticks before it gives up (10 s)
 		private const float Speed = 10.8f;         // pixels per tick (was 9, +20%, owner 2026-10-26): fast, but wings and boots can beat it
 		private const float FanSpeed = 13f;        // the first moments, while it fans out
@@ -40,7 +39,6 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.width = 40;
 			NPC.height = 40;
 			NPC.damage = 400;       // owner, 2026-10-26: 200 first, then 300, then 400
-			NPC.ArmorPenetration = ArmorPenetration; // owner, 2026-10-26: the player's armor was cancelling the whole hit
 			NPC.defense = 5;        // owner, 2026-10-26
 			NPC.lifeMax = StarLife;
 			NPC.HitSound = SoundID.Item27;      // glass
@@ -103,6 +101,12 @@ namespace MotherOfTerraria.NPCs.Bosses
 			Dust dust = Dust.NewDustPerfect(NPC.Center - NPC.velocity * 1.5f + Main.rand.NextVector2Circular(10f, 10f),
 				Main.rand.NextBool(3) ? DustID.GoldCoin : DustID.GemSapphire, -NPC.velocity * 0.1f, 0, default, 1.2f);
 			dust.noGravity = true;
+		}
+
+		// Armor penetration (owner, 2026-10-26: the player's armor was cancelling the whole hit): a touch ignores ALL of the player's defense.
+		public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+		{
+			modifiers.ScalingArmorPenetration += 1f;
 		}
 
 		// It touched the player (200 damage is the contact damage): it explodes.
