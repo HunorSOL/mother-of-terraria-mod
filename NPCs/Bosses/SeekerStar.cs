@@ -12,7 +12,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 	// One of the twenty homing stars of the STAR HELL attack (owner design, 2026-10-26; see MotherOfTerrariaBoss.DoStarHell). It is a real (small) enemy
 	// so the player's weapons can shoot it down: exactly 3000 health, defense 5. It fans out from her, then LOCKS ON and homes on the player extremely hard
 	// (it turns almost at once, so sidestepping does not work); it is fast but a player with wings or boots can outrun it. If it touches the player it
-	// hurts (400, ignoring armor) and explodes; if it is shot down it pops harmlessly; after SeekerLife ticks it fizzles out. It drops nothing.
+	// hurts (400, ignoring 40% of armor) and explodes; if it is shot down it pops harmlessly; after SeekerLife ticks it fizzles out. It drops nothing.
 	// ai[0] = the boss's NPC index, ai[1] = the direction (radians) it fans out in. localAI[0] = its age in ticks.
 	// ALL NUMBERS ARE PLACEHOLDERS (Phase 6 balances them). SINGLEPLAYER-ONLY: none known; not tested in multiplayer.
 	public class SeekerStar : ModNPC
@@ -103,10 +103,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 			dust.noGravity = true;
 		}
 
-		// Armor penetration (owner, 2026-10-26: the player's armor was cancelling the whole hit): a touch ignores ALL of the player's defense.
+		// Armor penetration (owner, 2026-10-26: the player's armor was cancelling the whole hit): a touch ignores 40% of the player's defense (owner, 2026-10-26: first all of it, then 40%).
 		public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
 		{
-			modifiers.ScalingArmorPenetration += 1f;
+			modifiers.ScalingArmorPenetration += 0.4f;
 		}
 
 		// It touched the player (200 damage is the contact damage): it explodes.

@@ -413,6 +413,7 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - She is now INVULNERABLE from the moment she releases the Star Hell stars (after the 1 s gathering) until she moves on (all 20 stars gone), with the same golden glow as the Cross Beams. While she is untouchable, shooting the stars is the whole fight. Before the release she can still be hit.
 
 ### Defense 120, and the homing stars: 400 damage and armor penetration (2026-10-26, owner; BUILT, NOT YET TESTED)
+- UPDATE (same day, owner): her defense is back to 100, and the stars ignore only 40% of the player's armor (`ScalingArmorPenetration += 0.4f`), not all of it. The lines below describe the first version.
 - Her defense is now 120 (was 100, then 200 as a test); change `NPC.defense` in `SetDefaults` if it needs to go back.
 - Star Hell stars: touch damage 300 -> 400, and ARMOR PENETRATION: a touch ignores ALL of the player's defense (`ModifyHitPlayer` in `SeekerStar.cs`, ScalingArmorPenetration +100%; the owner found the player's armor cancelled their hit to zero). Lower that number (for example 0.5f for half) if it hurts too much.
 
