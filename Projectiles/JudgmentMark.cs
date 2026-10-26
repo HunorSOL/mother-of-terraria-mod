@@ -28,7 +28,9 @@ namespace MotherOfTerraria.Projectiles
 
 		private const float FollowSpeed = 5.5f;       // pixels per tick (a running player does about 7 to 9, wings and boots more)
 		private const float ColumnHalfWidth = 75f;    // the lance's column is 150 wide
-		private const float ColumnHeight = 1500f;     // it falls from this high above the mark
+		// The lance now hits the WHOLE height of the map in its column (owner, 2026-10-26: "from top to bottom"): from y = 0 to the bottom of the world.
+		private static float ColumnTop => 0f;
+		private static float ColumnBottom => Main.maxTilesY * 16f;
 		private const float LingerHalfWidth = 95f;
 		private const float LingerHalfHeight = 55f;
 		private const float LingerDamage = 0.4f;      // of the strike's damage
@@ -114,7 +116,7 @@ namespace MotherOfTerraria.Projectiles
 		{
 			if (Striking)
 			{
-				Rectangle column = new Rectangle((int)(Projectile.Center.X - ColumnHalfWidth), (int)(Projectile.Center.Y - ColumnHeight), (int)(ColumnHalfWidth * 2f), (int)(ColumnHeight + 40f));
+				Rectangle column = new Rectangle((int)(Projectile.Center.X - ColumnHalfWidth), (int)ColumnTop, (int)(ColumnHalfWidth * 2f), (int)(ColumnBottom - ColumnTop));
 				return column.Intersects(targetHitbox);
 			}
 			if (Lingering)
@@ -155,8 +157,8 @@ namespace MotherOfTerraria.Projectiles
 				float lock01 = MathHelper.Clamp((age - FollowTicks) / (float)LockTicks, 0f, 1f);
 				float pulse = 0.85f + 0.15f * (float)System.Math.Sin(age * 0.5f);
 				float width = ColumnHalfWidth * 2f;
-				float top = System.Math.Max(Projectile.Center.Y - ColumnHeight, Main.screenPosition.Y - 40f) - Main.screenPosition.Y;
-				float length = centre.Y - top;
+				float top = -40f;                                    // the whole visible height of the screen, top to bottom
+				float length = Main.screenHeight + 80f;
 				if (length > 0f)
 				{
 					float fade = 0.35f + 0.55f * lock01;
@@ -204,15 +206,12 @@ namespace MotherOfTerraria.Projectiles
 				float fall = MathHelper.Clamp((age - FollowTicks - LockTicks) / (float)(StrikeTicks - 2), 0f, 1f);
 				Texture2D lance = TextureAssets.Projectile[Type].Value;
 				float lanceLength = lance.Height * LanceScale;
-				float tipY = MathHelper.Lerp(Projectile.Center.Y - ColumnHeight, Projectile.Center.Y + 20f, fall);
+				float tipY = MathHelper.Lerp(ColumnTop, ColumnBottom, fall); // it falls the whole height of the map
 				Vector2 lanceCentre = new Vector2(Projectile.Center.X, tipY - lanceLength / 2f) - Main.screenPosition;
 				float fade = age < FollowTicks + LockTicks + StrikeTicks ? 1f : MathHelper.Clamp(1f - (age - FollowTicks - LockTicks - StrikeTicks) / 12f, 0f, 1f);
-				float trailTop = System.Math.Max(Projectile.Center.Y - ColumnHeight, Main.screenPosition.Y - 40f) - Main.screenPosition.Y;
-				float trailLength = lanceCentre.Y - trailTop;
-				if (trailLength > 0f)
-				{
-					Main.spriteBatch.Draw(pixel, new Vector2(lanceCentre.X - 40f, trailTop), one, new Color(255, 215, 110) * (0.55f * fade), 0f, Vector2.Zero, new Vector2(80f, trailLength), SpriteEffects.None, 0f);
-				}
+				// the lance crosses the screen in a flash, so the whole column glows bright for the moment of the strike and fades after it
+				float glow = age < FollowTicks + LockTicks + StrikeTicks ? 0.75f : 0.75f * fade;
+				Main.spriteBatch.Draw(pixel, new Vector2(centre.X - ColumnHalfWidth, -40f), one, new Color(255, 225, 140) * glow, 0f, Vector2.Zero, new Vector2(ColumnHalfWidth * 2f, Main.screenHeight + 80f), SpriteEffects.None, 0f);
 				Main.spriteBatch.Draw(lance, lanceCentre, null, Color.White * fade, MathHelper.Pi, lance.Size() / 2f, LanceScale, SpriteEffects.None, 0f);
 			}
 			return false;

@@ -95,4 +95,5 @@ Projectiles: {
 	GrandStar.DisplayName: Grand Star
 	GravityLance.DisplayName: Gravity Lance
 	GravityWell.DisplayName: Gravity Well
+	JudgmentMark.DisplayName: Judgment Mark
 }
