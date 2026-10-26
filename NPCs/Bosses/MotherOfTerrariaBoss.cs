@@ -8,6 +8,7 @@ using Terraria;
 using ReLogic.Content;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.Graphics.CameraModifiers;
 using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -146,6 +147,8 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int HellWaveGap = 10;             // ... this many ticks apart, so they do not all arrive in one frame
 		private const int HellMin = HellTell + HellWaves * HellWaveGap + 20;  // she never moves on before this
 		private const int HellMax = HellTell + HellWaves * HellWaveGap + SeekerStar.SeekerLife + 60; // ... and never waits longer than this
+
+		private const int StageTwoPause = 90;      // ticks she roars and waits (1.5 s) after arriving, before her first stage 2 attack
 
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
@@ -364,6 +367,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.StarHell && Timer >= HellTell); // untouchable while the crystals live, during the cross beams, and from the moment the Star Hell stars are released (owner, 2026-10-26)
 
 			Timer++;
+			if (Timer < 0)
+			{
+				GatherLight(1.5f); // the stage 2 roar pause: no attack yet
+				return;
+			}
 			switch (CurrentAttack)
 			{
 				case Attack.SpearFan:
@@ -897,17 +905,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			}
 			else if (Timer > CrystalTell + 10 && !CrystalsAlive())
 			{
-				// Stage 2 begins at once: a burst of light, and she is vulnerable again (dontTakeDamage follows the attack).
-				SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
-				for (int i = 0; i < 60; i++)
-				{
-					Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.GoldCoin, Main.rand.NextVector2Circular(14f, 14f), 0, default, 1.8f);
-					dust.noGravity = true;
-				}
-				Stage = 2;
-				CurrentAttack = Attack.SpearFan; // placeholder: stage 2's own attacks are not built yet
-				Timer = 0;
-				NPC.netUpdate = true;
+				BeginStageTwo(); // she is vulnerable again (dontTakeDamage follows the attack)
 			}
 		}
 
@@ -934,9 +932,36 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			NPC.life = System.Math.Min(NPC.life, (int)System.Math.Ceiling(NPC.lifeMax * StageTwoAt));
+			BeginStageTwo();
+		}
+
+		// The switch to stage 2 (owner, 2026-10-26): she ROARS (a long roar, the screen shakes, a burst of light), TELEPORTS to her place above the player
+		// (a flash where she was and where she lands), and holds still for StageTwoPause ticks before the first stage 2 attack. The attack code does not run
+		// while Timer is below zero (see AI).
+		private void BeginStageTwo()
+		{
+			Player target = Main.player[NPC.target];
+			SoundEngine.PlaySound(SoundID.Roar with { Volume = 1f }, NPC.Center);
+			Main.instance.CameraModifiers.Add(new PunchCameraModifier(NPC.Center, Vector2.UnitY, 9f, 16f, 70, -1f, "MotherOfTerraria:StageTwoRoar"));
+			for (int i = 0; i < 60; i++)
+			{
+				Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.GoldCoin, Main.rand.NextVector2Circular(14f, 14f), 0, default, 1.8f);
+				dust.noGravity = true;
+			}
+			StationIndex = 0;                               // straight above the player (see Stations)
+			AttacksSinceMove = 0;
+			Vector2 landing = target.Center + Stations[0];
+			NPC.Center = landing;
+			NPC.velocity = Vector2.Zero;
+			System.Array.Clear(NPC.oldPos);
+			for (int i = 0; i < 60; i++)
+			{
+				Dust dust = Dust.NewDustPerfect(landing, DustID.GoldCoin, Main.rand.NextVector2Circular(14f, 14f), 0, default, 1.8f);
+				dust.noGravity = true;
+			}
 			Stage = 2;
 			CurrentAttack = Attack.SpearFan;
-			Timer = 0;
+			Timer = -StageTwoPause;
 			NPC.netUpdate = true;
 		}
 
