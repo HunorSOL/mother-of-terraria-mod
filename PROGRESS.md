@@ -412,6 +412,10 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - Owner: she felt too easy to damage. Her defense went from 100 to 200 (`NPC.defense` in `SetDefaults`). **THE OWNER MAY WANT THIS REVERTED TO 100 if it is too hard: it is a test, change that one number back.** For reference Moon Lord's parts have 40 to 70 defense.
 - She is now INVULNERABLE from the moment she releases the Star Hell stars (after the 1 s gathering) until she moves on (all 20 stars gone), with the same golden glow as the Cross Beams. While she is untouchable, shooting the stars is the whole fight. Before the release she can still be hit.
 
+### Defense 120, and the homing stars: 400 damage and armor penetration (2026-10-26, owner; BUILT, NOT YET TESTED)
+- Her defense is now 120 (was 100, then 200 as a test); change `NPC.defense` in `SetDefaults` if it needs to go back.
+- Star Hell stars: touch damage 300 -> 400, and ARMOR PENETRATION 200 (`SeekerStar.ArmorPenetration`; the owner found the player's armor cancelled their hit to zero). 200 is a large number on purpose, meaning "ignores all normal armor"; lower it if it hurts too much on a low-armor character.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

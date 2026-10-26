@@ -214,7 +214,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.width = 130;         // her body (the wings are scenery, not a hitbox); the 420x332 picture is centred on it
 			NPC.height = 210;
 			NPC.damage = 200;        // contact damage (placeholder)
-			NPC.defense = 200;       // placeholder. Owner, 2026-10-26: raised from 100 to 200 as a test; REVERT TO 100 if it is too hard
+			NPC.defense = 120;       // placeholder. Owner, 2026-10-26: 100 -> 200 as a test, then settled on 120; change it back to 100 if it is too hard
 			NPC.lifeMax = BossLife;
 			NPC.HitSound = SoundID.NPCHit5;
 			NPC.DeathSound = SoundID.NPCDeath6;
