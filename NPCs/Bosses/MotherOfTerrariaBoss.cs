@@ -150,6 +150,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 		private const int StageTwoPause = 90;      // ticks she roars and waits (1.5 s) after arriving, before her first stage 2 attack
 
+		// GRAVITY WELL (stage 2, owner's design 2026-10-26): she gathers light for a second, then a dark well opens in the air about 450 px from the player
+		// (above or to the side, never below, so the pull cannot drag anyone toward the Heavens' fall death), pulls the player in and drags Starlight
+		// Lances in on spirals (see Projectiles/GravityWell.cs). She can be hurt during it. She moves on when the well has collapsed.
+		private const int WellTell = 60;
+		private const float WellDistance = 450f;
+		private const int WellDamage = 400;             // the dark core's touch (the lances do 55% of it)
+		private const int WellEnd = WellTell + GravityWell.TotalTicks + 15;
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -161,7 +169,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
 		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell };
 
 		private enum Attack
 		{
@@ -175,6 +183,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			CrossBeams = 7,                         // stage 2 only (see StageTwoLoop)
 			MirrorCourt = 8,                        // stage 2 only
 			StarHell = 9,                           // stage 2 only
+			GravityWell = 10,                       // stage 2 only
 		}
 
 		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
@@ -351,7 +360,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -404,6 +413,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.StarHell:
 					DoStarHell();
+					break;
+				case Attack.GravityWell:
+					DoGravityWell(target);
 					break;
 			}
 		}
@@ -716,6 +728,35 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= CrossEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// GRAVITY WELL: she holds still for a second gathering light, then the well opens (see the constants above and Projectiles/GravityWell.cs).
+		private void DoGravityWell(Player target)
+		{
+			if (Timer < WellTell)
+			{
+				GatherLight(1f + Timer / (float)WellTell * 1.5f);
+				if (Timer == 1)
+				{
+					SoundEngine.PlaySound(SoundID.Item29 with { Pitch = -0.5f }, NPC.Center);
+				}
+			}
+			if (Timer == WellTell && Main.netMode != NetmodeID.MultiplayerClient)
+			{
+				// somewhere on the upper half of a ring around the player (never below), and not on top of her
+				float angle = -MathHelper.Pi + Main.rand.NextFloat(0.2f, MathHelper.Pi - 0.2f); // between left and right, through straight up
+				Vector2 place = target.Center + angle.ToRotationVector2() * WellDistance;
+				if (Vector2.Distance(place, NPC.Center) < 280f)
+				{
+					place.X = target.Center.X + (place.X > target.Center.X ? -1f : 1f) * System.Math.Abs(place.X - target.Center.X); // the other side
+				}
+				int damage = NPC.GetAttackDamage_ForProjectiles(WellDamage, WellDamage * 0.8f);
+				Projectile.NewProjectile(NPC.GetSource_FromAI(), place, Vector2.Zero, ModContent.ProjectileType<GravityWell>(), damage, 0f, Main.myPlayer, NPC.whoAmI);
+			}
+			if (Timer >= WellEnd)
 			{
 				NextAttack();
 			}

@@ -52,6 +52,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Starlight Lance (stage 2 spear projectile) | Projectiles/StarlightLance.png | OWNER'S DESIGN (2026-10-25), 49x104, pointing up, made by tools/make_boss_stage2_sheet.py (loose sparks removed). |
 | Mirror Clone (Mirror Court attack, 3 copies of her) | NPCs/Bosses/MirrorClone.cs (no file of its own) | Uses NPCs/Bosses/MotherOfTerrariaBoss_Stage2.png (2026-10-26). The real her is told apart by a faint halo drawn in code. No new art needed. |
 | Seeker Star (Star Hell homing star) | NPCs/Bosses/SeekerStar.cs (no file of its own) | Uses Projectiles/GoldCrystalStar.png at 0.62 size, spark trail in code. A smaller hand-made star could replace it. |
+| Gravity Well (stage 2 attack) and Gravity Lance | Projectiles/GravityWell.cs, Projectiles/GravityLance.cs (no files of their own) | The well is drawn entirely in code (soft glow textures made at load time, dust). The lance uses Projectiles/StarlightLance.png. Real art could replace the well. |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 | Debug Stage Two Skipper icon | Items/Debug/DebugStageTwoSkipper.png | TESTING ONLY, copy of the same icon; deleted before release. |
 | Debug Stage Tester icon | Items/Debug/DebugStageTester.png | TESTING ONLY, copy of the same icon; deleted before release (with the item, after stage 2 is tested). |
