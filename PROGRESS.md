@@ -426,6 +426,10 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - The roar sound is still the vanilla `SoundID.Roar` (it was already played at the end of the crystal fight before). A custom roar file from the owner would replace it. She is vulnerable during the pause.
 - Note: the earlier version only played the roar at the end of the crystal fight, never with the skipper item; both now match.
 
+### Stage 1 beams make her invulnerable (2026-10-26, owner; BUILT, NOT YET TESTED)
+- Owner: in stage 1 she is invulnerable during the beam attacks too. Now during the DEATH BEAM and the WING BEAMS she cannot be hurt from the moment she stops to aim (5 ticks before the beam attack proper: the same moment she holds still) until the attack ends, with the same golden glow as the Cross Beams (`BeamsShielded` in the boss class). The first part of each attack (the first 15 ticks of the Death Beam, 40 of the Wing Beams) she can still be hit.
+- The invulnerable moments are now: Cross Beams, Star Hell (from the release), the stage 1 beams, the crystal phase, and Mirror Court's shield.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:

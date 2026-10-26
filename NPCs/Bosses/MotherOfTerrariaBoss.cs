@@ -244,9 +244,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 		{
 			// While she cannot be hurt (the crystal phase) a golden shield glows around her, growing as the circle forms.
 			bool hellShield = CurrentAttack == Attack.StarHell && Timer >= HellTell; // invulnerable from the moment she releases the stars
-			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || hellShield) && HeavensSkyTextures.Ready)
+			bool beamShield = BeamsShielded; // stage 1 Death Beam / Wing Beams: shielded while she holds still for the beam
+			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || hellShield || beamShield) && HeavensSkyTextures.Ready)
 			{
-				float grow = hellShield ? 1f : MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
+				float grow = hellShield || beamShield ? 1f : MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
 				float pulse = 0.85f + 0.15f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
 				Texture2D glow = HeavensSkyTextures.Soft;
 				spriteBatch.End();
@@ -364,7 +365,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				StartCrystalPhase();
 			}
-			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.StarHell && Timer >= HellTell); // untouchable while the crystals live, during the cross beams, and from the moment the Star Hell stars are released (owner, 2026-10-26)
+			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.StarHell && Timer >= HellTell) || BeamsShielded; // untouchable while the crystals live, during the cross beams, and from the moment the Star Hell stars are released (owner, 2026-10-26)
 
 			Timer++;
 			if (Timer < 0)
@@ -408,6 +409,11 @@ namespace MotherOfTerraria.NPCs.Bosses
 		}
 
 		// Moves on to the next attack in the cycle (fan -> burst -> beam -> fan ...).
+		// Owner, 2026-10-26: she cannot be hurt while she holds still for a stage 1 beam attack (the Death Beam and the Wing Beams), like the Cross Beams in stage 2.
+		// From the moment she stops to aim until the attack ends (the same moment `holding` in AI starts).
+		private bool BeamsShielded =>
+			(CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+
 		private void NextAttack()
 		{
 			Timer = 0;
