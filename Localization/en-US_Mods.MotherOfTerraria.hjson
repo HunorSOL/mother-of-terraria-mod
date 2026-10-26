@@ -96,4 +96,5 @@ Projectiles: {
 	GravityLance.DisplayName: Gravity Lance
 	GravityWell.DisplayName: Gravity Well
 	JudgmentMark.DisplayName: Judgment Mark
+	MirrorDashLine.DisplayName: Mirror Dash Line
 }
