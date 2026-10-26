@@ -159,6 +159,14 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private const int WellRepeatGap = 3;           // owner, 2026-10-26: it must be rare: weight 1 in the shuffle (against OtherAttackWeight) and only after this many other attacks
 		private const int WellEnd = WellTell + GravityWell.TotalTicks + 15;
 
+		// JUDGMENT MARK (stage 2, owner's idea 2026-10-26): she gathers light for half a second, then THREE marks go out one after another, each starting as the
+		// last one locks (see Projectiles/JudgmentMark.cs: a sigil follows you, locks, a giant lance falls on it). She can be hurt during it.
+		private const int MarkTell = 30;
+		private const int MarkCount = 3;
+		private const int MarkGap = JudgmentMark.FollowTicks + 5;     // the next mark starts about when the last one locks
+		private const int MarkDamage = 550;
+		private const int MarkEnd = MarkTell + (MarkCount - 1) * MarkGap + JudgmentMark.TotalTicks + 10;
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -170,7 +178,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
 		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell, Attack.JudgmentMark };
 
 		private enum Attack
 		{
@@ -185,6 +193,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			MirrorCourt = 8,                        // stage 2 only
 			StarHell = 9,                           // stage 2 only
 			GravityWell = 10,                       // stage 2 only
+			JudgmentMark = 11,                      // stage 2 only
 		}
 
 		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
@@ -363,7 +372,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || CurrentAttack == Attack.JudgmentMark || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -419,6 +428,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.GravityWell:
 					DoGravityWell(target);
+					break;
+				case Attack.JudgmentMark:
+					DoJudgmentMark(target);
 					break;
 			}
 		}
@@ -743,6 +755,29 @@ namespace MotherOfTerraria.NPCs.Bosses
 				}
 			}
 			if (Timer >= CrossEnd)
+			{
+				NextAttack();
+			}
+		}
+
+		// JUDGMENT MARK: see the constants. Each mark starts on the player and then follows them.
+		private void DoJudgmentMark(Player target)
+		{
+			if (Timer < MarkTell)
+			{
+				GatherLight(1.5f);
+				if (Timer == 1)
+				{
+					SoundEngine.PlaySound(SoundID.Item29 with { Pitch = 0.1f }, NPC.Center);
+				}
+			}
+			int since = (int)Timer - MarkTell;
+			if (since >= 0 && since % MarkGap == 0 && since / MarkGap < MarkCount && Main.netMode != NetmodeID.MultiplayerClient)
+			{
+				int damage = NPC.GetAttackDamage_ForProjectiles(MarkDamage, MarkDamage * 0.8f);
+				Projectile.NewProjectile(NPC.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<JudgmentMark>(), damage, 0f, Main.myPlayer, NPC.whoAmI);
+			}
+			if (Timer >= MarkEnd)
 			{
 				NextAttack();
 			}

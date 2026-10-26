@@ -53,6 +53,7 @@ These are not files in the mod; the code uses the game's own graphics for now. E
 | Mirror Clone (Mirror Court attack, 3 copies of her) | NPCs/Bosses/MirrorClone.cs (no file of its own) | Uses NPCs/Bosses/MotherOfTerrariaBoss_Stage2.png (2026-10-26). The real her is told apart by a faint halo drawn in code. No new art needed. |
 | Seeker Star (Star Hell homing star) | NPCs/Bosses/SeekerStar.cs (no file of its own) | Uses Projectiles/GoldCrystalStar.png at 0.62 size, spark trail in code. A smaller hand-made star could replace it. |
 | Gravity Well (stage 2 attack) and Gravity Lance | Projectiles/GravityWell.cs, Projectiles/GravityLance.cs (no files of their own) | The well is drawn entirely in code (soft glow textures made at load time, dust). The lance uses Projectiles/StarlightLance.png. Real art could replace the well. |
+| Judgment Mark (stage 2 attack) | Projectiles/JudgmentMark.cs (no file of its own) | The sigil, column and patch are drawn in code; the falling lance is the Starlight Lance picture at 3.2 times its size (a bigger hand-made lance would be better). |
 | Debug Boss Summoner icon | Items/Debug/DebugBossSummoner.png | TESTING ONLY, copy of the starter kit icon; deleted before release. |
 | Debug Stage Two Skipper icon | Items/Debug/DebugStageTwoSkipper.png | TESTING ONLY, copy of the same icon; deleted before release. |
 | Debug Stage Tester icon | Items/Debug/DebugStageTester.png | TESTING ONLY, copy of the same icon; deleted before release (with the item, after stage 2 is tested). |
