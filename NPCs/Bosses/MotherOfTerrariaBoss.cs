@@ -214,7 +214,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			NPC.width = 130;         // her body (the wings are scenery, not a hitbox); the 420x332 picture is centred on it
 			NPC.height = 210;
 			NPC.damage = 200;        // contact damage (placeholder)
-			NPC.defense = 100;       // placeholder
+			NPC.defense = 200;       // placeholder. Owner, 2026-10-26: raised from 100 to 200 as a test; REVERT TO 100 if it is too hard
 			NPC.lifeMax = BossLife;
 			NPC.HitSound = SoundID.NPCHit5;
 			NPC.DeathSound = SoundID.NPCDeath6;
@@ -240,9 +240,10 @@ namespace MotherOfTerraria.NPCs.Bosses
 		public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
 		{
 			// While she cannot be hurt (the crystal phase) a golden shield glows around her, growing as the circle forms.
-			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams) && HeavensSkyTextures.Ready)
+			bool hellShield = CurrentAttack == Attack.StarHell && Timer >= HellTell; // invulnerable from the moment she releases the stars
+			if ((CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || hellShield) && HeavensSkyTextures.Ready)
 			{
-				float grow = MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
+				float grow = hellShield ? 1f : MathHelper.Clamp(Timer / (CurrentAttack == Attack.CrossBeams ? CrossCharge : CrystalTell), 0.15f, 1f);
 				float pulse = 0.85f + 0.15f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4f);
 				Texture2D glow = HeavensSkyTextures.Soft;
 				spriteBatch.End();
@@ -360,7 +361,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			{
 				StartCrystalPhase();
 			}
-			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams; // untouchable while the crystals live and during the cross beams
+			NPC.dontTakeDamage = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || (CurrentAttack == Attack.StarHell && Timer >= HellTell); // untouchable while the crystals live, during the cross beams, and from the moment the Star Hell stars are released (owner, 2026-10-26)
 
 			Timer++;
 			switch (CurrentAttack)

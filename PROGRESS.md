@@ -408,6 +408,10 @@ Owner's design: she stops in one place and is INVULNERABLE until the attack is o
 - Defaults I chose from the owner's contradictory "only way to escape is to destroy them" and "outrunnable": speed 9 px/tick (outrunnable with wings or boots, not on foot), 10 s life so they cannot chase forever. Constants at the top of `SeekerStar` and the `Hell*` ones in the boss class. NOTE: this is a star attack, but it is shoot-down not dodge, which the owner asked for after removing Grand Stars.
 - To test: do you survive 20 homers without a ranged weapon, is the tell clear, is 9 px/tick right for outrunning, are 1000 HP and 200 damage right, do melee players have a chance.
 
+### Her defense 200 (a test) and invulnerable during Star Hell (2026-10-26, owner; BUILT, NOT YET TESTED)
+- Owner: she felt too easy to damage. Her defense went from 100 to 200 (`NPC.defense` in `SetDefaults`). **THE OWNER MAY WANT THIS REVERTED TO 100 if it is too hard: it is a test, change that one number back.** For reference Moon Lord's parts have 40 to 70 defense.
+- She is now INVULNERABLE from the moment she releases the Star Hell stars (after the 1 s gathering) until she moves on (all 20 stars gone), with the same golden glow as the Cross Beams. While she is untouchable, shooting the stars is the whole fight. Before the release she can still be hit.
+
 ## Not yet tested in-game (consolidated 2026-10-24; the per-change test notes are in the dated sections above)
 The owner tested and approved: the summon sequence and everything older, the dashes, her size (the second shrink was good, a later 25% shrink needs a look), the Celestial Spear, the feather, the wing and halo ideas as designs, the star marks, the boss bar (works after [AutoloadBossHead]).
 STILL TO CHECK IN-GAME:
