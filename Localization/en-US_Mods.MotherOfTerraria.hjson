@@ -76,6 +76,7 @@ NPCs: {
 	MotherOfTerrariaBoss.DisplayName: Mother of Terraria
 	EnchantedCrystal.DisplayName: Enchanted Crystal
 	MirrorClone.DisplayName: Mirror Clone
+	SeekerStar.DisplayName: Seeker Star
 }
 
 Projectiles: {
