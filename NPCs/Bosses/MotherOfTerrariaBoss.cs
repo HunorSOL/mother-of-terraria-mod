@@ -182,6 +182,12 @@ namespace MotherOfTerraria.NPCs.Bosses
 		private int dashContactDamage;                  // her normal contact damage, remembered while she charges
 		private int dashSide = 1;                       // the side the last dash came from (the next one comes from the other side)
 
+		// WHIP (stage 2, owner's idea 2026-10-26; the owner is not sure about it, so it is easy to remove: search this file for "WHIP"): she sends out a Heavenly Whip
+		// (NPCs/Bosses/HeavenlyWhip.cs) that aims at the player, locks, lashes out and, if it touches them, CATCHES them: they cannot move and take 100 damage a second until
+		// the whip (7,000 health) is destroyed. She waits until the whip is gone. She can be hurt during it.
+		private const int WhipMin = 30;                 // she never moves on before this
+		private const int WhipMax = 60 * 60;            // WHIP: a safety net only (the whip kills a trapped player long before)
+
 		private const int AttackCount = 6;          // the attacks in the loop (CrystalPhase below is not part of it)
 
 		// THE CRYSTAL PHASE (stage change): she is invulnerable from the moment it starts until the last crystal is dead.
@@ -193,7 +199,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 		// STAGE 2's attack loop (owner, 2026-10-25): only the two spear attacks are carried over (as Starlight Lances); every other stage 2
 		// attack will be completely new, so the old beam, stars, feathers and wing beams are NOT used in stage 2. New stage 2 attacks go here.
 		// The order is SHUFFLED (owner, 2026-10-26): each time a random one that is not the current attack (see NextAttack).
-		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell, Attack.JudgmentMark, Attack.MirrorDash };
+		private static readonly Attack[] StageTwoLoop = { Attack.SpearFan, Attack.SpearBurst, Attack.CrossBeams, Attack.MirrorCourt, Attack.StarHell, Attack.GravityWell, Attack.JudgmentMark, Attack.MirrorDash, Attack.HeavenlyWhip };
 
 		private enum Attack
 		{
@@ -210,6 +216,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 			GravityWell = 10,                       // stage 2 only
 			JudgmentMark = 11,                      // stage 2 only
 			MirrorDash = 12,                        // stage 2 only
+			HeavenlyWhip = 13,                      // stage 2 only (WHIP)
 		}
 
 		// Mirror Court's shield (health left) and her health when it began (restored every tick, so only the shield takes damage).
@@ -388,7 +395,7 @@ namespace MotherOfTerraria.NPCs.Bosses
 
 			// Dash to the current station (relative to the player, so she follows when the player moves). During the
 			// beam she holds still once she is in place. She faces the front, so the picture is never flipped.
-			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || CurrentAttack == Attack.JudgmentMark || CurrentAttack == Attack.MirrorDash || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
+			bool holding = CurrentAttack == Attack.CrystalPhase || CurrentAttack == Attack.CrossBeams || CurrentAttack == Attack.MirrorCourt || CurrentAttack == Attack.StarHell || CurrentAttack == Attack.GravityWell || CurrentAttack == Attack.JudgmentMark || CurrentAttack == Attack.MirrorDash || CurrentAttack == Attack.HeavenlyWhip || (CurrentAttack == Attack.DeathBeam && Timer >= BeamStart - 5) || (CurrentAttack == Attack.WingBeams && Timer >= WingBeamsStart - 5);
 			Vector2 station = Stations[(int)StationIndex % Stations.Length];
 			Vector2 goal = target.Center + station + new Vector2(0f, 10f * (float)System.Math.Sin(Main.GameUpdateCount / 40f)); // a slow, heavy bob
 			Vector2 toGoal = goal - NPC.Center;
@@ -450,6 +457,9 @@ namespace MotherOfTerraria.NPCs.Bosses
 					break;
 				case Attack.MirrorDash:
 					DoMirrorDash(target);
+					break;
+				case Attack.HeavenlyWhip:
+					DoHeavenlyWhip();
 					break;
 			}
 		}
@@ -850,6 +860,37 @@ namespace MotherOfTerraria.NPCs.Bosses
 				NPC.velocity = Vector2.Zero;
 				System.Array.Clear(NPC.oldPos);
 				DashFlash(NPC.Center);
+				NextAttack();
+			}
+		}
+
+		// WHIP: she raises her arm (gold light), the whip appears at her hand and does everything itself; she moves on when it is gone.
+		private void DoHeavenlyWhip()
+		{
+			if (Timer == 1)
+			{
+				SoundEngine.PlaySound(SoundID.Item29 with { Pitch = -0.2f }, NPC.Center);
+				if (Main.netMode != NetmodeID.MultiplayerClient)
+				{
+					NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<HeavenlyWhip>(), 0, NPC.whoAmI);
+				}
+			}
+			if (Timer < HeavenlyWhip.FollowTicks)
+			{
+				GatherLight(1f + Timer / (float)HeavenlyWhip.FollowTicks);
+			}
+			bool whipAlive = false;
+			int whipType = ModContent.NPCType<HeavenlyWhip>();
+			foreach (NPC other in Main.ActiveNPCs)
+			{
+				if (other.type == whipType && (int)other.ai[0] == NPC.whoAmI)
+				{
+					whipAlive = true;
+					break;
+				}
+			}
+			if (Timer >= WhipMin && (!whipAlive || Timer >= WhipMax))
+			{
 				NextAttack();
 			}
 		}
